@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Mapping Tool</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<body>
+    <h1>JSON Mapping Tool</h1>
+
+    <div>
+        <h2>JSON de Origem</h2>
+        <textarea id="sourceJsonTextarea" rows="10" cols="50" placeholder="Cole o JSON de origem aqui"></textarea>
+    </div>
+
+    <div>
+        <h2>JSON de Saída</h2>
+        <textarea id="outputJsonTextarea" rows="10" cols="50" placeholder="Cole o JSON de saída aqui"></textarea>
+    </div>
+
+    <button id="mapButton">Realizar Mapeamento</button>
+    
+    <div id="errorMessage" class="error-message"></div>
+    <div id="formContainer"></div>
+    <div id="mappedJsonContainer"></div>
+
+    <script src="static/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 10px;
+}
+
+#formContainer {
+    margin-top: 20px;
+}
+
+#mappedJsonContainer {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+.label {
+    margin-bottom: 10px;
+    /* Adicione o espaço vertical desejado */
+}
+
+.input-container {
+    margin-bottom: 10px;
+    /* Adicione o espaço vertical desejado */
+}
+.field-container {
+    margin-bottom: 8.5px;
+    /* Adicione o espaço vertical desejado */
+}
