@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (json.hasOwnProperty(key)) {
                 const value = json[key];
 
-                if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                //if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                if (typeof value === 'object' && !Array.isArray(value)) {
                     // Adiciona a chave à lista com a hierarquia
                     parentContainer.push(prefix + key);
 
@@ -78,14 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
         formContainer.innerHTML = ''; // Limpa o formulário anterior
         mappedJsonContainer.textContent = ''; // Limpa o JSON mapeado anterior
 
-        const sourceJson = parseJson(sourceJsonTextarea.value);
-
-        if (!sourceJson) {
-            errorMessage.textContent = 'Por favor, forneça um JSON válido.';
-            return;
-        }
-
-        
         generateKeysList(sourceJson, keysList);
         console.log('Lista de chaves hierarquizadas:', keysList);
 
@@ -96,6 +89,27 @@ document.addEventListener('DOMContentLoaded', function () {
         //mappedJsonContainer.textContent = mappedJson;
         //console.log('JsonMapper:', mappedJson); 
     });
+    function performJMESPathMapping(keysList, outputJson) {
+        const mappedJson = {};
+
+        for (const keyPath of keysList) {
+            const keys = keyPath.split('.');
+            let sourceValue = outputJson;
+
+            for (const key of keys) {
+                if (sourceValue.hasOwnProperty(key)) {
+                    sourceValue = sourceValue[key];
+                } else {
+                    sourceValue = null;
+                    break;
+                }
+            }
+
+            setNestedKeyValue(mappedJson, keyPath, sourceValue);
+        }
+
+        return mappedJson;
+    }
 
     // Define the event listener for the "Realizar Mapeamento" button
     mapButton.addEventListener('click', function () {
@@ -106,8 +120,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const sourceJson = parseJson(sourceJsonTextarea.value);
         const outputJson = parseJson(outputJsonTextarea.value);
 
-        if (!sourceJson || !outputJson) {
-            errorMessage.textContent = 'Por favor, forneça JSONs válidos.';
+        if (!sourceJson) {
+            errorMessage.textContent = 'Por favor, forneça JSONs de origem válido válidos.';
+            return;
+        }else if (!outputJson){
+            errorMessage.textContent = 'Por favor, forneça JSONs de saída válido válidos.';
             return;
         }
 
@@ -154,44 +171,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     function generateIndentedInputFields(json, parentContainer, sourceJson, depth = 0) {
-        for (const key in json) {
-            if (json.hasOwnProperty(key)) {
-                const value = json[key];
-                const fieldContainer = document.createElement('div');
-                fieldContainer.classList.add('field-container');
-                fieldContainer.style.marginLeft = `${depth * 20}px`; // Adjust the indentation
+    for (const key in json) {
+        if (json.hasOwnProperty(key)) {
+            const value = json[key];
+            const fieldContainer = document.createElement('div');
+            fieldContainer.classList.add('field-container');
+            fieldContainer.style.marginLeft = `${depth * 20}px`; // Ajusta a indentação
 
-                if (typeof value === 'object' && !Array.isArray(value)) {
-                    const label = document.createElement('span');
-                    label.classList.add('label');
-                    label.textContent = key + ':';
-                    fieldContainer.appendChild(label);
+            const label = document.createElement('span');
+            label.classList.add('label');
+            label.textContent = key + ':';
+            fieldContainer.appendChild(label);
 
-                    generateIndentedInputFields(value, fieldContainer, sourceJson, depth + 1);
-                } else if (Array.isArray(value)) {
-                    const label = document.createElement('span');
-                    label.classList.add('label');
-                    label.textContent = key + ':';
-                    fieldContainer.appendChild(label);
-
-                    if (value.length > 0) {
-                        generateIndentedInputFields(value[0], fieldContainer, sourceJson, depth + 1);
-                    }
-                } else {
-                    const label = document.createElement('span');
-                    label.classList.add('label');
-                    label.textContent = key + ':';
-
+            if (typeof value === 'object' && !Array.isArray(value)) {
+                generateIndentedInputFields(value, fieldContainer, sourceJson, depth + 1);
+            } else if (Array.isArray(value)) {
+                if (value.length > 0) {
+                    generateIndentedInputFields(value[0], fieldContainer, sourceJson, depth + 1);
+                }
+            } else {
+                if (value === null || value === "" || value === "null") {
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.name = key;
-
+                    fieldContainer.appendChild(input);
+                } else {
                     const select = document.createElement('select');
                     select.name = key + '_select';
+                    select.style.marginLeft = '5px';
 
-                    //console.log('Source:', sourceJson)
-
-                    // Populate select with keys from sourceJson
                     for (const sourceKey in sourceJson) {
                         const option = document.createElement('option');
                         option.value = sourceJson[sourceKey];
@@ -199,15 +207,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         select.appendChild(option);
                     }
 
-                    fieldContainer.appendChild(label);
-                    //fieldContainer.appendChild(input);
                     fieldContainer.appendChild(select);
                 }
-
-                parentContainer.appendChild(fieldContainer);
             }
+
+            parentContainer.appendChild(fieldContainer);
         }
     }
+}
+
+
     function generateKeysListFromSource(json, parentContainer, prefix = '') {
         for (const key in json) {
             if (json.hasOwnProperty(key)) {
