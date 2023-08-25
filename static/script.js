@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Exibir o JSON mapeado no elemento correspondente
         mappedJsonContainer.textContent = mappedJson;
-        console.log('JsonMapper:', mappedJson); 
+        
     });
     function performJMESPathMapping(keysList, outputJson) {
         const mappedJson = {};
@@ -262,7 +262,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         generateForm(jsonOutput, selectedKey, keysListbox.options); // Gere o formulário aqui com a chave selecionada e as opções do keysListbox
     });
-    //const keysListbox = document.getElementById('keys-listbox');
     const selectedKeyField = document.getElementById('selectedKey');
 
     generateKeysList(jsonOrigin.data, keysListbox);
@@ -288,6 +287,46 @@ document.addEventListener('DOMContentLoaded', function () {
         const lastKey = keys[keys.length - 1];
         nestedObj[lastKey] = value;
     }
+    function generatePreviewJson(outputJson) {
+        const previewJsonContainer = document.getElementById('previewJson');
+        previewJsonContainer.innerHTML = ''; // Limpa o conteúdo anterior
+
+        function createPreviewElement(key, value) {
+            const previewElement = document.createElement('div');
+            previewElement.classList.add('preview-element');
+
+            const keyElement = document.createElement('span');
+            keyElement.classList.add('preview-key');
+            keyElement.textContent = key;
+
+            if (typeof value === 'object' && value !== null) {
+                const subElements = document.createElement('div');
+                subElements.classList.add('sub-elements');
+
+                for (const subKey in value) {
+                    if (value.hasOwnProperty(subKey)) {
+                        createPreviewElement(subKey, value[subKey]);
+                    }
+                }
+
+                previewElement.appendChild(keyElement);
+                previewElement.appendChild(subElements);
+            } else {
+                previewElement.appendChild(keyElement);
+            }
+
+            return previewElement;
+        }
+
+        for (const key in outputJson) {
+            if (outputJson.hasOwnProperty(key)) {
+                const previewElement = createPreviewElement(key, outputJson[key]);
+                previewJsonContainer.appendChild(previewElement);
+            }
+        }
+    }
+
+    // Define the event listener for the "Generate Output JSON" button
     generateOutputJsonButton.addEventListener('click', function () {
         const outputJsonData = {};
         const formInputs = formContainer.querySelectorAll('input[name]');
@@ -302,6 +341,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const outputJson = JSON.stringify(outputJsonData, null, 2);
         outputJsonContainer.textContent = outputJson;
+
+        // Generate the preview of the output JSON structure
+        generatePreviewJson(outputJsonData);
     });
 
 });
