@@ -103,3 +103,7 @@ select:focus {
     border-color: #66afe9;
     box-shadow: 0 0 5px #487fab;
 }
+
+#table_mapping{
+    margin-block-end: 5%;
+}
