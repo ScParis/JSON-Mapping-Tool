@@ -1,17 +1,28 @@
 body {
     min-height: 100vh;
-    margin: 0;
+    margin-left: 1.5;
+    margin-right: 1.5;
+    margin-top: 0.5;
+    margin-bottom: 1.5;
     background-color: #f0f0f0;
 }
+textarea{
+    background-color: #f8f8f8;
+    border-radius: 2%;
+    border-color: #333;
+    box-shadow: #333;
+    display: flex;
 
+}
 #formContainer {
     margin-left: 5%;
 }
 
 #generateButton {
-    padding: 10px;
-    margin-left: 10%;
+    padding: 5px;
+    margin-left: 5%;
     margin-right: 10%;
+    border: #2980b9;
 }
 
 #mappedJsonContainer,
@@ -36,10 +47,11 @@ body {
     background-color: #2980b9;
 }
 
-h1 {
+#top_text {
     border: 2px solid hsl(204, 70%, 53%);
     padding: 30px;
     text-align: center;
+    border-radius: #333;
 }
 
 .error-message {
@@ -103,7 +115,73 @@ select:focus {
     border-color: #66afe9;
     box-shadow: 0 0 5px #487fab;
 }
+/* ... outros estilos ... */
 
-#table_mapping{
-    margin-block-end: 5%;
+/* Estilo para as labels dos campos */
+.form-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Estilo para os campos de input */
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Estilo para o botão "Gerar o Json de saída" */
+#generateOutputJson {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: hsl(204, 70%, 53%);
+    color: white;
+    border: darkblue;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#generateOutputJson:hover {
+    background-color: #2980b9;
+}
+
+/* Estilo para o campo de seleção (select2) */
+.select2-container--default .select2-selection--single {
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    height: 34px;
+}
+
+/* Espaçamento inferior para elementos */
+.margin-bottom {
+    margin-bottom: 20px;
+}
+
+/* Estilo para elementos desabilitados */
+.unabled {
+    opacity: 0.3;
+}
+
+/* Estilo para campos de formulário */
+.form-control-slice {
+    display: block;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    width: 49%;
+    margin-right: 3px;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }

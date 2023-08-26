@@ -55,10 +55,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const label = document.createElement('label');
                 label.textContent = key;
+                label.classList.add('form-label'); // Add a custom class for labels
 
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.name = key;
+                input.classList.add('form-input'); // Add a custom class for inputs
 
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(input);

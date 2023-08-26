@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <h1>JSON Mapping Tool</h1>
+    <h1 id="top_text">JSON Mapping Tool</h1>
     <table style="width:100%">
         <tr>
             <th>
@@ -25,10 +25,10 @@
         </tr>
         <tr>
             <th>
-                <textarea id="sourceJsonTextarea" rows="10" cols="60" placeholder="Cole o JSON de origem aqui" style="width: 917px; height: 801px;"></textarea>
+                <textarea id="sourceJsonTextarea" rows="10" cols="60" placeholder="    Cole o JSON de origem aqui" style="width: 917px; height: 801px;"></textarea>
             </th>
             <th>
-                <textarea id="outputJsonTextarea" rows="10" cols="60" placeholder="Cole o JSON de saída aqui" style="width: 917px; height: 801px;"></textarea>
+                <textarea id="outputJsonTextarea" rows="10" cols="60" placeholder="   Cole o JSON de saída aqui" style="width: 917px; height: 801px;"></textarea>
             </th>
             <th>
                 <textarea id="outputJsonContainer" style="width: 917px; height: 801px;"></textarea>
@@ -50,7 +50,7 @@
 
     <div id="errorMessage" class="error-message"></div>
     <div id="generateButton">
-        <table id="table_mapping">
+        <table>
             <tr>
                 <th>
                     <div id="mappedJsonContainer"></div>
@@ -58,7 +58,7 @@
             </tr>
         </table>
     </div>
-    <div>
+    <div id="mapping_json">
         <div id="formContainer"></div>
         <div id="keysListbox"></div>
         <!-- <div id="previewJson"></div> -->
