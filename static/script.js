@@ -4,14 +4,16 @@ const keysList = [];
 document.addEventListener('DOMContentLoaded', function () {
     const sourceJsonTextarea = document.getElementById('sourceJsonTextarea');
     const outputJsonTextarea = document.getElementById('outputJsonTextarea');
-    const mapButton = document.getElementById('mapButton');
-    const createListButton = document.getElementById('createListButton'); // Novo botão
     const errorMessage = document.getElementById('errorMessage');
     const formContainer = document.getElementById('formContainer');
     const mappedJsonContainer = document.getElementById('mappedJsonContainer');
     const keysListbox = document.getElementById('keys-listbox');
     const generateOutputJsonButton = document.getElementById('generateOutputJson');
     const outputJsonContainer = document.getElementById('outputJsonContainer');
+    
+    const createListButton = document.getElementById('createListButton');
+    const mapButton = document.getElementById('mapButton');
+    
 
     // Define a função para parsear JSON
     function parseJson(jsonString) {
@@ -253,25 +255,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Gerar as opções da lista de seleção a partir do JSON de origem
     generateKeysListFromSource(sourceJson, keysListbox);
 
-    keysListbox.addEventListener('change', function () {
-        const selectedKey = keysListbox.value;
-        selectedKeyField.value = selectedKey;
-
-        generateForm(jsonOutput, selectedKey, keysListbox.options); // Gere o formulário aqui com a chave selecionada e as opções do keysListbox
-    });
     const selectedKeyField = document.getElementById('selectedKey');
 
-    generateKeysList(jsonOrigin.data, keysListbox);
-
-    keysListbox.addEventListener('change', function () {
-        const selectedKey = keysListbox.value;
-        selectedKeyField.value = selectedKey;
-
-        generateForm(jsonOutput, selectedKey, keysListbox.options); // Gere o formulário aqui com a chave selecionada e as opções do keysListbox
-    });
     function setNestedKeyValue(obj, path, value) {
         const keys = path.split('.');
         let nestedObj = obj;
@@ -285,7 +272,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const lastKey = keys[keys.length - 1];
-        nestedObj[lastKey] = value;
+        if (value !== '') { // Adiciona a verificação para ignorar campos vazios
+            nestedObj[lastKey] = value;
+        }
     }
     function generatePreviewJson(outputJson) {
         const previewJsonContainer = document.getElementById('previewJson');
@@ -329,11 +318,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Define the event listener for the "Generate Output JSON" button
     generateOutputJsonButton.addEventListener('click', function () {
         const outputJsonData = {};
-        const formInputs = formContainer.querySelectorAll('input[name]');
+        const formInputs = formContainer.querySelectorAll('input[name], select[name]');
 
         formInputs.forEach(input => {
             const key = input.name;
-            const value = input.value;
+            const value = input.type === 'select-one' ? input.value : input.value;
             setNestedKeyValue(outputJsonData, key, value);
         });
 
@@ -345,5 +334,4 @@ document.addEventListener('DOMContentLoaded', function () {
         // Generate the preview of the output JSON structure
         generatePreviewJson(outputJsonData);
     });
-
 });
