@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <h1>JSON Mapping Tool</h1>
+    <h1 id="top_text">JSON Mapping Tool</h1>
     <table style="width:100%">
         <tr>
             <th>
@@ -19,13 +19,19 @@
             <th>
                 <h2>JSON de Saída</h2>
             </th>
+            <th>
+                <h2>JSON Mapeado</h2>
+            </th>
         </tr>
         <tr>
             <th>
-                <textarea id="sourceJsonTextarea" rows="10" cols="50" placeholder="Cole o JSON de origem aqui" style="width: 757px; height: 502px;"></textarea>
+                <textarea id="sourceJsonTextarea" rows="10" cols="60" placeholder="    Cole o JSON de origem aqui" style="width: 917px; height: 801px;"></textarea>
             </th>
             <th>
-                <textarea id="outputJsonTextarea" rows="10" cols="50" placeholder="Cole o JSON de saída aqui" style="width: 757px; height: 502px;"></textarea>
+                <textarea id="outputJsonTextarea" rows="10" cols="60" placeholder="   Cole o JSON de saída aqui" style="width: 917px; height: 801px;"></textarea>
+            </th>
+            <th>
+                <textarea id="outputJsonContainer" style="width: 917px; height: 801px;"></textarea>
             </th>
         </tr>
         <tr>
@@ -33,26 +39,32 @@
                 <button id="createListButton">Criar lista de dados</button>
             </th>
             <th>
-                <button id="mapButton">Realizar Mapeamento</button>
+                <div><button id="mapButton">Realizar Mapeamento</button></div>
+                
+            </th>
+            <th>
+                <button id="generateOutputJson">Gerar o Json de saída</button>
             </th>
         </tr>
     </table>
 
     <div id="errorMessage" class="error-message"></div>
-    <div>
-        <h2 id="mapper-form">JSON de Saída</h2>
-        <div id="formContainer"></div>
-        <div id="mappedJsonContainer"></div>
-        <div id="keysListbox"></div>
+    <div id="generateButton">
+        <table>
+            <tr>
+                <th>
+                    <div id="mappedJsonContainer"></div>
+                </th>
+            </tr>
+        </table>
     </div>
-    <table id="generateButton">
-        <tr>
-            <th>
-                <button id="generateOutputJson">Generate Output JSON</button>
-            </th>
-        </tr>
+    <div id="mapping_json">
+        <div id="formContainer"></div>
+        <div id="keysListbox"></div>
+        <div id="previewJson"></div>
         
-    </table>
+
+    </div>
     <script src="static/script.js"></script>
     
 </body>

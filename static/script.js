@@ -4,14 +4,16 @@ const keysList = [];
 document.addEventListener('DOMContentLoaded', function () {
     const sourceJsonTextarea = document.getElementById('sourceJsonTextarea');
     const outputJsonTextarea = document.getElementById('outputJsonTextarea');
-    const mapButton = document.getElementById('mapButton');
-    const createListButton = document.getElementById('createListButton'); // Novo botão
     const errorMessage = document.getElementById('errorMessage');
     const formContainer = document.getElementById('formContainer');
     const mappedJsonContainer = document.getElementById('mappedJsonContainer');
     const keysListbox = document.getElementById('keys-listbox');
     const generateOutputJsonButton = document.getElementById('generateOutputJson');
     const outputJsonContainer = document.getElementById('outputJsonContainer');
+    
+    const createListButton = document.getElementById('createListButton');
+    const mapButton = document.getElementById('mapButton');
+    
 
     // Define a função para parsear JSON
     function parseJson(jsonString) {
@@ -27,15 +29,16 @@ document.addEventListener('DOMContentLoaded', function () {
             if (json.hasOwnProperty(key)) {
                 const value = json[key];
 
-                //if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                if (typeof value === 'object' && !Array.isArray(value)) {
-                    // Adiciona a chave à lista com a hierarquia
+                if (Array.isArray(value)) {
+                    // Para arrays, gere chaves para as propriedades dos objetos dentro do array
+                    value.forEach((item, index) => {
+                        generateKeysList(item, parentContainer, `${prefix}${key}[${index}].`);
+                    });
+                } else if (typeof value === 'object' && value !== null) {
+                    // Para objetos, gere chaves de forma recursiva
                     parentContainer.push(prefix + key);
-
-                    // Recursivamente gera as chaves internas
                     generateKeysList(value, parentContainer, prefix + key + '.');
                 } else {
-                    // Adiciona a chave à lista
                     parentContainer.push(prefix + key);
                 }
             }
@@ -52,10 +55,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const label = document.createElement('label');
                 label.textContent = key;
+                label.classList.add('form-label'); // Add a custom class for labels
 
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.name = key;
+                input.classList.add('form-input'); // Add a custom class for inputs
 
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(input);
@@ -68,8 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const sourceJsonText = sourceJsonTextarea.value;
         try {
             sourceJson = JSON.parse(sourceJsonText);
-            keysList.length = 0; // Clear the keysList array
-            generateKeysList(sourceJson, keysList);
+            generateKeysList(keysList);
             console.log('Lista de chaves hierarquizadas:', keysList);
         } catch (error) {
             console.error('Erro ao fazer o parse do JSON de origem:', error);
@@ -80,14 +84,13 @@ document.addEventListener('DOMContentLoaded', function () {
         mappedJsonContainer.textContent = ''; // Limpa o JSON mapeado anterior
 
         generateKeysList(sourceJson, keysList);
-        console.log('Lista de chaves hierarquizadas:', keysList);
-
+        
         // Exemplo de código para gerar o JSON mapeado
         const mappedJson = keysList.join('\n');
 
         // Exibir o JSON mapeado no elemento correspondente
-        //mappedJsonContainer.textContent = mappedJson;
-        //console.log('JsonMapper:', mappedJson); 
+        mappedJsonContainer.textContent = mappedJson;
+        
     });
     function performJMESPathMapping(keysList, outputJson) {
         const mappedJson = {};
@@ -97,11 +100,25 @@ document.addEventListener('DOMContentLoaded', function () {
             let sourceValue = outputJson;
 
             for (const key of keys) {
-                if (sourceValue.hasOwnProperty(key)) {
-                    sourceValue = sourceValue[key];
+                const matchArray = key.match(/(.+)\[(\d+)\]$/); // Verifica se a chave é um array
+                if (matchArray) {
+                    const arrayKey = matchArray[1];
+                    const index = parseInt(matchArray[2]);
+
+                    if (sourceValue.hasOwnProperty(arrayKey) && Array.isArray(sourceValue[arrayKey])) {
+                        const arrayItem = sourceValue[arrayKey][index];
+                        sourceValue = arrayItem;
+                    } else {
+                        sourceValue = null;
+                        break;
+                    }
                 } else {
-                    sourceValue = null;
-                    break;
+                    if (sourceValue.hasOwnProperty(key)) {
+                        sourceValue = sourceValue[key];
+                    } else {
+                        sourceValue = null;
+                        break;
+                    }
                 }
             }
 
@@ -110,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return mappedJson;
     }
+
 
     // Define the event listener for the "Realizar Mapeamento" button
     mapButton.addEventListener('click', function () {
@@ -170,31 +188,29 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
+
     function generateIndentedInputFields(json, parentContainer, sourceJson, depth = 0) {
-    for (const key in json) {
-        if (json.hasOwnProperty(key)) {
-            const value = json[key];
-            const fieldContainer = document.createElement('div');
-            fieldContainer.classList.add('field-container');
-            fieldContainer.style.marginLeft = `${depth * 20}px`; // Ajusta a indentação
+        for (const key in json) {
+            if (json.hasOwnProperty(key)) {
+                const value = json[key];
+                const fieldContainer = document.createElement('div');
+                fieldContainer.classList.add('field-container');
+                fieldContainer.style.marginLeft = `${depth * 20}px`; // Ajusta a indentação
 
-            const label = document.createElement('span');
-            label.classList.add('label');
-            label.textContent = key + ':';
-            fieldContainer.appendChild(label);
+                const label = document.createElement('span');
+                label.classList.add('label');
+                label.textContent = key + ':';
+                fieldContainer.appendChild(label);
 
-            if (typeof value === 'object' && !Array.isArray(value)) {
-                generateIndentedInputFields(value, fieldContainer, sourceJson, depth + 1);
-            } else if (Array.isArray(value)) {
-                if (value.length > 0) {
-                    generateIndentedInputFields(value[0], fieldContainer, sourceJson, depth + 1);
-                }
-            } else {
-                if (value === null || value === "" || value === "null") {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.name = key;
-                    fieldContainer.appendChild(input);
+                if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                        // Verifica se o valor no array é um objeto
+                        if (typeof value[0] === 'object') {
+                            generateIndentedInputFields(value[0], fieldContainer, sourceJson, depth + 1);
+                        }
+                    }
+                } else if (typeof value === 'object' && !Array.isArray(value)) {
+                    generateIndentedInputFields(value, fieldContainer, sourceJson, depth + 1);
                 } else {
                     const select = document.createElement('select');
                     select.name = key + '_select';
@@ -209,12 +225,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     fieldContainer.appendChild(select);
                 }
-            }
 
-            parentContainer.appendChild(fieldContainer);
+                parentContainer.appendChild(fieldContainer);
+            }
         }
     }
-}
 
 
     function generateKeysListFromSource(json, parentContainer, prefix = '') {
@@ -242,26 +257,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Gerar as opções da lista de seleção a partir do JSON de origem
     generateKeysListFromSource(sourceJson, keysListbox);
 
-    keysListbox.addEventListener('change', function () {
-        const selectedKey = keysListbox.value;
-        selectedKeyField.value = selectedKey;
-
-        generateForm(jsonOutput, selectedKey, keysListbox.options); // Gere o formulário aqui com a chave selecionada e as opções do keysListbox
-    });
-    //const keysListbox = document.getElementById('keys-listbox');
     const selectedKeyField = document.getElementById('selectedKey');
 
-    generateKeysList(jsonOrigin.data, keysListbox);
-
-    keysListbox.addEventListener('change', function () {
-        const selectedKey = keysListbox.value;
-        selectedKeyField.value = selectedKey;
-
-        generateForm(jsonOutput, selectedKey, keysListbox.options); // Gere o formulário aqui com a chave selecionada e as opções do keysListbox
-    });
     function setNestedKeyValue(obj, path, value) {
         const keys = path.split('.');
         let nestedObj = obj;
@@ -269,21 +268,66 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let i = 0; i < keys.length - 1; i++) {
             const key = keys[i];
             if (!nestedObj[key]) {
+                // Cria um objeto vazio se a chave ainda não existir
                 nestedObj[key] = {};
             }
             nestedObj = nestedObj[key];
         }
 
+        // Define o valor na chave mais interna
         const lastKey = keys[keys.length - 1];
-        nestedObj[lastKey] = value;
+        // Remove o sufixo "_select" do último nome da chave
+        const cleanLastKey = lastKey.replace(/_select$/, '');
+        nestedObj[cleanLastKey] = value;
     }
+
+    function generatePreviewJson(outputJson) {
+        const previewJsonContainer = document.getElementById('previewJson');
+        previewJsonContainer.innerHTML = ''; // Limpa o conteúdo anterior
+
+        function createPreviewElement(key, value) {
+            const previewElement = document.createElement('div');
+            previewElement.classList.add('preview-element');
+
+            const keyElement = document.createElement('span');
+            keyElement.classList.add('preview-key');
+            keyElement.textContent = key;
+
+            if (typeof value === 'object' && value !== null) {
+                const subElements = document.createElement('div');
+                subElements.classList.add('sub-elements');
+
+                for (const subKey in value) {
+                    if (value.hasOwnProperty(subKey)) {
+                        createPreviewElement(subKey, value[subKey]);
+                    }
+                }
+
+                previewElement.appendChild(keyElement);
+                previewElement.appendChild(subElements);
+            } else {
+                previewElement.appendChild(keyElement);
+            }
+
+            return previewElement;
+        }
+
+        for (const key in outputJson) {
+            if (outputJson.hasOwnProperty(key)) {
+                const previewElement = createPreviewElement(key, outputJson[key]);
+                previewJsonContainer.appendChild(previewElement);
+            }
+        }
+    }
+
+    // Define the event listener for the "Generate Output JSON" button
     generateOutputJsonButton.addEventListener('click', function () {
         const outputJsonData = {};
-        const formInputs = formContainer.querySelectorAll('input[name]');
+        const formInputs = formContainer.querySelectorAll('input[name], select[name]');
 
         formInputs.forEach(input => {
             const key = input.name;
-            const value = input.value;
+            const value = input.type === 'select-one' ? input.value : input.value;
             setNestedKeyValue(outputJsonData, key, value);
         });
 
@@ -291,6 +335,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const outputJson = JSON.stringify(outputJsonData, null, 2);
         outputJsonContainer.textContent = outputJson;
+
+        // Generate the preview of the output JSON structure
+        generatePreviewJson(outputJsonData);
     });
+    // Define a função para gerar o JSON de saída com valores limpos
+    function generateEmptyOutputJson() {
+        const outputJsonText = outputJsonTextarea.value;
+        const outputJsonData = parseJson(outputJsonText);
+
+        if (outputJsonData) {
+            // Função para percorrer o objeto JSON e definir todos os valores como vazios
+            function clearJsonValues(obj) {
+                for (let key in obj) {
+                    if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+                        clearJsonValues(obj[key]); // Chama a função recursivamente para objetos aninhados
+                    } else {
+                        obj[key] = ''; // Define o valor como vazio
+                    }
+                }
+            }
+
+            const cleanOutputJsonData = JSON.parse(JSON.stringify(outputJsonData)); // Copia o JSON
+            clearJsonValues(cleanOutputJsonData); // Chama a função para limpar os valores
+
+            // Converte o objeto JSON limpo de volta para uma string JSON formatada
+            const outputJson = JSON.stringify(cleanOutputJsonData, null, 2);
+
+            // Crie uma lista encadeada em formato de array de strings
+            const formattedJsonList = [];
+            const lines = outputJson.split('\n');
+            lines.forEach((line) => {
+                formattedJsonList.push(line);
+            });
+
+            // Log da lista encadeada no console
+            console.log('Log da lista encadeada no console', formattedJsonList);
+        } else {
+            errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
+        }
+    }
+
+    // Define o evento de clique para o botão "Gerar o Json de saída"
+    generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
 
 });
