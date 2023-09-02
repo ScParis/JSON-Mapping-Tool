@@ -268,16 +268,19 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let i = 0; i < keys.length - 1; i++) {
             const key = keys[i];
             if (!nestedObj[key]) {
+                // Cria um objeto vazio se a chave ainda não existir
                 nestedObj[key] = {};
             }
             nestedObj = nestedObj[key];
         }
 
+        // Define o valor na chave mais interna
         const lastKey = keys[keys.length - 1];
-        if (value !== '') { // Adiciona a verificação para ignorar campos vazios
-            nestedObj[lastKey] = value;
-        }
+        // Remove o sufixo "_select" do último nome da chave
+        const cleanLastKey = lastKey.replace(/_select$/, '');
+        nestedObj[cleanLastKey] = value;
     }
+
     function generatePreviewJson(outputJson) {
         const previewJsonContainer = document.getElementById('previewJson');
         previewJsonContainer.innerHTML = ''; // Limpa o conteúdo anterior
