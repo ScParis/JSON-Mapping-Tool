@@ -339,4 +339,37 @@ document.addEventListener('DOMContentLoaded', function () {
         // Generate the preview of the output JSON structure
         generatePreviewJson(outputJsonData);
     });
+    // Define a função para gerar o JSON de saída com valores limpos
+    function generateEmptyOutputJson() {
+        const outputJsonText = outputJsonTextarea.value;
+        const outputJsonData = parseJson(outputJsonText);
+
+        if (outputJsonData) {
+            // Função para percorrer o objeto JSON e definir todos os valores como vazios
+            function clearJsonValues(obj) {
+                for (let key in obj) {
+                    if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+                        clearJsonValues(obj[key]); // Chama a função recursivamente para objetos aninhados
+                    } else {
+                        obj[key] = ''; // Define o valor como vazio
+                    }
+                }
+            }
+
+            const cleanOutputJsonData = JSON.parse(JSON.stringify(outputJsonData)); // Copia o JSON
+            clearJsonValues(cleanOutputJsonData); // Chama a função para limpar os valores
+
+            // Converte o objeto JSON com valores limpos de volta para uma string JSON formatada
+            const outputJson = JSON.stringify(cleanOutputJsonData, null, 2);
+
+            // Exibe o JSON limpo no campo outputJsonContainer
+            outputJsonContainer.textContent = outputJson;
+        } else {
+            errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
+        }
+    }
+
+    // Define o evento de clique para o botão "Gerar o Json de saída"
+    generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
+
 });
