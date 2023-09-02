@@ -359,11 +359,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const cleanOutputJsonData = JSON.parse(JSON.stringify(outputJsonData)); // Copia o JSON
             clearJsonValues(cleanOutputJsonData); // Chama a função para limpar os valores
 
-            // Converte o objeto JSON com valores limpos de volta para uma string JSON formatada
+            // Converte o objeto JSON limpo de volta para uma string JSON formatada
             const outputJson = JSON.stringify(cleanOutputJsonData, null, 2);
 
-            // Exibe o JSON limpo no campo outputJsonContainer
-            outputJsonContainer.textContent = outputJson;
+            // Crie uma lista encadeada em formato de array de strings
+            const formattedJsonList = [];
+            const lines = outputJson.split('\n');
+            lines.forEach((line) => {
+                formattedJsonList.push(line);
+            });
+
+            // Log da lista encadeada no console
+            console.log('Log da lista encadeada no console', formattedJsonList);
         } else {
             errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
         }
