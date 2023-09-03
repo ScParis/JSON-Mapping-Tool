@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Define a function to generate the dynamic form
     function generateDynamicForm(outputJson) {
         formContainer.innerHTML = ''; // Clear previous form
-
+                
         for (const key in outputJson) {
             if (outputJson.hasOwnProperty(key)) {
                 const fieldContainer = document.createElement('div');
@@ -67,6 +67,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 formContainer.appendChild(fieldContainer);
             }
         }
+        // Adicione este console.log para imprimir o resultado do formContainer
+        console.log('Resultado do formContainer:', formContainer);
     }
     // Define o evento para o botão "Criar lista de dados"
     createListButton.addEventListener('click', function () {
@@ -95,39 +97,27 @@ document.addEventListener('DOMContentLoaded', function () {
     function performJMESPathMapping(keysList, outputJson) {
         const mappedJson = {};
 
-        for (const keyPath of keysList) {
+        keysList.forEach(keyPath => {
             const keys = keyPath.split('.');
-            let sourceValue = outputJson;
+            let currentLevel = mappedJson;
 
-            for (const key of keys) {
-                const matchArray = key.match(/(.+)\[(\d+)\]$/); // Verifica se a chave é um array
-                if (matchArray) {
-                    const arrayKey = matchArray[1];
-                    const index = parseInt(matchArray[2]);
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i];
 
-                    if (sourceValue.hasOwnProperty(arrayKey) && Array.isArray(sourceValue[arrayKey])) {
-                        const arrayItem = sourceValue[arrayKey][index];
-                        sourceValue = arrayItem;
+                if (!currentLevel[key]) {
+                    if (i === keys.length - 1) {
+                        currentLevel[key] = '';
                     } else {
-                        sourceValue = null;
-                        break;
-                    }
-                } else {
-                    if (sourceValue.hasOwnProperty(key)) {
-                        sourceValue = sourceValue[key];
-                    } else {
-                        sourceValue = null;
-                        break;
+                        currentLevel[key] = {};
                     }
                 }
-            }
 
-            setNestedKeyValue(mappedJson, keyPath, sourceValue);
-        }
+                currentLevel = currentLevel[key];
+            }
+        });
 
         return mappedJson;
     }
-
 
     // Define the event listener for the "Realizar Mapeamento" button
     mapButton.addEventListener('click', function () {
@@ -151,6 +141,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const mappedJson = performJMESPathMapping(keysList, outputJson);
 
         mappedJsonContainer.textContent = JSON.stringify(mappedJson, null, 2);
+        // Após a geração do formulário dinâmico, imprima o conteúdo do formContainer no console
+
     });
 
 
@@ -229,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 parentContainer.appendChild(fieldContainer);
             }
         }
+        // Imprima o resultado do formContainer no console
     }
 
 
@@ -281,44 +274,33 @@ document.addEventListener('DOMContentLoaded', function () {
         nestedObj[cleanLastKey] = value;
     }
 
-    function generatePreviewJson(outputJson) {
-        const previewJsonContainer = document.getElementById('previewJson');
-        previewJsonContainer.innerHTML = ''; // Limpa o conteúdo anterior
-
-        function createPreviewElement(key, value) {
-            const previewElement = document.createElement('div');
-            previewElement.classList.add('preview-element');
-
-            const keyElement = document.createElement('span');
-            keyElement.classList.add('preview-key');
-            keyElement.textContent = key;
-
-            if (typeof value === 'object' && value !== null) {
-                const subElements = document.createElement('div');
-                subElements.classList.add('sub-elements');
-
-                for (const subKey in value) {
-                    if (value.hasOwnProperty(subKey)) {
-                        createPreviewElement(subKey, value[subKey]);
-                    }
-                }
-
-                previewElement.appendChild(keyElement);
-                previewElement.appendChild(subElements);
-            } else {
-                previewElement.appendChild(keyElement);
-            }
-
-            return previewElement;
-        }
-
+    function generatePreviewJson(outputJson, parentElement, prefix = '') {
         for (const key in outputJson) {
             if (outputJson.hasOwnProperty(key)) {
-                const previewElement = createPreviewElement(key, outputJson[key]);
-                previewJsonContainer.appendChild(previewElement);
+                const currentElement = document.createElement('div');
+                currentElement.classList.add('preview-element');
+
+                const keyElement = document.createElement('span');
+                keyElement.classList.add('preview-key');
+                keyElement.textContent = prefix + key + ':';
+                currentElement.appendChild(keyElement);
+
+                if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
+                    generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
+                } else {
+                    const valueElement = document.createElement('span');
+                    valueElement.classList.add('preview-value');
+                    valueElement.textContent = key; // Usar a chave como valor
+                    currentElement.appendChild(valueElement);
+                }
+
+                if (parentElement) {
+                    parentElement.appendChild(currentElement);
+                }
             }
         }
     }
+
 
     // Define the event listener for the "Generate Output JSON" button
     generateOutputJsonButton.addEventListener('click', function () {
@@ -345,32 +327,33 @@ document.addEventListener('DOMContentLoaded', function () {
         const outputJsonData = parseJson(outputJsonText);
 
         if (outputJsonData) {
-            // Função para percorrer o objeto JSON e definir todos os valores como vazios
-            function clearJsonValues(obj) {
+            // Função para criar a lista mantendo a estrutura hierárquica
+            function createListWithHierarchy(obj, indent = 0) {
+                let list = '';
+
                 for (let key in obj) {
-                    if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-                        clearJsonValues(obj[key]); // Chama a função recursivamente para objetos aninhados
+                    const value = obj[key];
+                    const lineIndent = ' '.repeat(indent * 2);
+
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        // Objeto aninhado, chama a função recursivamente
+                        list += `${lineIndent}"${key}": {\n`;
+                        list += createListWithHierarchy(value, indent + 1);
+                        list += `${lineIndent}},\n`;
                     } else {
-                        obj[key] = ''; // Define o valor como vazio
+                        // Valor simples, adiciona à lista
+                        list += `${lineIndent}"${key}": "",\n`;
                     }
                 }
+
+                return list;
             }
 
-            const cleanOutputJsonData = JSON.parse(JSON.stringify(outputJsonData)); // Copia o JSON
-            clearJsonValues(cleanOutputJsonData); // Chama a função para limpar os valores
+            // Chama a função para criar a lista mantendo a estrutura hierárquica
+            const formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
 
-            // Converte o objeto JSON limpo de volta para uma string JSON formatada
-            const outputJson = JSON.stringify(cleanOutputJsonData, null, 2);
-
-            // Crie uma lista encadeada em formato de array de strings
-            const formattedJsonList = [];
-            const lines = outputJson.split('\n');
-            lines.forEach((line) => {
-                formattedJsonList.push(line);
-            });
-
-            // Log da lista encadeada no console
-            console.log('Log da lista encadeada no console', formattedJsonList);
+            // Log da lista no console
+            console.log('Log da lista no console:', formattedJsonList);
         } else {
             errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
         }
@@ -378,5 +361,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
+
 
 });
