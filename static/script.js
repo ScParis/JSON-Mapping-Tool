@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const errorMessage = document.getElementById('errorMessage');
     const formContainer = document.getElementById('formContainer');
     const mappedJsonContainer = document.getElementById('mappedJsonContainer');
-    const keysListbox = document.getElementById('keys-listbox');
+    const keysListbox = document.getElementById('keysListbox');
     const generateOutputJsonButton = document.getElementById('generateOutputJson');
     const outputJsonContainer = document.getElementById('outputJsonContainer');
     
@@ -207,6 +207,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     const select = document.createElement('select');
                     select.name = key + '_select';
                     select.style.marginLeft = '5px';
+                    // Adicionar a opção de placeholder
+                    const placeholderOption = document.createElement('option');
+                    placeholderOption.value = '';
+                    placeholderOption.textContent = 'Selecione a opção para mapeamento';
+                    select.appendChild(placeholderOption);
 
                     for (const sourceKey in sourceJson) {
                         const option = document.createElement('option');
@@ -221,9 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 parentContainer.appendChild(fieldContainer);
             }
         }
-        // Imprima o resultado do formContainer no console
     }
-
 
     function generateKeysListFromSource(json, parentContainer, prefix = '') {
         for (const key in json) {
@@ -252,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     generateKeysListFromSource(sourceJson, keysListbox);
 
-    const selectedKeyField = document.getElementById('selectedKey');
+    //const selectedKeyField = document.getElementById('selectedKey');
 
     function setNestedKeyValue(obj, path, value) {
         const keys = path.split('.');
@@ -361,6 +364,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
-
-
+    
 });
