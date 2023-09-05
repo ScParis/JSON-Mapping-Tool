@@ -44,32 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    // Define a function to generate the dynamic form
-    function generateDynamicForm(outputJson) {
-        formContainer.innerHTML = ''; // Clear previous form
-                
-        for (const key in outputJson) {
-            if (outputJson.hasOwnProperty(key)) {
-                const fieldContainer = document.createElement('div');
-                fieldContainer.classList.add('field-container');
 
-                const label = document.createElement('label');
-                label.textContent = key;
-                label.classList.add('form-label'); // Add a custom class for labels
-
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.name = key;
-                input.classList.add('form-input'); // Add a custom class for inputs
-
-                fieldContainer.appendChild(label);
-                fieldContainer.appendChild(input);
-                formContainer.appendChild(fieldContainer);
-            }
-        }
-        // Adicione este console.log para imprimir o resultado do formContainer
-        console.log('Resultado do formContainer:', formContainer);
-    }
     // Define o evento para o botão "Criar lista de dados"
     createListButton.addEventListener('click', function () {
         const sourceJsonText = sourceJsonTextarea.value;
@@ -145,44 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-
-    function generateInputFields(json, parentContainer) {
-        for (const key in json) {
-            if (json.hasOwnProperty(key)) {
-                const value = json[key];
-
-                if (typeof value === 'object' && !Array.isArray(value)) {
-                    const fieldContainer = document.createElement('div');
-                    fieldContainer.classList.add('field-container');
-
-                    const label = document.createElement('label');
-                    label.textContent = key;
-
-                    fieldContainer.appendChild(label);
-                    parentContainer.appendChild(fieldContainer);
-
-                    generateInputFields(value, fieldContainer);
-                } else {
-                    const fieldContainer = document.createElement('div');
-                    fieldContainer.classList.add('field-container');
-
-                    const label = document.createElement('label');
-                    label.textContent = key;
-
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.name = key;
-
-                    fieldContainer.appendChild(label);
-                    fieldContainer.appendChild(input);
-                    parentContainer.appendChild(fieldContainer);
-                }
-            }
-        }
-    }
-
     function generateIndentedInputFields(json, parentContainer, sourceJson, depth = 0) {
         for (const key in json) {
+            console.log('É pra ser um json: ', json)
             if (json.hasOwnProperty(key)) {
                 const value = json[key];
                 const fieldContainer = document.createElement('div');
@@ -288,7 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 keyElement.textContent = prefix + key + ':';
                 currentElement.appendChild(keyElement);
 
-                if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
+                //if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
+                if (typeof outputJson[key] === 'object') {
                     generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
                 } else {
                     const valueElement = document.createElement('span');
@@ -315,8 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const value = input.type === 'select-one' ? input.value : input.value;
             setNestedKeyValue(outputJsonData, key, value);
         });
-
-        console.log('Output JSON Data:', outputJsonData);
 
         const outputJson = JSON.stringify(outputJsonData, null, 2);
         outputJsonContainer.textContent = outputJson;
