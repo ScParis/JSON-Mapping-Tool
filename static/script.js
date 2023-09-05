@@ -254,8 +254,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const key = input.name;
             const value = input.type === 'select-one' ? input.value : input.value;
 
+            // Remove o sufixo "_select" do último nome da chave
+            const cleanKey = key.replace(/_select$/, '');
+
             // Divide a chave em partes
-            const keys = key.split('.');
+            const keys = cleanKey.split('.');
             let currentLevel = outputJsonData;
 
             // Percorre as partes da chave e cria os objetos pai, se necessário
@@ -274,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
             currentLevel[lastKey] = value;
         });
     }
+
 
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
