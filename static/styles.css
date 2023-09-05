@@ -1,18 +1,23 @@
 body {
     min-height: 100vh;
-    margin-left: 1.5;
-    margin-right: 1.5;
-    margin-top: 0.5;
-    margin-bottom: 1.5;
+    margin-left: 1.5rem;
+    /* Adicione 'rem' após os valores numéricos */
+    margin-right: 1.5rem;
+    /* Adicione 'rem' após os valores numéricos */
+    margin-top: 0.5rem;
+    /* Adicione 'rem' após os valores numéricos */
+    margin-bottom: 1.5rem;
+    /* Adicione 'rem' após os valores numéricos */
     background-color: #f0f0f0;
 }
-textarea{
+
+textarea {
     background-color: #f8f8f8;
     border-radius: 2%;
-    border-color: #333;
-    box-shadow: #333;
+    border: 1px solid #333;
+    box-shadow: 1px 1px 3px #333;
+    /* Corrija a declaração da sombra */
     display: flex;
-
 }
 #formContainer {
     margin-left: 5%;
