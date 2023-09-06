@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function populateOutputJsonFromForm(formInputs, outputJsonData) {
         formInputs.forEach(input => {
             const key = input.name;
-            const value = input.type === 'select-one' ? input.value : input.value;
+            const value = input.type === 'select-one' ? input.options[input.selectedIndex].label : input.value;
 
             // Remove o sufixo "_select" do último nome da chave
             const cleanKey = key.replace(/_select$/, '');
@@ -280,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', function () {
         const outputPreview = {};
@@ -303,12 +304,17 @@ document.addEventListener('DOMContentLoaded', function () {
         if (target.tagName === 'SELECT') {
             const outputJsonData = {};
             const formInputs = formContainer.querySelectorAll('input[name], select[name]');
+            const selectElement = target;
+            const selectedOptions = Array.from(selectElement.selectedOptions);
+            const optionLabels = selectedOptions.map(option => option.label);
+
+            console.log('Labels dos elementos option selecionados:', optionLabels);
 
             // Popula o JSON de saída com os valores do formulário
             populateOutputJsonFromForm(formInputs, outputJsonData);
 
             // Log dos valores atualizados no console
-            console.log('Valores atualizados no JSON de saída:', outputJsonData);
+            //console.log('Valores atualizados no JSON de saída:', outputJsonData);
         }
     });
 
@@ -345,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
 
             // Log da lista no console
-            console.log('Log da lista no console:', formattedJsonList);
+            //console.log('Log da lista no console:', formattedJsonList);
         } else {
             errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
         }
