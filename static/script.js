@@ -274,11 +274,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Define o valor na chave mais interna
             const lastKey = keys[keys.length - 1];
-            currentLevel[lastKey] = value;
+
+            // Verifica se o valor selecionado é o placeholder
+            if (value === "Selecione a opção para mapeamento") {
+                currentLevel[lastKey] = ""; // Ou currentLevel[lastKey] = null; para definir como null
+            } else {
+                currentLevel[lastKey] = value;
+            }
         });
     }
-
-
 
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
