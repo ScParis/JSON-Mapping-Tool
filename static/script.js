@@ -131,14 +131,16 @@ document.addEventListener('DOMContentLoaded', function () {
             if (json.hasOwnProperty(key)) {
                 const value = json[key];
                 const fieldContainer = document.createElement('div');
-              
                 fieldContainer.classList.add('field-container');
                 fieldContainer.style.marginLeft = `${depth * 20}px`; // Ajusta a indentação
-                fieldContainer.style.border = '1px solid #ccc'; // Adicione um estilo de borda
-                fieldContainer.style.padding = '5px'; // Adicione um preenchimento para espaçamento
-                fieldContainer.style.marginRight = '5px'
-                fieldContainer.style.boxShadow = ''
-                
+                fieldContainer.style.marginLeft = `1px`;
+
+                // Adicione uma borda com base no nível de profundidade
+                if (depth > 0) {
+                    fieldContainer.style.border = '1px solid #ccc'; // Adicione um estilo de borda
+                    fieldContainer.style.padding = '5px'; // Adicione um preenchimento para espaçamento
+                }
+
                 const keyPath = parentKeyPath ? `${parentKeyPath}.${key}` : key;
 
                 const label = document.createElement('span');
@@ -147,10 +149,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 fieldContainer.appendChild(label);
 
                 if (Array.isArray(value)) {
+                    // Verifique se o valor é um array
                     if (value.length > 0) {
-                        // Verifica se o valor no array é um objeto
+                        // Verifique se o array contém objetos
                         if (typeof value[0] === 'object') {
-                            generateIndentedInputFields(value[0], fieldContainer, sourceJson, depth + 1, keyPath);
+                            // Crie campos para cada objeto no array
+                            for (let i = 0; i < value.length; i++) {
+                                const arrayItemContainer = document.createElement('div');
+                                arrayItemContainer.classList.add('array-item-container');
+                                arrayItemContainer.style.marginLeft = `${(depth + 1) * 20}px`; // Indentação adicional
+
+                                // Adicione o índice do objeto dentro do array
+                                const indexLabel = document.createElement('span');
+                                indexLabel.textContent = `${i}:`;
+                                arrayItemContainer.appendChild(indexLabel);
+
+                                // Crie campos para os objetos dentro do array
+                                generateIndentedInputFields(value[i], arrayItemContainer, sourceJson, depth + 1, `${keyPath}[${i}]`);
+                                fieldContainer.appendChild(arrayItemContainer);
+                            }
                         }
                     }
                 } else if (typeof value === 'object' && !Array.isArray(value)) {
@@ -159,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const select = document.createElement('select');
                     select.name = keyPath + '_select';
                     select.style.marginLeft = '5px';
+
                     // Adicionar a opção de placeholder
                     const placeholderOption = document.createElement('option');
                     placeholderOption.value = '';
@@ -179,7 +197,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
 
 
     function generateKeysListFromSource(json, parentContainer, prefix = '') {
@@ -231,26 +248,30 @@ document.addEventListener('DOMContentLoaded', function () {
         nestedObj[cleanLastKey] = value;
     }
 
-    function generatePreviewJson(outputJson, parentElement, prefix = '') {
+    function generatePreviewJson(outputJson, parentElement, prefix = '', sourceJson) {
         for (const key in outputJson) {
             if (outputJson.hasOwnProperty(key)) {
                 const currentElement = document.createElement('div');
                 currentElement.classList.add('preview-element');
 
-                
                 const keyElement = document.createElement('span');
                 keyElement.classList.add('preview-key');
                 keyElement.textContent = prefix + key + ':';
                 currentElement.appendChild(keyElement);
 
                 if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
-                    generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
+                    // Verifica se a chave mapeada está presente em sourceJson
+                    const mappedKey = prefix + key;
+                    if (sourceJson.hasOwnProperty(mappedKey)) {
+                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson);
+                    } else {
+                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
+                    }
                 } else {
                     const valueElement = document.createElement('span');
                     valueElement.classList.add('preview-value');
                     valueElement.textContent = key; // Usar a chave como valor
                     currentElement.appendChild(valueElement);
-    
                 }
 
                 if (parentElement) {
@@ -298,21 +319,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
+    // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', function () {
-        const outputPreview = {};
         const formInputs = formContainer.querySelectorAll('input[name], select[name]');
+        const outputPreview = {};
 
         // Popula o JSON de saída com os valores do formulário
         populateOutputJsonFromForm(formInputs, outputPreview);
 
-        const outputJson = JSON.stringify(outputPreview, null, 2);
+        // Função para corrigir a estrutura do JSON mapeado
+        function fixArrayStructure(obj) {
+            for (const key in obj) {
+                if (Array.isArray(obj[key])) {
+                    // Se o valor for um array, verifique se ele contém objetos
+                    if (obj[key].length > 0 && typeof obj[key][0] === 'object') {
+                        const newArray = {};
+
+                        for (let i = 0; i < obj[key].length; i++) {
+                            const newItem = fixArrayStructure(obj[key][i]);
+                            Object.keys(newItem).forEach(newKey => {
+                                newArray[`${key}[${i}].${newKey}`] = newItem[newKey];
+                            });
+                        }
+
+                        obj[key] = newArray;
+                    }
+                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    obj[key] = fixArrayStructure(obj[key]);
+                }
+            }
+
+            return obj;
+        }
+
+        // Corrige a estrutura do JSON mapeado
+        const fixedMappedJson = fixArrayStructure(outputPreview);
+
+        // Exibe o JSON mapeado corrigido no textarea
+        const outputJson = JSON.stringify(fixedMappedJson, null, 2);
         outputJsonContainer.textContent = outputJson;
 
-        // Generate the preview of the output JSON structure
-        generatePreviewJson(outputPreview);
+        // Verifica se o JSON de origem está disponível
+        if (sourceJson) {
+            // Generate the preview of the output JSON structure
+            generatePreviewJson(fixedMappedJson, null, '', sourceJson);
+        }
     });
 
-    
     // Define o evento change para campos de seleção (select)
     formContainer.addEventListener('change', function (event) {
         const target = event.target;

@@ -5,36 +5,45 @@
     box-sizing: border-box;
 }
 
-/* Defina as cores do CRM PipeRun */
+/* Defina as cores do seu sistema */
 body {
-    background-color: #f7f8f9;
+    background: white;
+    /* Alterado para branco */
     font-family: Arial, sans-serif;
 }
 
 header {
-    background-color: #0073e6;
+    background-color: #f0f2f6 !important;
     color: white;
     text-align: center;
     padding: 20px 0;
-    font-size: 24px;
+    border: 1px solid #d3d1d1;
+}
+h1{
+    background-color: #F5F5F5;
+    font-size: 30px;
+    border-radius: 5px;
+    padding: 5px 5px;
+    color: #333;
 }
 
 table {
+    background-color: #f0f2f6;
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-}
-
-table,
-th,
-td {
-    border: 1px solid #ccc;
+    text-align: center;
 }
 
 th,
 td {
+    border: 1px solid #d3d1d1;
     padding: 10px;
     text-align: left;
+}
+h2{
+    text-align: center;
+    color: #333;
 }
 
 textarea {
@@ -47,7 +56,8 @@ textarea {
 }
 
 button {
-    background-color: #0073e6;
+    background-color: #1ab394;
+    /* Alterado para verde (#1ab394) */
     color: white;
     border: none;
     border-radius: 5px;
@@ -55,11 +65,11 @@ button {
     cursor: pointer;
     box-shadow: darkblue;
 }
-#formContainer{
-    text-shadow: #005bb8;
-}
+
+/* Alterado o hover para a cor de fundo verde mais escura */
 button:hover {
-    background-color: #005bb8;
+    background-color: #009b77;
+    /* Cor de hover mais escura (#009b77) */
 }
 
 .error-message {
@@ -77,14 +87,15 @@ button:hover {
 #mappedJsonContainer {
     border: 1px solid #ccc;
     padding: 10px;
-    background-color: #fff;
+    background-color: #F5F5F5;
+    /* Alterado para cinza (#F5F5F5) */
     margin-top: 20px;
     border-radius: 5px;
 }
 
 footer {
-    background-color: #0073e6;
-    color: white;
+    background-color: #f0f2f6;
+    color: #333;
     text-align: center;
     padding: 10px 0;
     position: fixed;
@@ -100,6 +111,7 @@ footer {
     }
 }
 
-#previewJson, #createListButton, #mappedJsonContainer{
+#createListButton,
+#mappedJsonContainer {
     display: none;
 }
