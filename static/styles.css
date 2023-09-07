@@ -1,196 +1,105 @@
+/* Reset de estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Defina as cores do CRM PipeRun */
 body {
-    min-height: 100vh;
-    margin-left: 1.5rem;
-    /* Adicione 'rem' após os valores numéricos */
-    margin-right: 1.5rem;
-    /* Adicione 'rem' após os valores numéricos */
-    margin-top: 0.5rem;
-    /* Adicione 'rem' após os valores numéricos */
-    margin-bottom: 1.5rem;
-    /* Adicione 'rem' após os valores numéricos */
-    background-color: #f0f0f0;
+    background-color: #f7f8f9;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #0073e6;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 24px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ccc;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
 }
 
 textarea {
-    background-color: #f8f8f8;
-    border-radius: 2%;
-    border: 1px solid #333;
-    box-shadow: 1px 1px 3px #333;
-    /* Corrija a declaração da sombra */
-    display: flex;
-}
-#formContainer {
-    margin-left: 5%;
-}
-
-#generateButton {
-    padding: 5px;
-    margin-left: 5%;
-    margin-right: 10%;
-    border: #2980b9;
-}
-
-#mappedJsonContainer,
-#keysListbox {
-    display: none;
-}
-
-#generateOutputJson,
-#mapButton,
-#createListButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: hsl(204, 70%, 53%);
-    color: white;
-    border: darkblue;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: #fff;
+    resize: vertical;
+}
+
+button {
+    background-color: #0073e6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    box-shadow: darkblue;
 }
-
-#generateOutputJson:hover {
-    background-color: #2980b9;
+#formContainer{
+    text-shadow: #005bb8;
 }
-
-#top_text {
-    border: 2px solid hsl(204, 70%, 53%);
-    padding: 30px;
-    text-align: center;
-    border-radius: #333;
+button:hover {
+    background-color: #005bb8;
 }
 
 .error-message {
     background-color: #FFCACA;
     color: #a60202;
     border-radius: 5px;
+    text-align: center;
 }
 
-.ms {
-    width: 100%;
-    margin: auto;
-    padding: 1em;
-    float: left;
-    display: block;
-    margin-bottom: 10px;
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-weight: 100;
-    font-size: 16px;
-}
-
-#formContainer {
+#generateButton {
+    text-align: center;
     margin-top: 20px;
 }
 
 #mappedJsonContainer {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff;
     margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
-}
-
-#mapper-form {
-    margin-left: 15%;
-    background-color: #f0f0f0;
-}
-
-.label {
-    margin-bottom: 5px;
-}
-
-.input-container {
-    margin-bottom: 10px;
-}
-
-.field-container {
-    margin-bottom: 8.5px;
-    margin-top: 2px;
-    padding-left: 20px;
-}
-
-input[type="text"],
-select {
-    width: 15%;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-input[type="text"]:focus,
-select:focus {
-    outline: none;
-    border-color: #66afe9;
-    box-shadow: 0 0 5px #487fab;
-}
-/* ... outros estilos ... */
-
-/* Estilo para as labels dos campos */
-.form-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-/* Estilo para os campos de input */
-.form-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
     border-radius: 5px;
-    margin-bottom: 10px;
 }
 
-/* Estilo para o botão "Gerar o Json de saída" */
-#generateOutputJson {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: hsl(204, 70%, 53%);
+footer {
+    background-color: #0073e6;
     color: white;
-    border: darkblue;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
-#generateOutputJson:hover {
-    background-color: #2980b9;
+/* Estilos para dispositivos menores */
+@media (max-width: 768px) {
+    textarea {
+        height: 150px;
+        /* Altura menor para dispositivos menores */
+    }
 }
 
-/* Estilo para o campo de seleção (select2) */
-.select2-container--default .select2-selection--single {
-    background-color: #fff;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    height: 34px;
-}
-
-/* Espaçamento inferior para elementos */
-.margin-bottom {
-    margin-bottom: 20px;
-}
-
-/* Estilo para elementos desabilitados */
-.unabled {
-    opacity: 0.3;
-}
-
-/* Estilo para campos de formulário */
-.form-control-slice {
-    display: block;
-    height: 34px;
-    padding: 6px 12px;
-    font-size: 14px;
-    line-height: 1.42857143;
-    color: #555;
-    background-color: #fff;
-    background-image: none;
-    border: 1px solid #ccc;
-    width: 49%;
-    margin-right: 3px;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-}
-
-#previewJson{
+#previewJson, #createListButton, #mappedJsonContainer{
     display: none;
 }

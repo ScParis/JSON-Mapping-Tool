@@ -10,8 +10,12 @@
 </head>
 
 <body>
-    <h1 id="top_text">JSON Mapping Tool</h1>
-    <table style="width:100%">
+    <div>
+    <header>
+        <h1 id="top_text">JSON Mapping Tool</h1>
+    </header>
+    </div>
+    <table>
         <tr>
             <th>
                 <h2>JSON de Origem</h2>
@@ -56,14 +60,7 @@
     </table>
 
     <div id="errorMessage" class="error-message"></div>
-    <div id="generateButton">
-        <table>
-            <tr>
-                <th>
-                    <div id="mappedJsonContainer"></div>
-                </th>
-            </tr>
-        </table>
+    <div id="mappedJsonContainer"></div>
     </div>
     <div id="mapping_json">
         <div id="formContainer"></div>
@@ -72,6 +69,11 @@
     </div>
 
     <script src="static/script.js"></script>
+   
+        <footer>
+            <p>JSON Mapping Tool</p>
+        </footer>
+   
 
 </body>
 

@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Define o evento para o botão "Criar lista de dados"
-    createListButton.addEventListener('click', function () {
+    // Função que contém o código do evento "Criar lista de dados"
+    function createListButtonAction() {
         const sourceJsonText = sourceJsonTextarea.value;
         try {
             sourceJson = JSON.parse(sourceJsonText);
@@ -61,14 +61,47 @@ document.addEventListener('DOMContentLoaded', function () {
         mappedJsonContainer.textContent = ''; // Limpa o JSON mapeado anterior
 
         generateKeysList(sourceJson, keysList);
-        
+
         // Exemplo de código para gerar o JSON mapeado
         const mappedJson = keysList.join('\n');
 
         // Exibir o JSON mapeado no elemento correspondente
         mappedJsonContainer.textContent = mappedJson;
-        
+    }
+
+    // Define o evento para o botão "Criar lista de dados"
+    createListButton.addEventListener('click', createListButtonAction);
+
+    // Define o evento para o botão "Realizar Mapeamento"
+    mapButton.addEventListener('click', function () {
+        // Chama a função createListButtonAction antes de continuar
+        createListButtonAction();
+
+        // Resto do código do evento mapButton
+        errorMessage.textContent = '';
+        formContainer.innerHTML = ''; // Clear previous form
+        mappedJsonContainer.textContent = ''; // Clear previous mapped JSON
+
+        const sourceJson = parseJson(sourceJsonTextarea.value);
+        const outputJson = parseJson(outputJsonTextarea.value);
+
+        if (!sourceJson) {
+            errorMessage.textContent = 'Por favor, forneça JSONs de origem válidos.';
+            return;
+        } else if (!outputJson) {
+            errorMessage.textContent = 'Por favor, forneça JSONs de saída válidos.';
+            return;
+        }
+
+        generateIndentedInputFields(outputJson, formContainer, keysList); // Generate input fields with indentation and provide sourceJson
+
+        const mappedJson = performJMESPathMapping(keysList, outputJson);
+
+        mappedJsonContainer.textContent = JSON.stringify(mappedJson, null, 2);
+        // Após a geração do formulário dinâmico, imprima o conteúdo do formContainer no console
     });
+
+    
     function performJMESPathMapping(keysList, outputJson) {
         const mappedJson = {};
         keysList.forEach(keyPath => {
@@ -93,40 +126,19 @@ document.addEventListener('DOMContentLoaded', function () {
         return mappedJson;
     }
 
-    // Define the event listener for the "Realizar Mapeamento" button
-    mapButton.addEventListener('click', function () {
-        errorMessage.textContent = '';
-        formContainer.innerHTML = ''; // Clear previous form
-        mappedJsonContainer.textContent = ''; // Clear previous mapped JSON
-
-        const sourceJson = parseJson(sourceJsonTextarea.value);
-        const outputJson = parseJson(outputJsonTextarea.value);
-
-        if (!sourceJson) {
-            errorMessage.textContent = 'Por favor, forneça JSONs de origem válido válidos.';
-            return;
-        }else if (!outputJson){
-            errorMessage.textContent = 'Por favor, forneça JSONs de saída válido válidos.';
-            return;
-        }
-
-        generateIndentedInputFields(outputJson, formContainer, keysList); // Generate input fields with indentation and provide sourceJson
-
-        const mappedJson = performJMESPathMapping(keysList, outputJson);
-
-        mappedJsonContainer.textContent = JSON.stringify(mappedJson, null, 2);
-        // Após a geração do formulário dinâmico, imprima o conteúdo do formContainer no console
-    
-    });
-
     function generateIndentedInputFields(json, parentContainer, sourceJson, depth = 0, parentKeyPath = '') {
         for (const key in json) {
             if (json.hasOwnProperty(key)) {
                 const value = json[key];
                 const fieldContainer = document.createElement('div');
+              
                 fieldContainer.classList.add('field-container');
                 fieldContainer.style.marginLeft = `${depth * 20}px`; // Ajusta a indentação
-
+                fieldContainer.style.border = '1px solid #ccc'; // Adicione um estilo de borda
+                fieldContainer.style.padding = '5px'; // Adicione um preenchimento para espaçamento
+                fieldContainer.style.marginRight = '5px'
+                fieldContainer.style.boxShadow = ''
+                
                 const keyPath = parentKeyPath ? `${parentKeyPath}.${key}` : key;
 
                 const label = document.createElement('span');
