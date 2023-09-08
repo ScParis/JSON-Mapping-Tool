@@ -260,17 +260,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 currentElement.appendChild(keyElement);
 
                 if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
-                    // Verifica se a chave mapeada está presente em sourceJson
-                    const mappedKey = prefix + key;
-                    if (sourceJson.hasOwnProperty(mappedKey)) {
-                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson);
+                    if (sourceJson && sourceJson.hasOwnProperty(prefix + key)) {
+                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson[prefix + key]);
                     } else {
                         generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
                     }
                 } else {
                     const valueElement = document.createElement('span');
                     valueElement.classList.add('preview-value');
-                    valueElement.textContent = key; // Usar a chave como valor
+                    valueElement.textContent = key; // Use a chave como valor
                     currentElement.appendChild(valueElement);
                 }
 
@@ -280,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
+
 
     // Função para popular o JSON de saída a partir do formulário
     function populateOutputJsonFromForm(formInputs, outputJsonData) {
@@ -407,6 +406,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         list += `${lineIndent}"${fullKey}": {\n`;
                         list += createListWithHierarchy(value, indent + 1, fullKey);
                         list += `${lineIndent}},\n`;
+                    } else if (Array.isArray(value)) {
+                        // Array encontrado, percorra os elementos e chame a função para cada objeto
+                        list += `${lineIndent}"${fullKey}": [\n`;
+
+                        for (let i = 0; i < value.length; i++) {
+                            list += `${lineIndent}  {\n`;
+                            list += createListWithHierarchy(value[i], indent + 2, fullKey);
+                            list += `${lineIndent}  },\n`;
+                        }
+
+                        list += `${lineIndent}],\n`;
                     } else {
                         // Valor simples, adiciona à lista
                         list += `${lineIndent}"${fullKey}": "",\n`;
@@ -420,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
 
             // Log da lista no console
-            //console.log('Log da lista no console:', formattedJsonList);
+            console.log('Log da lista no console:', formattedJsonList);
         } else {
             errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
         }
