@@ -2,16 +2,33 @@
 
 Bem-vindo à documentação da nossa aplicação de mapeamento de saída para arquivos JSON! Neste arquivo README, vamos detalhar as funcionalidades principais e o processo de desenvolvimento da aplicação.
 
-## Funcionalidades
+## Visão geral do que o código faz e como ele está estruturado:
 
-1. **Envio de JSON de Origem:** Os usuários podem inserir um JSON de origem que servirá como base para preparar o JSON de saída.
-2. **Envio de JSON de Saída:** Os usuários podem fornecer um JSON de saída desejado, que será usado como modelo para a estrutura final.
-3. **Validação de Estrutura:** A aplicação verifica se os JSONs de origem e saída estão bem formados e exibe mensagens de erro ou aviso caso haja problemas de estrutura.
-4. **Limpeza dos Valores das Chaves:** Os valores das chaves no JSON de saída são limpos para possivelmente remover informações sensíveis.
-5. **Conversão para Formulário:** A estrutura do JSON de saída é mapeada para um formulário visual, onde cada chave é representada por um campo de input.
-6. **Campos de Input e Listagem de Chaves:** Os campos de input permitem que os usuários insiram valores para as chaves do JSON de saída. Uma lista suspensa exibe as chaves hierárquicas do JSON de origem para seleção.
-7. **Mapeamento JMESPath:** Os valores inseridos pelos usuários são mapeados para os valores correspondentes usando expressões JMESPath.
-8. **Geração do JSON de Saída:** Ao finalizar o mapeamento, a aplicação gera o JSON de saída completo, incluindo chaves e valores com mapeamento JMESPath.
+### HTML:
+
+- O HTML define a estrutura da página web, incluindo cabeçalho, corpo e elementos como botões, áreas de texto e contêineres para exibição de JSONs.
+
+### CSS:
+
+- O CSS fornece estilos de formatação para elementos HTML na página, como cores de fundo, bordas, margens, tamanho de fonte, etc. Ele ajuda a tornar a interface mais atraente e legível.
+
+### JavaScript:
+
+- O JavaScript é usado para adicionar funcionalidade interativa à página. Ele faz o seguinte:
+- Define várias variáveis para elementos HTML, como áreas de texto, botões e contêineres.
+- Define funções para análise JSON, geração de lista de chaves hierarquizadas, mapeamento de JSON e muito mais.
+
+- Configura manipuladores de eventos para botões, como "Criar lista de dados" e "Realizar Mapeamento", para executar a lógica quando clicados.
+- Popula o JSON de saída a partir do formulário com valores do formulário e gera uma visualização da estrutura JSON de saída.
+
+## Principais recursos e funcionalidades:
+
+1. A ferramenta permite aos usuários colar JSONs de origem e de saída em áreas de texto.
+2. O botão "Criar lista de dados" gera uma lista hierarquizada das chaves no JSON de origem.
+3. O botão "Realizar Mapeamento" gera um formulário dinâmico com opções para mapear as chaves do JSON de origem para o JSON de saída.
+4. Os usuários podem selecionar as opções no formulário para realizar o mapeamento.
+5. O botão "Gerar o Json de saída" gera o JSON de saída com base nas seleções feitas no formulário.
+6. A ferramenta fornece uma visualização da estrutura do JSON de saída.
 
 ------
 ## Exemplos
