@@ -1,37 +1,119 @@
-body {
-    font-family: Arial, sans-serif;
+/* Reset de estilos */
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Defina as cores do seu sistema */
+body {
+    background: white;
+    /* Alterado para branco */
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #f0f2f6 !important;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    border: 1px solid #d3d1d1;
 }
 
 h1 {
+    background-color: #F5F5F5;
+    font-size: 30px;
+    border-radius: 5px;
+    padding: 5px 5px;
+    color: #333;
+}
+
+table {
+    background-color: #f0f2f6;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
     text-align: center;
 }
 
-.error-message {
-    color: red;
-    margin-bottom: 10px;
+th,
+td {
+    border: 1px solid #d3d1d1;
+    padding: 10px;
+    text-align: left;
 }
 
-#formContainer {
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    resize: vertical;
+}
+
+button {
+    background-color: #1ab394;
+    /* Alterado para verde (#1ab394) */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    box-shadow: darkblue;
+}
+
+/* Alterado o hover para a cor de fundo verde mais escura */
+button:hover {
+    background-color: #009b77;
+    /* Cor de hover mais escura (#009b77) */
+}
+
+.error-message {
+    background-color: #FFCACA;
+    color: #a60202;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#generateButton {
+    text-align: center;
     margin-top: 20px;
 }
 
 #mappedJsonContainer {
-    margin-top: 20px;
     border: 1px solid #ccc;
     padding: 10px;
-}
-.label {
-    margin-bottom: 10px;
-    /* Adicione o espaço vertical desejado */
+    background-color: #F5F5F5;
+    /* Alterado para cinza (#F5F5F5) */
+    margin-top: 20px;
+    border-radius: 5px;
 }
 
-.input-container {
-    margin-bottom: 10px;
-    /* Adicione o espaço vertical desejado */
+footer {
+    background-color: #f0f2f6;
+    color: #333;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
-.field-container {
-    margin-bottom: 8.5px;
-    /* Adicione o espaço vertical desejado */
+
+/* Estilos para dispositivos menores */
+@media (max-width: 768px) {
+    textarea {
+        height: 150px;
+        /* Altura menor para dispositivos menores */
+    }
+}
+
+#createListButton,
+#mappedJsonContainer {
+    display: none;
 }
