@@ -436,7 +436,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
 
