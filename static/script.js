@@ -198,56 +198,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
-    function generateKeysListFromSource(json, parentContainer, prefix = '') {
-        for (const key in json) {
-            if (json.hasOwnProperty(key)) {
-                const value = json[key];
-
-                if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                    // Adiciona a opção à lista com a hierarquia
-                    const option = document.createElement('option');
-                    option.value = prefix + key;
-                    option.textContent = prefix + key;
-                    parentContainer.appendChild(option);
-
-                    // Recursivamente gera as opções para as chaves internas
-                    generateKeysListFromSource(value, parentContainer, prefix + key + '.');
-                } else {
-                    // Adiciona a opção à lista
-                    const option = document.createElement('option');
-                    option.value = prefix + key;
-                    option.textContent = prefix + key;
-                    parentContainer.appendChild(option);
-                }
-            }
-        }
-    }
-
-    generateKeysListFromSource(sourceJson, keysListbox);
-
-    //const selectedKeyField = document.getElementById('selectedKey');
-
-    function setNestedKeyValue(obj, path, value) {
-        const keys = path.split('.');
-        let nestedObj = obj;
-
-        for (let i = 0; i < keys.length - 1; i++) {
-            const key = keys[i];
-            if (!nestedObj[key]) {
-                // Cria um objeto vazio se a chave ainda não existir
-                nestedObj[key] = {};
-            }
-            nestedObj = nestedObj[key];
-        }
-
-        // Define o valor na chave mais interna
-        const lastKey = keys[keys.length - 1];
-        // Remove o sufixo "_select" do último nome da chave
-        const cleanLastKey = lastKey.replace(/_select$/, '');
-        nestedObj[cleanLastKey] = value;
-    }
-
     function generatePreviewJson(outputJson, parentElement, prefix = '', sourceJson) {
         for (const key in outputJson) {
             if (outputJson.hasOwnProperty(key)) {
@@ -278,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
 
     // Função para popular o JSON de saída a partir do formulário
     function populateOutputJsonFromForm(formInputs, outputJsonData) {
@@ -316,8 +265,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
-    // Define o evento de clique para o botão "Gerar o Json de saída"
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', function () {
         const formInputs = formContainer.querySelectorAll('input[name], select[name]');
@@ -435,7 +382,6 @@ document.addEventListener('DOMContentLoaded', function () {
             errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
         }
     }
-
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
