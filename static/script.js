@@ -1,4 +1,6 @@
 let sourceJson;
+let formattedJsonList = '';
+
 const keysList = [];
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -139,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (depth > 0) {
                     fieldContainer.style.border = '1px solid #ccc'; // Adicione um estilo de borda
                     fieldContainer.style.padding = '5px'; // Adicione um preenchimento para espaçamento
+                    fieldContainer.style.paddingLeft = '5px';
                 }
 
                 const keyPath = parentKeyPath ? `${parentKeyPath}.${key}` : key;
@@ -198,56 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
-    function generateKeysListFromSource(json, parentContainer, prefix = '') {
-        for (const key in json) {
-            if (json.hasOwnProperty(key)) {
-                const value = json[key];
-
-                if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                    // Adiciona a opção à lista com a hierarquia
-                    const option = document.createElement('option');
-                    option.value = prefix + key;
-                    option.textContent = prefix + key;
-                    parentContainer.appendChild(option);
-
-                    // Recursivamente gera as opções para as chaves internas
-                    generateKeysListFromSource(value, parentContainer, prefix + key + '.');
-                } else {
-                    // Adiciona a opção à lista
-                    const option = document.createElement('option');
-                    option.value = prefix + key;
-                    option.textContent = prefix + key;
-                    parentContainer.appendChild(option);
-                }
-            }
-        }
-    }
-
-    generateKeysListFromSource(sourceJson, keysListbox);
-
-    //const selectedKeyField = document.getElementById('selectedKey');
-
-    function setNestedKeyValue(obj, path, value) {
-        const keys = path.split('.');
-        let nestedObj = obj;
-
-        for (let i = 0; i < keys.length - 1; i++) {
-            const key = keys[i];
-            if (!nestedObj[key]) {
-                // Cria um objeto vazio se a chave ainda não existir
-                nestedObj[key] = {};
-            }
-            nestedObj = nestedObj[key];
-        }
-
-        // Define o valor na chave mais interna
-        const lastKey = keys[keys.length - 1];
-        // Remove o sufixo "_select" do último nome da chave
-        const cleanLastKey = lastKey.replace(/_select$/, '');
-        nestedObj[cleanLastKey] = value;
-    }
-
     function generatePreviewJson(outputJson, parentElement, prefix = '', sourceJson) {
         for (const key in outputJson) {
             if (outputJson.hasOwnProperty(key)) {
@@ -261,9 +214,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
                     if (sourceJson && sourceJson.hasOwnProperty(prefix + key)) {
-                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson[prefix + key]);
+                        if (Array.isArray(outputJson[key])) {
+                            // Se o valor for um array, crie uma estrutura de array correspondente
+                            const arrayContainer = document.createElement('div');
+                            arrayContainer.classList.add('preview-array');
+
+                            for (let i = 0; i < outputJson[key].length; i++) {
+                                const arrayItemContainer = document.createElement('div');
+                                arrayItemContainer.classList.add('preview-array-item');
+
+                                generatePreviewJson(
+                                    outputJson[key][i],
+                                    arrayItemContainer,
+                                    `${prefix + key}[${i}]`,
+                                    sourceJson[`${prefix + key}[${i}]`]
+                                );
+
+                                arrayContainer.appendChild(arrayItemContainer);
+                            }
+
+                            currentElement.appendChild(arrayContainer);
+                        } else {
+                            generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson[prefix + key]);
+                        }
                     } else {
-                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
+                        // Trate os objetos não mapeados como uma estrutura de objeto vazia
+                        const objContainer = document.createElement('div');
+                        objContainer.classList.add('preview-object');
+                        generatePreviewJson(outputJson[key], objContainer, prefix + key + '.');
+                        currentElement.appendChild(objContainer);
                     }
                 } else {
                     const valueElement = document.createElement('span');
@@ -278,7 +257,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
 
     // Função para popular o JSON de saída a partir do formulário
     function populateOutputJsonFromForm(formInputs, outputJsonData) {
@@ -318,74 +296,92 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
-    // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', function () {
         const formInputs = formContainer.querySelectorAll('input[name], select[name]');
-        const outputPreview = {};
 
-        // Popula o JSON de saída com os valores do formulário
+        // Popula o JSON de saída com os valores do formulário usando o JSON formatado
+        const outputPreview = JSON.parse(formattedJsonList);
         populateOutputJsonFromForm(formInputs, outputPreview);
 
-        // Função para corrigir a estrutura do JSON mapeado
-        function fixArrayStructure(obj) {
-            for (const key in obj) {
-                if (Array.isArray(obj[key])) {
-                    // Se o valor for um array, verifique se ele contém objetos
-                    if (obj[key].length > 0 && typeof obj[key][0] === 'object') {
-                        const newArray = {};
-
-                        for (let i = 0; i < obj[key].length; i++) {
-                            const newItem = fixArrayStructure(obj[key][i]);
-                            Object.keys(newItem).forEach(newKey => {
-                                newArray[`${key}[${i}].${newKey}`] = newItem[newKey];
-                            });
-                        }
-
-                        obj[key] = newArray;
-                    }
-                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                    obj[key] = fixArrayStructure(obj[key]);
-                }
-            }
-
-            return obj;
-        }
-
-        // Corrige a estrutura do JSON mapeado
-        const fixedMappedJson = fixArrayStructure(outputPreview);
-
-        // Exibe o JSON mapeado corrigido no textarea
-        const outputJson = JSON.stringify(fixedMappedJson, null, 2);
+        // Exibe o JSON populado no elemento outputJsonContainer
+        const outputJson = JSON.stringify(outputPreview, null, 2);
         outputJsonContainer.textContent = outputJson;
-
-        // Verifica se o JSON de origem está disponível
-        if (sourceJson) {
-            // Generate the preview of the output JSON structure
-            generatePreviewJson(fixedMappedJson, null, '', sourceJson);
-        }
     });
 
+    
     // Define o evento change para campos de seleção (select)
     formContainer.addEventListener('change', function (event) {
         const target = event.target;
 
         if (target.tagName === 'SELECT') {
             const outputJsonData = {};
+            const formattedJsonList = {};
             const formInputs = formContainer.querySelectorAll('input[name], select[name]');
             const selectElement = target;
             const selectedOptions = Array.from(selectElement.selectedOptions);
             const optionLabels = selectedOptions.map(option => option.label);
 
-            console.log('Labels dos elementos option selecionados:', optionLabels);
+            console.log('Labels dos elementos option selecionados:', formattedJsonList);
 
             // Popula o JSON de saída com os valores do formulário
-            populateOutputJsonFromForm(formInputs, outputJsonData);
+            populateOutputJsonFromForm(formInputs, formattedJsonList);
 
             // Log dos valores atualizados no console
-            //console.log('Valores atualizados no JSON de saída:', outputJsonData);
+            console.log('Valores atualizados no JSON de saída:', formattedJsonList);
         }
     });
 
+    // Função para criar a lista mantendo a estrutura hierárquica
+    function createListWithHierarchy(obj, indent = 0, prefix = '') {
+        let list = '';
+
+        for (let key in obj) {
+            const value = obj[key];
+
+            if (typeof value === 'object' && !Array.isArray(value)) {
+                const lineIndent = ' '.repeat(indent * 2);
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+                const nestedList = createListWithHierarchy(value, indent + 1, fullKey);
+
+                // Verifique se o objeto aninhado não é vazio
+                if (nestedList.trim() !== '{}') {
+                    list += `${lineIndent}"${fullKey}": {\n`;
+                    list += nestedList;
+                    list += `${lineIndent}},\n`;
+                }
+            } else if (Array.isArray(value)) {
+                const lineIndent = ' '.repeat(indent * 2);
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+
+                if (value.length > 0) {
+                    list += `${lineIndent}"${fullKey}": [\n`;
+
+                    for (let i = 0; i < value.length; i++) {
+                        const nestedList = createListWithHierarchy(value[i], indent + 2, `${fullKey}[${i}]`);
+
+                        // Verifique se o objeto aninhado não é vazio
+                        if (nestedList.trim() !== '{}') {
+                            list += `${lineIndent}  {\n`;
+                            list += nestedList;
+                            list += `${lineIndent}  },\n`;
+                        }
+                    }
+
+                    list += `${lineIndent}],\n`;
+                } else {
+                    // Remova a propriedade se o array estiver vazio
+                    delete obj[key];
+                }
+            } else {
+                const lineIndent = ' '.repeat(indent * 2);
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+
+                list += `${lineIndent}"${fullKey}": "",\n`;
+            }
+        }
+
+        return list;
+    }
     // Define a função para gerar o JSON de saída com valores limpos
     function generateEmptyOutputJson() {
         const outputJsonText = outputJsonTextarea.value;
@@ -427,7 +423,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Chama a função para criar a lista mantendo a estrutura hierárquica
-            const formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
+            formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
+
+            // Exibe o JSON formatado na tela
+            outputJsonContainer.textContent = formattedJsonList;
 
             // Log da lista no console
             console.log('Log da lista no console:', formattedJsonList);
@@ -435,6 +434,7 @@ document.addEventListener('DOMContentLoaded', function () {
             errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
         }
     }
+
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
