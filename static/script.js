@@ -382,6 +382,64 @@ document.addEventListener('DOMContentLoaded', function () {
             errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
         }
     }
+    const newMappingButton = document.getElementById('newMappingButton');
+
+    // Função para verificar se um textarea está vazio
+    function isTextareaEmpty(textarea) {
+        return textarea.value.trim() === '';
+    }
+
+    // Evento de clique para o botão "Novo Mapeamento"
+    newMappingButton.addEventListener('click', function () {
+        const sourceJsonTextarea = document.getElementById('sourceJsonTextarea');
+        const outputJsonTextarea = document.getElementById('outputJsonTextarea');
+        const outputJsonContainer = document.getElementById('outputJsonContainer');
+        const mappingJsonTextarea = document.getElementById('mapping_json');
+        const mappedJsonContainer = document.getElementById('mappedJsonContainer');
+        const formContainer = document.getElementById('formContainer');
+        const keysListbox = document.getElementById('keysListbox');
+        const previewJson = document.getElementById('previewJson');
+
+        // Verifica se pelo menos um dos campos contém dados
+        if (!isTextareaEmpty(sourceJsonTextarea) || !isTextareaEmpty(outputJsonTextarea) || !isTextareaEmpty(outputJsonContainer) || !isTextareaEmpty(mappingJsonTextarea)) {
+            const confirmation = confirm('Você tem dados não salvos. Se continuar, os dados serão perdidos. Deseja continuar?');
+
+            if (!confirmation) {
+                // O usuário optou por não continuar, então não faz nada
+                return;
+            }
+        }
+
+        // Limpa os campos de JSON de origem, JSON de saída, listas, campo de JSON de saída mapeado e elementos adicionais
+        sourceJsonTextarea.value = '';
+        outputJsonTextarea.value = '';
+        mappedJsonContainer.textContent = '';
+        keysList.length = 0;
+
+        // Limpa o conteúdo dos elementos
+        if (outputJsonContainer) {
+            outputJsonContainer.textContent = '';
+        }
+
+        if (mappingJsonTextarea) {
+            mappingJsonTextarea.innerHTML = '';
+        }
+
+        if (formContainer) {
+            formContainer.innerHTML = '';
+        }
+
+        if (keysListbox) {
+            keysListbox.innerHTML = '';
+        }
+
+        if (previewJson) {
+            previewJson.innerHTML = '';
+        }
+        // Recarrega a página para redefinir ao estado inicial
+        location.reload();
+
+    });
 
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
