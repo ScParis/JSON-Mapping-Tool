@@ -74,12 +74,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Define o evento para o botão "Criar lista de dados"
     createListButton.addEventListener('click', createListButtonAction);
 
-    // Define o evento para o botão "Realizar Mapeamento"
+    // Dentro do evento de clique para o botão "Realizar Mapeamento"
     mapButton.addEventListener('click', function () {
         // Chama a função createListButtonAction antes de continuar
         createListButtonAction();
 
-        // Resto do código do evento mapButton
         errorMessage.textContent = '';
         formContainer.innerHTML = ''; // Limpa o formulário anterior
         mappedJsonContainer.textContent = ''; // Limpa o JSON mapeado anterior
@@ -100,7 +99,48 @@ document.addEventListener('DOMContentLoaded', function () {
         const mappedJson = performJMESPathMapping(keysList, outputJson);
 
         mappedJsonContainer.textContent = JSON.stringify(mappedJson, null, 2);
+
+        // Crie a variável outputJsonObject e atribua o valor
+        const outputJsonObject = outputJson;
+
+        // Remove os valores do JSON de saída, mantendo apenas as chaves, exceto no campo outputJsonTextarea
+        removeValues(outputJsonObject, outputJsonTextarea);
+
+        // Armazene o JSON limpo no LocalStorage como "template_de_saida"
+        localStorage.setItem("template_de_saida", JSON.stringify(outputJsonObject));
+
+        // Converte o JSON limpo em uma string formatada e armazena no LocalStorage como "output_json_text"
+        const outputJsonCleanedText = formatJsonString(JSON.stringify(outputJsonObject, null, 2));
+        localStorage.setItem("output_json_text", outputJsonCleanedText);
+
+        // Console.log para validar o conteúdo salvo
+        console.log('Conteúdo salvo no LocalStorage como "template_de_saida":', localStorage.getItem("template_de_saida"));
+        console.log('Conteúdo salvo no LocalStorage como "output_json_text":', localStorage.getItem("output_json_text"));
     });
+
+    // Função para remover valores do JSON, mantendo apenas as chaves
+    function removeValues(obj) {
+        for (const key in obj) {
+            if (typeof obj[key] === 'object') {
+                removeValues(obj[key]);
+            } else {
+                if (typeof obj[key] !== 'function') {
+                    obj[key] = typeof obj[key] === 'object' ? {} : '';
+                }
+            }
+        }
+    }
+    // Função para formatar uma string JSON com hierarquia e identação preservadas
+    function formatJsonString(jsonString) {
+        try {
+            const jsonObj = JSON.parse(jsonString);
+            return JSON.stringify(jsonObj, null, 2);
+        } catch (error) {
+            console.error('Erro ao formatar a string JSON:', error);
+            return jsonString; // Retorna a string original se houver um erro de parse
+        }
+    }
+
 
     function performJMESPathMapping(keysList, outputJson) {
         const mappedJson = {};
@@ -197,61 +237,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function generatePreviewJson(outputJson, parentElement, prefix = '', sourceJson) {
-        for (const key in outputJson) {
-            if (outputJson.hasOwnProperty(key)) {
-                const currentElement = document.createElement('div');
-                currentElement.classList.add('preview-element');
-
-                const keyElement = document.createElement('span');
-                keyElement.classList.add('preview-key');
-                keyElement.textContent = prefix + key + ':';
-                currentElement.appendChild(keyElement);
-
-                if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
-                    if (sourceJson && sourceJson.hasOwnProperty(prefix + key)) {
-                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson[prefix + key]);
-                    } else {
-                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
-
-                        if (Array.isArray(outputJson[key])) {
-                            // Se o valor for um array, crie uma estrutura de array correspondente
-                            const arrayContainer = document.createElement('div');
-                            arrayContainer.classList.add('preview-array');
-
-                            for (let i = 0; i < outputJson[key].length; i++) {
-                                const arrayItemContainer = document.createElement('div');
-                                arrayItemContainer.classList.add('preview-array-item');
-
-                                generatePreviewJson(
-                                    outputJson[key][i],
-                                    arrayItemContainer,
-                                    `${prefix + key}[${i}]`,
-                                    sourceJson ? sourceJson[`${prefix + key}[${i}]`] : undefined
-                                );
-
-                                arrayContainer.appendChild(arrayItemContainer);
-                            }
-
-                            currentElement.appendChild(arrayContainer);
-                        }
-                    }
-                } else {
-                    const valueElement = document.createElement('span');
-                    valueElement.classList.add('preview-value');
-                    valueElement.textContent = outputJson[key]; // Use o valor correspondente em vez da chave
-                    currentElement.appendChild(valueElement);
-                }
-
-                if (parentElement) {
-                    parentElement.appendChild(currentElement);
-                }
-            }
-        }
-    }
-
-    // Função para popular o JSON de saída a partir do formulário
-    function populateOutputJsonFromForm(formInputs, outputJsonData) {
+    
+    // Função para popular o JSON de saída a partir do formulário e salvar no Local Storage
+    function populateOutputJsonFrom(formInputs, outputJsonData) {
         formInputs.forEach(input => {
             const key = input.name;
             const value = input.type === 'select-one' ? input.options[input.selectedIndex].value : input.value;
@@ -280,10 +268,17 @@ document.addEventListener('DOMContentLoaded', function () {
             // Verifica se o valor selecionado é o placeholder
             if (value !== 'Selecione a opção para mapeamento') {
                 currentLevel[lastKey] = value;
+
+                // Após definir o valor, atualize o Local Storage
+                localStorage.setItem("template_de_saida", JSON.stringify(outputJsonData));
+                localStorage.setItem("output_json_text", JSON.stringify(outputJsonData, null, 2));
             }
         });
+
+        // Adicione um console.log para verificar se a função está sendo chamada
+        console.log('populateOutputJsonFrom foi chamada');
     }
- 
+
     // Define o evento de clique para o botão "Gerar o JSON de Saída"
     generateOutputJsonButton.addEventListener('click', function () {
         const outputJsonTextarea = document.getElementById('outputJsonTextarea');
@@ -313,6 +308,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Exibe o JSON limpo no elemento outputJsonContainer
         outputJsonContainer.textContent = cleanedOutputJsonText;
+
+        // Adicione um console.log para verificar
+        console.log('JSON de saída limpo:', cleanedOutputJsonText);
+    });
+
+    const dynamicSelects = document.querySelectorAll('.dynamic-select');
+
+    dynamicSelects.forEach(select => {
+        select.addEventListener('change', function () {
+            populateOutputJsonFrom(formContainer.querySelectorAll('select'), outputJson);
+        });
     });
 
     
