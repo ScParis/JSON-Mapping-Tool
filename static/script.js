@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const keysListbox = document.getElementById('keysListbox');
     const generateOutputJsonButton = document.getElementById('generateOutputJson');
     const outputJsonContainer = document.getElementById('outputJsonContainer');
+    
+    const createListButton = document.getElementById('createListButton');
+    const mapButton = document.getElementById('mapButton');
+    
 
     const createListButton = document.getElementById('createListButton');
     const mapButton = document.getElementById('mapButton');
@@ -103,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Após a geração do formulário dinâmico, imprima o conteúdo do formContainer no console
     });
 
-
     function performJMESPathMapping(keysList, outputJson) {
         const mappedJson = {};
         keysList.forEach(keyPath => {
@@ -141,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (depth > 0) {
                     fieldContainer.style.border = '1px solid #ccc'; // Adicione um estilo de borda
                     fieldContainer.style.padding = '5px'; // Adicione um preenchimento para espaçamento
-                    fieldContainer.style.paddingLeft = '5px';
+
                 }
 
                 const keyPath = parentKeyPath ? `${parentKeyPath}.${key}` : key;
@@ -214,6 +217,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
                     if (sourceJson && sourceJson.hasOwnProperty(prefix + key)) {
+
+                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson[prefix + key]);
+                    } else {
+                        generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
+
                         if (Array.isArray(outputJson[key])) {
                             // Se o valor for um array, crie uma estrutura de array correspondente
                             const arrayContainer = document.createElement('div');
@@ -266,6 +274,149 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Remove o sufixo "_select" do último nome da chave
             const cleanKey = key.replace(/_select$/, '');
+
+            // Divide a chave em partes
+            const keys = cleanKey.split('.');
+            let currentLevel = outputJsonData;
+
+            // Percorre as partes da chave e cria os objetos pai, se necessário
+            for (let i = 0; i < keys.length - 1; i++) {
+                const currentKey = keys[i];
+
+                if (!currentLevel[currentKey]) {
+                    currentLevel[currentKey] = {};
+                }
+
+                currentLevel = currentLevel[currentKey];
+            }
+
+            // Define o valor na chave mais interna
+            const lastKey = keys[keys.length - 1];
+
+            // Verifica se o valor selecionado é o placeholder
+            if (value === "Selecione a opção para mapeamento") {
+                currentLevel[lastKey] = ""; // Ou currentLevel[lastKey] = null; para definir como null
+            } else {
+                currentLevel[lastKey] = value;
+            }
+        });
+    }
+
+    // Define o evento de clique para o botão "Gerar o Json de saída"
+    generateOutputJsonButton.addEventListener('click', function () {
+        const formInputs = formContainer.querySelectorAll('input[name], select[name]');
+        const outputPreview = {};
+
+        // Popula o JSON de saída com os valores do formulário
+        populateOutputJsonFromForm(formInputs, outputPreview);
+
+        // Função para corrigir a estrutura do JSON mapeado
+        function fixArrayStructure(obj) {
+            for (const key in obj) {
+                if (Array.isArray(obj[key])) {
+                    // Se o valor for um array, verifique se ele contém objetos
+                    if (obj[key].length > 0 && typeof obj[key][0] === 'object') {
+                        const newArray = {};
+
+                        for (let i = 0; i < obj[key].length; i++) {
+                            const newItem = fixArrayStructure(obj[key][i]);
+                            Object.keys(newItem).forEach(newKey => {
+                                newArray[`${key}[${i}].${newKey}`] = newItem[newKey];
+                            });
+                        }
+
+                        obj[key] = newArray;
+                    }
+                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    obj[key] = fixArrayStructure(obj[key]);
+                }
+            }
+
+            return obj;
+        }
+
+        // Corrige a estrutura do JSON mapeado
+        const fixedMappedJson = fixArrayStructure(outputPreview);
+
+        // Exibe o JSON mapeado corrigido no textarea
+        const outputJson = JSON.stringify(fixedMappedJson, null, 2);
+        outputJsonContainer.textContent = outputJson;
+
+        // Verifica se o JSON de origem está disponível
+        if (sourceJson) {
+            // Generate the preview of the output JSON structure
+            generatePreviewJson(fixedMappedJson, null, '', sourceJson);
+        }
+    });
+
+    // Define o evento change para campos de seleção (select)
+    formContainer.addEventListener('change', function (event) {
+        const target = event.target;
+
+        if (target.tagName === 'SELECT') {
+            const outputJsonData = {};
+            const formInputs = formContainer.querySelectorAll('input[name], select[name]');
+            const selectElement = target;
+            const selectedOptions = Array.from(selectElement.selectedOptions);
+            const optionLabels = selectedOptions.map(option => option.label);
+
+            console.log('Labels dos elementos option selecionados:', optionLabels);
+
+            // Popula o JSON de saída com os valores do formulário
+            populateOutputJsonFromForm(formInputs, outputJsonData);
+
+            // Log dos valores atualizados no console
+            //console.log('Valores atualizados no JSON de saída:', outputJsonData);
+        }
+    });
+
+    // Define a função para gerar o JSON de saída com valores limpos
+    function generateEmptyOutputJson() {
+        const outputJsonText = outputJsonTextarea.value;
+        const outputJsonData = parseJson(outputJsonText);
+
+        if (outputJsonData) {
+            // Função para criar a lista mantendo a estrutura hierárquica
+            function createListWithHierarchy(obj, indent = 0, prefix = '') {
+                let list = '';
+
+                for (let key in obj) {
+                    const value = obj[key];
+                    const lineIndent = ' '.repeat(indent * 2);
+                    const fullKey = prefix ? `${prefix}.${key}` : key;
+
+                    if (typeof value === 'object' && !Array.isArray(value)) {
+                        // Objeto aninhado, chama a função recursivamente
+                        list += `${lineIndent}"${fullKey}": {\n`;
+                        list += createListWithHierarchy(value, indent + 1, fullKey);
+                        list += `${lineIndent}},\n`;
+                    } else if (Array.isArray(value)) {
+                        // Array encontrado, percorra os elementos e chame a função para cada objeto
+                        list += `${lineIndent}"${fullKey}": [\n`;
+
+                        for (let i = 0; i < value.length; i++) {
+                            list += `${lineIndent}  {\n`;
+                            list += createListWithHierarchy(value[i], indent + 2, fullKey);
+                            list += `${lineIndent}  },\n`;
+                        }
+
+                        list += `${lineIndent}],\n`;
+                    } else {
+                        // Valor simples, adiciona à lista
+                        list += `${lineIndent}"${fullKey}": "",\n`;
+                    }
+                }
+
+                return list;
+            }
+
+            // Chama a função para criar a lista mantendo a estrutura hierárquica
+            const formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
+
+            // Log da lista no console
+            console.log('Log da lista no console:', formattedJsonList);
+        } else {
+            errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
 
             // Divide a chave em partes
             const keys = cleanKey.split('.');
@@ -378,7 +529,72 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 list += `${lineIndent}"${fullKey}": "",\n`;
             }
+
         }
+    }
+    const newMappingButton = document.getElementById('newMappingButton');
+
+    // Função para verificar se um textarea está vazio
+    function isTextareaEmpty(textarea) {
+        return textarea.value.trim() === '';
+    }
+
+    // Evento de clique para o botão "Novo Mapeamento"
+    newMappingButton.addEventListener('click', function () {
+        const sourceJsonTextarea = document.getElementById('sourceJsonTextarea');
+        const outputJsonTextarea = document.getElementById('outputJsonTextarea');
+        const outputJsonContainer = document.getElementById('outputJsonContainer');
+        const mappingJsonTextarea = document.getElementById('mapping_json');
+        const mappedJsonContainer = document.getElementById('mappedJsonContainer');
+        const formContainer = document.getElementById('formContainer');
+        const keysListbox = document.getElementById('keysListbox');
+        const previewJson = document.getElementById('previewJson');
+
+        // Verifica se pelo menos um dos campos contém dados
+        if (!isTextareaEmpty(sourceJsonTextarea) || !isTextareaEmpty(outputJsonTextarea) || !isTextareaEmpty(outputJsonContainer) || !isTextareaEmpty(mappingJsonTextarea)) {
+            const confirmation = confirm('Você tem dados não salvos. Se continuar, os dados serão perdidos. Deseja continuar?');
+
+            if (!confirmation) {
+                // O usuário optou por não continuar, então não faz nada
+                return;
+            }
+        }
+
+        // Limpa os campos de JSON de origem, JSON de saída, listas, campo de JSON de saída mapeado e elementos adicionais
+        sourceJsonTextarea.value = '';
+        outputJsonTextarea.value = '';
+        mappedJsonContainer.textContent = '';
+        keysList.length = 0;
+
+        // Limpa o conteúdo dos elementos
+        if (outputJsonContainer) {
+            outputJsonContainer.textContent = '';
+        }
+
+        if (mappingJsonTextarea) {
+            mappingJsonTextarea.innerHTML = '';
+        }
+
+        if (formContainer) {
+            formContainer.innerHTML = '';
+        }
+
+        if (keysListbox) {
+            keysListbox.innerHTML = '';
+        }
+
+        if (previewJson) {
+            previewJson.innerHTML = '';
+        }
+        // Recarrega a página para redefinir ao estado inicial
+        location.reload();
+
+    });
+
+    // Define o evento de clique para o botão "Gerar o Json de saída"
+    generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
+        
+});
 
         return list;
     }
@@ -440,3 +656,4 @@ document.addEventListener('DOMContentLoaded', function () {
     generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
 
 });
+

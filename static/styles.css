@@ -19,6 +19,40 @@ header {
     padding: 20px 0;
     border: 1px solid #d3d1d1;
 }
+h1{
+    background-color: #F5F5F5;
+    font-size: 30px;
+    border-radius: 5px;
+    padding: 5px 5px;
+    color: #333;
+}
+
+table {
+    background-color: #f0f2f6;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: center;
+}
+
+th,
+td {
+    border: 1px solid #d3d1d1;
+    padding: 10px;
+    text-align: left;
+}
+h2{
+    text-align: center;
+
+}
+
+header {
+    background-color: #f0f2f6 !important;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    border: 1px solid #d3d1d1;
+}
 
 h1 {
     background-color: #F5F5F5;
@@ -45,6 +79,7 @@ td {
 
 h2 {
     text-align: center;
+
     color: #333;
 }
 
