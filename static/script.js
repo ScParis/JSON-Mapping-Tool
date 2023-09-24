@@ -12,14 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const keysListbox = document.getElementById('keysListbox');
     const generateOutputJsonButton = document.getElementById('generateOutputJson');
     const outputJsonContainer = document.getElementById('outputJsonContainer');
-    
-    const createListButton = document.getElementById('createListButton');
-    const mapButton = document.getElementById('mapButton');
-    
 
     const createListButton = document.getElementById('createListButton');
     const mapButton = document.getElementById('mapButton');
-
 
     // Define a função para parsear JSON
     function parseJson(jsonString) {
@@ -29,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
     }
+
     // Define a função para gerar a lista de chaves hierarquizadas
     function generateKeysList(json, parentContainer, prefix = '') {
         for (const key in json) {
@@ -56,17 +52,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const sourceJsonText = sourceJsonTextarea.value;
         try {
             sourceJson = JSON.parse(sourceJsonText);
-            generateKeysList(keysList);
+            keysList.length = 0; // Limpa a lista de chaves
+            generateKeysList(sourceJson, keysList);
             console.log('Lista de chaves hierarquizadas:', keysList);
         } catch (error) {
             console.error('Erro ao fazer o parse do JSON de origem:', error);
         }
 
-        //errorMessage.textContent = '';
-        formContainer.innerHTML = ''; // Limpa o formulário anterior
-        mappedJsonContainer.textContent = ''; // Limpa o JSON mapeado anterior
-
-        generateKeysList(sourceJson, keysList);
+        // Limpa os elementos anteriores
+        formContainer.innerHTML = '';
+        mappedJsonContainer.textContent = '';
+        errorMessage.textContent = '';
 
         // Exemplo de código para gerar o JSON mapeado
         const mappedJson = keysList.join('\n');
@@ -85,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Resto do código do evento mapButton
         errorMessage.textContent = '';
-        formContainer.innerHTML = ''; // Clear previous form
-        mappedJsonContainer.textContent = ''; // Clear previous mapped JSON
+        formContainer.innerHTML = ''; // Limpa o formulário anterior
+        mappedJsonContainer.textContent = ''; // Limpa o JSON mapeado anterior
 
         const sourceJson = parseJson(sourceJsonTextarea.value);
         const outputJson = parseJson(outputJsonTextarea.value);
@@ -99,12 +95,11 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        generateIndentedInputFields(outputJson, formContainer, keysList); // Generate input fields with indentation and provide sourceJson
+        generateIndentedInputFields(outputJson, formContainer, sourceJson, keysList); // Generate input fields with indentation and provide sourceJson
 
         const mappedJson = performJMESPathMapping(keysList, outputJson);
 
         mappedJsonContainer.textContent = JSON.stringify(mappedJson, null, 2);
-        // Após a geração do formulário dinâmico, imprima o conteúdo do formContainer no console
     });
 
     function performJMESPathMapping(keysList, outputJson) {
@@ -131,20 +126,18 @@ document.addEventListener('DOMContentLoaded', function () {
         return mappedJson;
     }
 
-    function generateIndentedInputFields(json, parentContainer, sourceJson, depth = 0, parentKeyPath = '') {
+    function generateIndentedInputFields(json, parentContainer, sourceJson, keysList, depth = 0, parentKeyPath = '') {
         for (const key in json) {
             if (json.hasOwnProperty(key)) {
                 const value = json[key];
                 const fieldContainer = document.createElement('div');
                 fieldContainer.classList.add('field-container');
                 fieldContainer.style.marginLeft = `${depth * 20}px`; // Ajusta a indentação
-                fieldContainer.style.marginLeft = `1px`;
 
                 // Adicione uma borda com base no nível de profundidade
                 if (depth > 0) {
                     fieldContainer.style.border = '1px solid #ccc'; // Adicione um estilo de borda
                     fieldContainer.style.padding = '5px'; // Adicione um preenchimento para espaçamento
-
                 }
 
                 const keyPath = parentKeyPath ? `${parentKeyPath}.${key}` : key;
@@ -171,13 +164,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                 arrayItemContainer.appendChild(indexLabel);
 
                                 // Crie campos para os objetos dentro do array
-                                generateIndentedInputFields(value[i], arrayItemContainer, sourceJson, depth + 1, `${keyPath}[${i}]`);
+                                generateIndentedInputFields(value[i], arrayItemContainer, sourceJson, keysList, depth + 1, `${keyPath}[${i}]`);
                                 fieldContainer.appendChild(arrayItemContainer);
                             }
                         }
                     }
                 } else if (typeof value === 'object' && !Array.isArray(value)) {
-                    generateIndentedInputFields(value, fieldContainer, sourceJson, depth + 1, keyPath);
+                    generateIndentedInputFields(value, fieldContainer, sourceJson, keysList, depth + 1, keyPath);
                 } else {
                     const select = document.createElement('select');
                     select.name = keyPath + '_select';
@@ -189,12 +182,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     placeholderOption.textContent = 'Selecione a opção para mapeamento';
                     select.appendChild(placeholderOption);
 
-                    for (const sourceKey in sourceJson) {
+                    keysList.forEach((sourceKey, index) => {
                         const option = document.createElement('option');
-                        option.value = keyPath + '.' + sourceKey; // Chave completa
-                        option.textContent = sourceJson[sourceKey];
+                        option.value = sourceKey; // Chave completa
+                        option.textContent = sourceKey;
                         select.appendChild(option);
-                    }
+                    });
 
                     fieldContainer.appendChild(select);
                 }
@@ -217,7 +210,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (typeof outputJson[key] === 'object' && outputJson[key] !== null) {
                     if (sourceJson && sourceJson.hasOwnProperty(prefix + key)) {
-
                         generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson[prefix + key]);
                     } else {
                         generatePreviewJson(outputJson[key], currentElement, prefix + key + '.');
@@ -235,27 +227,19 @@ document.addEventListener('DOMContentLoaded', function () {
                                     outputJson[key][i],
                                     arrayItemContainer,
                                     `${prefix + key}[${i}]`,
-                                    sourceJson[`${prefix + key}[${i}]`]
+                                    sourceJson ? sourceJson[`${prefix + key}[${i}]`] : undefined
                                 );
 
                                 arrayContainer.appendChild(arrayItemContainer);
                             }
 
                             currentElement.appendChild(arrayContainer);
-                        } else {
-                            generatePreviewJson(outputJson[key], currentElement, prefix + key + '.', sourceJson[prefix + key]);
                         }
-                    } else {
-                        // Trate os objetos não mapeados como uma estrutura de objeto vazia
-                        const objContainer = document.createElement('div');
-                        objContainer.classList.add('preview-object');
-                        generatePreviewJson(outputJson[key], objContainer, prefix + key + '.');
-                        currentElement.appendChild(objContainer);
                     }
                 } else {
                     const valueElement = document.createElement('span');
                     valueElement.classList.add('preview-value');
-                    valueElement.textContent = key; // Use a chave como valor
+                    valueElement.textContent = outputJson[key]; // Use o valor correspondente em vez da chave
                     currentElement.appendChild(valueElement);
                 }
 
@@ -270,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function populateOutputJsonFromForm(formInputs, outputJsonData) {
         formInputs.forEach(input => {
             const key = input.name;
-            const value = input.type === 'select-one' ? input.options[input.selectedIndex].label : input.value;
+            const value = input.type === 'select-one' ? input.options[input.selectedIndex].value : input.value;
 
             // Remove o sufixo "_select" do último nome da chave
             const cleanKey = key.replace(/_select$/, '');
@@ -294,14 +278,35 @@ document.addEventListener('DOMContentLoaded', function () {
             const lastKey = keys[keys.length - 1];
 
             // Verifica se o valor selecionado é o placeholder
-            if (value === "Selecione a opção para mapeamento") {
-                currentLevel[lastKey] = ""; // Ou currentLevel[lastKey] = null; para definir como null
-            } else {
+            if (value !== 'Selecione a opção para mapeamento') {
                 currentLevel[lastKey] = value;
             }
         });
     }
+    // Função para corrigir a estrutura do JSON mapeado
+    function fixArrayStructure(obj) {
+        for (const key in obj) {
+            if (Array.isArray(obj[key])) {
+                // Se o valor for um array, verifique se ele contém objetos
+                if (obj[key].length > 0 && typeof obj[key][0] === 'object') {
+                    const newArray = {};
 
+                    for (let i = 0; i < obj[key].length; i++) {
+                        const newItem = fixArrayStructure(obj[key][i]);
+                        Object.keys(newItem).forEach(newKey => {
+                            newArray[`${key}[${i}].${newKey}`] = newItem[newKey];
+                        });
+                    }
+
+                    obj[key] = newArray;
+                }
+            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                obj[key] = fixArrayStructure(obj[key]);
+            }
+        }
+
+        return obj;
+    }
     // Define o evento de clique para o botão "Gerar o Json de saída"
     generateOutputJsonButton.addEventListener('click', function () {
         const formInputs = formContainer.querySelectorAll('input[name], select[name]');
@@ -310,177 +315,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // Popula o JSON de saída com os valores do formulário
         populateOutputJsonFromForm(formInputs, outputPreview);
 
-        // Função para corrigir a estrutura do JSON mapeado
-        function fixArrayStructure(obj) {
-            for (const key in obj) {
-                if (Array.isArray(obj[key])) {
-                    // Se o valor for um array, verifique se ele contém objetos
-                    if (obj[key].length > 0 && typeof obj[key][0] === 'object') {
-                        const newArray = {};
-
-                        for (let i = 0; i < obj[key].length; i++) {
-                            const newItem = fixArrayStructure(obj[key][i]);
-                            Object.keys(newItem).forEach(newKey => {
-                                newArray[`${key}[${i}].${newKey}`] = newItem[newKey];
-                            });
-                        }
-
-                        obj[key] = newArray;
-                    }
-                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                    obj[key] = fixArrayStructure(obj[key]);
-                }
-            }
-
-            return obj;
-        }
-
         // Corrige a estrutura do JSON mapeado
         const fixedMappedJson = fixArrayStructure(outputPreview);
 
         // Exibe o JSON mapeado corrigido no textarea
         const outputJson = JSON.stringify(fixedMappedJson, null, 2);
         outputJsonContainer.textContent = outputJson;
-
-        // Verifica se o JSON de origem está disponível
-        if (sourceJson) {
-            // Generate the preview of the output JSON structure
-            generatePreviewJson(fixedMappedJson, null, '', sourceJson);
-        }
     });
 
-    // Define o evento change para campos de seleção (select)
-    formContainer.addEventListener('change', function (event) {
-        const target = event.target;
-
-        if (target.tagName === 'SELECT') {
-            const outputJsonData = {};
-            const formInputs = formContainer.querySelectorAll('input[name], select[name]');
-            const selectElement = target;
-            const selectedOptions = Array.from(selectElement.selectedOptions);
-            const optionLabels = selectedOptions.map(option => option.label);
-
-            console.log('Labels dos elementos option selecionados:', optionLabels);
-
-            // Popula o JSON de saída com os valores do formulário
-            populateOutputJsonFromForm(formInputs, outputJsonData);
-
-            // Log dos valores atualizados no console
-            //console.log('Valores atualizados no JSON de saída:', outputJsonData);
-        }
-    });
-
-    // Define a função para gerar o JSON de saída com valores limpos
-    function generateEmptyOutputJson() {
-        const outputJsonText = outputJsonTextarea.value;
-        const outputJsonData = parseJson(outputJsonText);
-
-        if (outputJsonData) {
-            // Função para criar a lista mantendo a estrutura hierárquica
-            function createListWithHierarchy(obj, indent = 0, prefix = '') {
-                let list = '';
-
-                for (let key in obj) {
-                    const value = obj[key];
-                    const lineIndent = ' '.repeat(indent * 2);
-                    const fullKey = prefix ? `${prefix}.${key}` : key;
-
-                    if (typeof value === 'object' && !Array.isArray(value)) {
-                        // Objeto aninhado, chama a função recursivamente
-                        list += `${lineIndent}"${fullKey}": {\n`;
-                        list += createListWithHierarchy(value, indent + 1, fullKey);
-                        list += `${lineIndent}},\n`;
-                    } else if (Array.isArray(value)) {
-                        // Array encontrado, percorra os elementos e chame a função para cada objeto
-                        list += `${lineIndent}"${fullKey}": [\n`;
-
-                        for (let i = 0; i < value.length; i++) {
-                            list += `${lineIndent}  {\n`;
-                            list += createListWithHierarchy(value[i], indent + 2, fullKey);
-                            list += `${lineIndent}  },\n`;
-                        }
-
-                        list += `${lineIndent}],\n`;
-                    } else {
-                        // Valor simples, adiciona à lista
-                        list += `${lineIndent}"${fullKey}": "",\n`;
-                    }
-                }
-
-                return list;
-            }
-
-            // Chama a função para criar a lista mantendo a estrutura hierárquica
-            const formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
-
-            // Log da lista no console
-            console.log('Log da lista no console:', formattedJsonList);
-        } else {
-            errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
-
-            // Divide a chave em partes
-            const keys = cleanKey.split('.');
-            let currentLevel = outputJsonData;
-
-            // Percorre as partes da chave e cria os objetos pai, se necessário
-            for (let i = 0; i < keys.length - 1; i++) {
-                const currentKey = keys[i];
-
-                if (!currentLevel[currentKey]) {
-                    currentLevel[currentKey] = {};
-                }
-
-                currentLevel = currentLevel[currentKey];
-            }
-
-            // Define o valor na chave mais interna
-            const lastKey = keys[keys.length - 1];
-
-            // Verifica se o valor selecionado é o placeholder
-            if (value === "Selecione a opção para mapeamento") {
-                currentLevel[lastKey] = ""; // Ou currentLevel[lastKey] = null; para definir como null
-            } else {
-                currentLevel[lastKey] = value;
-            }
-        });
-    }
-
-
-    // Define o evento de clique para o botão "Gerar o Json de saída"
-    generateOutputJsonButton.addEventListener('click', function () {
-        const formInputs = formContainer.querySelectorAll('input[name], select[name]');
-
-        // Popula o JSON de saída com os valores do formulário usando o JSON formatado
-        const outputPreview = JSON.parse(formattedJsonList);
-        populateOutputJsonFromForm(formInputs, outputPreview);
-
-        // Exibe o JSON populado no elemento outputJsonContainer
-        const outputJson = JSON.stringify(outputPreview, null, 2);
-        outputJsonContainer.textContent = outputJson;
-    });
-
-    
-    // Define o evento change para campos de seleção (select)
-    formContainer.addEventListener('change', function (event) {
-        const target = event.target;
-
-        if (target.tagName === 'SELECT') {
-            const outputJsonData = {};
-            const formattedJsonList = {};
-            const formInputs = formContainer.querySelectorAll('input[name], select[name]');
-            const selectElement = target;
-            const selectedOptions = Array.from(selectElement.selectedOptions);
-            const optionLabels = selectedOptions.map(option => option.label);
-
-            console.log('Labels dos elementos option selecionados:', formattedJsonList);
-
-            // Popula o JSON de saída com os valores do formulário
-            populateOutputJsonFromForm(formInputs, formattedJsonList);
-
-            // Log dos valores atualizados no console
-            console.log('Valores atualizados no JSON de saída:', formattedJsonList);
-        }
-    });
 
     // Função para criar a lista mantendo a estrutura hierárquica
     function createListWithHierarchy(obj, indent = 0, prefix = '') {
@@ -489,57 +331,32 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let key in obj) {
             const value = obj[key];
 
+            const lineIndent = ' '.repeat(indent * 2);
+            const fullKey = prefix ? `${prefix}.${key}` : key;
+
             if (typeof value === 'object' && !Array.isArray(value)) {
-                const lineIndent = ' '.repeat(indent * 2);
-                const fullKey = prefix ? `${prefix}.${key}` : key;
-                const nestedList = createListWithHierarchy(value, indent + 1, fullKey);
-
-                // Verifique se o objeto aninhado não é vazio
-                if (nestedList.trim() !== '{}') {
-                    list += `${lineIndent}"${fullKey}": {\n`;
-                    list += nestedList;
-                    list += `${lineIndent}},\n`;
-                }
+                list += `${lineIndent}"${fullKey}": {\n`;
+                list += createListWithHierarchy(value, indent + 1, fullKey);
+                list += `${lineIndent}},\n`;
             } else if (Array.isArray(value)) {
-                const lineIndent = ' '.repeat(indent * 2);
-                const fullKey = prefix ? `${prefix}.${key}` : key;
+                list += `${lineIndent}"${fullKey}": [\n`;
 
-                if (value.length > 0) {
-                    list += `${lineIndent}"${fullKey}": [\n`;
-
-                    for (let i = 0; i < value.length; i++) {
-                        const nestedList = createListWithHierarchy(value[i], indent + 2, `${fullKey}[${i}]`);
-
-                        // Verifique se o objeto aninhado não é vazio
-                        if (nestedList.trim() !== '{}') {
-                            list += `${lineIndent}  {\n`;
-                            list += nestedList;
-                            list += `${lineIndent}  },\n`;
-                        }
-                    }
-
-                    list += `${lineIndent}],\n`;
-                } else {
-                    // Remova a propriedade se o array estiver vazio
-                    delete obj[key];
+                for (let i = 0; i < value.length; i++) {
+                    list += `${lineIndent}  {\n`;
+                    list += createListWithHierarchy(value[i], indent + 2, `${fullKey}[${i}]`);
+                    list += `${lineIndent}  },\n`;
                 }
-            } else {
-                const lineIndent = ' '.repeat(indent * 2);
-                const fullKey = prefix ? `${prefix}.${key}` : key;
 
+                list += `${lineIndent}],\n`;
+            } else {
                 list += `${lineIndent}"${fullKey}": "",\n`;
             }
-
         }
-    }
-    const newMappingButton = document.getElementById('newMappingButton');
 
-    // Função para verificar se um textarea está vazio
-    function isTextareaEmpty(textarea) {
-        return textarea.value.trim() === '';
+        return list;
     }
 
-    // Evento de clique para o botão "Novo Mapeamento"
+    // Define o evento de clique para o botão "Novo Mapeamento"
     newMappingButton.addEventListener('click', function () {
         const sourceJsonTextarea = document.getElementById('sourceJsonTextarea');
         const outputJsonTextarea = document.getElementById('outputJsonTextarea');
@@ -586,74 +403,5 @@ document.addEventListener('DOMContentLoaded', function () {
         if (previewJson) {
             previewJson.innerHTML = '';
         }
-        // Recarrega a página para redefinir ao estado inicial
-        location.reload();
-
     });
-
-    // Define o evento de clique para o botão "Gerar o Json de saída"
-    generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
-        
 });
-
-        return list;
-    }
-    // Define a função para gerar o JSON de saída com valores limpos
-    function generateEmptyOutputJson() {
-        const outputJsonText = outputJsonTextarea.value;
-        const outputJsonData = parseJson(outputJsonText);
-
-        if (outputJsonData) {
-            // Função para criar a lista mantendo a estrutura hierárquica
-            function createListWithHierarchy(obj, indent = 0, prefix = '') {
-                let list = '';
-
-                for (let key in obj) {
-                    const value = obj[key];
-                    const lineIndent = ' '.repeat(indent * 2);
-                    const fullKey = prefix ? `${prefix}.${key}` : key;
-
-                    if (typeof value === 'object' && !Array.isArray(value)) {
-                        // Objeto aninhado, chama a função recursivamente
-                        list += `${lineIndent}"${fullKey}": {\n`;
-                        list += createListWithHierarchy(value, indent + 1, fullKey);
-                        list += `${lineIndent}},\n`;
-                    } else if (Array.isArray(value)) {
-                        // Array encontrado, percorra os elementos e chame a função para cada objeto
-                        list += `${lineIndent}"${fullKey}": [\n`;
-
-                        for (let i = 0; i < value.length; i++) {
-                            list += `${lineIndent}  {\n`;
-                            list += createListWithHierarchy(value[i], indent + 2, fullKey);
-                            list += `${lineIndent}  },\n`;
-                        }
-
-                        list += `${lineIndent}],\n`;
-                    } else {
-                        // Valor simples, adiciona à lista
-                        list += `${lineIndent}"${fullKey}": "",\n`;
-                    }
-                }
-
-                return list;
-            }
-
-            // Chama a função para criar a lista mantendo a estrutura hierárquica
-            formattedJsonList = `{\n${createListWithHierarchy(outputJsonData)}\n}`;
-
-            // Exibe o JSON formatado na tela
-            outputJsonContainer.textContent = formattedJsonList;
-
-            // Log da lista no console
-            console.log('Log da lista no console:', formattedJsonList);
-        } else {
-            errorMessage.textContent = 'Por favor, forneça um JSON de saída válido.';
-        }
-    }
-
-
-    // Define o evento de clique para o botão "Gerar o Json de saída"
-    generateOutputJsonButton.addEventListener('click', generateEmptyOutputJson);
-
-});
-
