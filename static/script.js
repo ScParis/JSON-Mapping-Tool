@@ -283,79 +283,39 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    // Função para corrigir a estrutura do JSON mapeado
-    function fixArrayStructure(obj) {
-        for (const key in obj) {
-            if (Array.isArray(obj[key])) {
-                // Se o valor for um array, verifique se ele contém objetos
-                if (obj[key].length > 0 && typeof obj[key][0] === 'object') {
-                    const newArray = {};
+ 
+    // Define o evento de clique para o botão "Gerar o JSON de Saída"
+    generateOutputJsonButton.addEventListener('click', function () {
+        const outputJsonTextarea = document.getElementById('outputJsonTextarea');
+        const outputJsonContainer = document.getElementById('outputJsonContainer');
 
-                    for (let i = 0; i < obj[key].length; i++) {
-                        const newItem = fixArrayStructure(obj[key][i]);
-                        Object.keys(newItem).forEach(newKey => {
-                            newArray[`${key}[${i}].${newKey}`] = newItem[newKey];
-                        });
-                    }
+        // Obtém o conteúdo do campo outputJsonTextarea
+        const outputJsonText = outputJsonTextarea.value;
 
-                    obj[key] = newArray;
+        // Analisa o JSON para um objeto JavaScript
+        const outputJsonObject = JSON.parse(outputJsonText);
+
+        // Remove todos os valores do objeto, mantendo apenas as chaves
+        function removeValues(obj) {
+            for (const key in obj) {
+                if (typeof obj[key] === 'object') {
+                    removeValues(obj[key]);
+                } else {
+                    obj[key] = typeof obj[key] === 'object' ? {} : '';
                 }
-            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                obj[key] = fixArrayStructure(obj[key]);
             }
         }
 
-        return obj;
-    }
-    // Define o evento de clique para o botão "Gerar o Json de saída"
-    generateOutputJsonButton.addEventListener('click', function () {
-        const formInputs = formContainer.querySelectorAll('input[name], select[name]');
-        const outputPreview = {};
+        removeValues(outputJsonObject);
 
-        // Popula o JSON de saída com os valores do formulário
-        populateOutputJsonFromForm(formInputs, outputPreview);
+        // Converte o objeto JavaScript resultante de volta para JSON
+        const cleanedOutputJsonText = JSON.stringify(outputJsonObject, null, 2);
 
-        // Corrige a estrutura do JSON mapeado
-        const fixedMappedJson = fixArrayStructure(outputPreview);
-
-        // Exibe o JSON mapeado corrigido no textarea
-        const outputJson = JSON.stringify(fixedMappedJson, null, 2);
-        outputJsonContainer.textContent = outputJson;
+        // Exibe o JSON limpo no elemento outputJsonContainer
+        outputJsonContainer.textContent = cleanedOutputJsonText;
     });
 
-
-    // Função para criar a lista mantendo a estrutura hierárquica
-    function createListWithHierarchy(obj, indent = 0, prefix = '') {
-        let list = '';
-
-        for (let key in obj) {
-            const value = obj[key];
-
-            const lineIndent = ' '.repeat(indent * 2);
-            const fullKey = prefix ? `${prefix}.${key}` : key;
-
-            if (typeof value === 'object' && !Array.isArray(value)) {
-                list += `${lineIndent}"${fullKey}": {\n`;
-                list += createListWithHierarchy(value, indent + 1, fullKey);
-                list += `${lineIndent}},\n`;
-            } else if (Array.isArray(value)) {
-                list += `${lineIndent}"${fullKey}": [\n`;
-
-                for (let i = 0; i < value.length; i++) {
-                    list += `${lineIndent}  {\n`;
-                    list += createListWithHierarchy(value[i], indent + 2, `${fullKey}[${i}]`);
-                    list += `${lineIndent}  },\n`;
-                }
-
-                list += `${lineIndent}],\n`;
-            } else {
-                list += `${lineIndent}"${fullKey}": "",\n`;
-            }
-        }
-
-        return list;
-    }
-
+    
     // Define o evento de clique para o botão "Novo Mapeamento"
     newMappingButton.addEventListener('click', function () {
         const sourceJsonTextarea = document.getElementById('sourceJsonTextarea');
