@@ -1,3 +1,5 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
 /* Reset de estilos */
 * {
     margin: 0;
@@ -5,30 +7,198 @@
     box-sizing: border-box;
 }
 
+/* Layout responsivo para os três painéis */
+.json-panels {
+    display: grid;
+    grid-template-columns: 1fr; /* mobile-first: 1 coluna */
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* Overrides para neutralizar estilos inline do index.html */
+body .json-panels { display: grid !important; }
+body .panel { width: 100% !important; max-width: none !important; }
+
+.panel {
+    width: 100%;
+    margin: 0;
+}
+
+/* Melhor contraste para o tema escuro em inputs */
+body:not(.light-theme) textarea {
+    background-color: #1f1f1f;
+    border-color: #444;
+    color: #e6e6e6;
+}
+
+/* Placeholder legível */
+textarea::placeholder {
+    color: #aaa;
+}
+
+/* Estilo do formulário de mapeamento gerado dinamicamente */
+.form-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 16px auto;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    max-height: 40vh;
+    overflow: auto;
+}
+
+body.light-theme .form-container {
+    background-color: #fff;
+    border-color: #ddd;
+}
+
+/* Campos do formulário de mapeamento */
+.form-container .field-container {
+    display: block; /* Garante que o container seja visível */
+    padding: 4px 0;
+}
+
+.form-container .field-container > .label {
+    display: inline-block;
+    min-width: 150px; /* Alinha os selects */
+    font-weight: 600;
+}
+
+.form-container .field-container .label {
+    font-weight: 600;
+}
+
+.form-container select {
+    min-width: 260px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #666;
+    background-color: #232323;
+    color: #e6e6e6;
+    font-size: 14px;
+}
+
+body.light-theme .form-container select {
+    background-color: #fff;
+    color: #222;
+    border-color: #bbb;
+}
+
 /* Defina as cores do seu sistema */
 body {
-    background: white;
-    /* Alterado para branco */
     font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Tema escuro (padrão) */
+body:not(.light-theme) {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+body:not(.light-theme) header,
+body:not(.light-theme) table {
+    background-color: #2c2c2c;
+    border-color: #444;
+}
+
+body:not(.light-theme) h1,
+body:not(.light-theme) h2,
+body:not(.light-theme) h3 {
+    color: #ffffff;
+}
+
+body:not(.light-theme) h1 {
+    background-color: #333;
+}
+
+/* Tema claro */
+body.light-theme {
+    background-color: #f5f5f5;
+    color: #333333;
+}
+
+body.light-theme header,
+body.light-theme table {
+    background-color: #f0f2f6;
+    border-color: #d3d1d1;
+}
+
+body.light-theme h1 {
+    background-color: #F5F5F5;
+    color: #333;
+}
+
+body.light-theme h2 {
+    color: #333;
+}
+
+body.light-theme .code-container {
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme textarea {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333333;
+    caret-color: #333333;
+}
+
+body.light-theme .btn-theme {
+    background-color: #f0f0f0;
+    color: #333333;
+}
+
+body.light-theme .btn-theme:hover {
+    background-color: #e0e0e0;
+}
+
+body.light-theme .controls button {
+    color: #333333;
+}
+
+body.light-theme .message {
+    color: #ffffff;
+}
+
+body.light-theme .code-container .drop-zone-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+body.light-theme .code-container:hover .resize-handle::after {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+body.light-theme .code-container .resize-handle::after {
+    color: rgba(0, 0, 0, 0.3);
 }
 
 header {
-    background-color: #f0f2f6 !important;
     color: white;
     text-align: center;
     padding: 20px 0;
     border: 1px solid #d3d1d1;
+    position: relative;
 }
+
 h1{
-    background-color: #F5F5F5;
     font-size: 30px;
     border-radius: 5px;
     padding: 5px 5px;
-    color: #333;
 }
 
 table {
-    background-color: #f0f2f6;
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
@@ -41,72 +211,707 @@ td {
     padding: 10px;
     text-align: left;
 }
+
 h2{
     text-align: center;
-
 }
 
-header {
-    background-color: #f0f2f6 !important;
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    border: 1px solid #d3d1d1;
-}
-
-h1 {
-    background-color: #F5F5F5;
-    font-size: 30px;
-    border-radius: 5px;
-    padding: 5px 5px;
-    color: #333;
-}
-
-table {
-    background-color: #f0f2f6;
+/* Estilo para os containers de código */
+.code-container {
+    position: relative;
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    text-align: center;
-}
-
-th,
-td {
-    border: 1px solid #d3d1d1;
-    padding: 10px;
-    text-align: left;
-}
-
-h2 {
-    text-align: center;
-
-    color: #333;
-}
-
-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
+    height: clamp(360px, 55vh, 680px);
+    min-height: 240px;
+    max-height: 90vh;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
     resize: vertical;
 }
 
-button {
-    background-color: #1ab394;
-    /* Alterado para verde (#1ab394) */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    box-shadow: darkblue;
+/* Estilo para o manipulador de redimensionamento */
+.resize-handle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    cursor: ns-resize;
+    z-index: 10;
 }
 
-/* Alterado o hover para a cor de fundo verde mais escura */
-button:hover {
-    background-color: #009b77;
-    /* Cor de hover mais escura (#009b77) */
+.resize-handle::after {
+    content: '⋯';
+    position: absolute;
+    left: 50%;
+    top: 2px;
+    transform: translateX(-50%) rotate(90deg);
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 16px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.code-container:hover .resize-handle::after {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.code-container.resizing {
+    user-select: none;
+    cursor: ns-resize;
+}
+
+.code-container.resizing textarea {
+    pointer-events: none;
+}
+
+/* Esconde completamente o botão de upload por padrão */
+.btn-upload {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Mostra o botão apenas durante drag-and-drop */
+.code-container.dragover .btn-upload {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* Estilo para a área de drop */
+.drop-zone-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(45, 45, 45, 0.9);
+    display: none; /* Escondido por padrão */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Remove completamente o comportamento de hover */
+.code-container .drop-zone-overlay {
+    display: none !important; /* Força escondido */
+    opacity: 0 !important;
+}
+
+/* Aparece apenas durante drag-and-drop */
+.code-container.dragover .drop-zone-overlay {
+    display: flex !important; /* Mostra apenas durante drag */
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.code-container.dragover {
+    border: 2px dashed #1ab394;
+    background-color: rgba(26, 179, 148, 0.1);
+}
+
+/* Estilo para o botão de upload */
+.btn-upload {
+    background-color: #1c84c6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 24px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.btn-upload:hover {
+    background-color: #1a6ea0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-upload i {
+    font-size: 16px;
+}
+
+/* Estilo para o pre/code do Prism */
+.code-container pre {
+    margin: 0;
+    height: 100%;
+    overflow: auto;
+    background: #2d2d2d;
+    border-radius: 5px;
+}
+
+.code-container code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+/* Estilo para os textareas */
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background-color: #1f1f1f;
+    resize: vertical;
+    color: #e0e0e0;
+    caret-color: #ffffff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    line-height: 1.5;
+    font-size: 15px;
+    tab-size: 2;
+    transition: all 0.3s ease;
+}
+
+/* Estilo para campos inválidos */
+textarea.invalid-json {
+    border-left: 4px solid #ed5565;
+    background-color: rgba(237, 85, 101, 0.1);
+}
+
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26, 179, 148, 0.3);
+}
+
+/* Melhoria na barra de rolagem */
+.code-container pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.code-container pre::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+.code-container pre::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+.code-container pre::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Ajustes para o tema do Prism */
+.token.string { color: #7ec699; }
+.token.number { color: #f08d49; }
+.token.boolean { color: #f08d49; }
+.token.null { color: #f08d49; }
+.token.key { color: #cc99cd; }
+.token.punctuation { color: #cccccc; }
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+/* Botão de tema */
+.btn-theme {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0 5px;
+    transition: all 0.2s ease;
+}
+
+.btn-theme:hover {
+    background-color: #3d3d3d;
+    transform: rotate(30deg);
+}
+
+/* Botão de formatação */
+.btn-format {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-format:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-format i {
+    font-size: 14px;
+}
+
+/* Ajustes para tema claro */
+body.light-theme .btn-format {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+body.light-theme .btn-format:hover {
+    background-color: #d6d8db;
+}
+
+/* Estilos para os botões de controle */
+.controls {
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.controls button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.controls button i {
+    font-size: 16px;
+}
+
+.controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Ícones para os botões */
+/* Estilo para mensagens de notificação */
+.message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.message.error {
+    background-color: #ed5565;
+}
+
+.message.fade-out {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+}
+
+/* Estilo para a visualização em árvore do JSON */
+.json-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.btn-view-mode {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-view-mode:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+.json-tree {
+    display: none;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #e0e0e0;
+    background-color: #2d2d2d;
+    border-radius: 5px;
+    height: calc(100% - 10px);
+    overflow-y: auto;
+    white-space: pre;
+    margin-top: 5px;
+}
+
+.json-node {
+    margin-left: 20px;
+    position: relative;
+    cursor: default;
+    transition: all 0.2s ease;
+}
+
+.json-node:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.json-node.expandable {
+    cursor: pointer;
+}
+
+.json-children {
+    margin-left: 15px;
+    border-left: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-left: 10px;
+}
+
+.json-key {
+    color: #88c0d0;
+}
+
+.json-string {
+    color: #a3be8c;
+}
+
+.json-number {
+    color: #d08770;
+}
+
+.json-boolean {
+    color: #81a1c1;
+    font-style: italic;
+}
+
+.json-null {
+    color: #bf616a;
+    font-style: italic;
+}
+
+.json-bracket, .json-brace {
+    color: #d8dee9;
+    font-weight: bold;
+}
+
+.json-comma {
+    color: #d8dee9;
+}
+
+.json-summary {
+    color: #88c0d0;
+    font-style: italic;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+/* Ajustes para tema claro */
+body.light-theme .json-tree {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #dee2e6;
+}
+
+body.light-theme .json-node:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .json-children {
+    border-left-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .json-key {
+    color: #2b6cb0;
+}
+
+body.light-theme .json-string {
+    color: #2f855a;
+}
+
+body.light-theme .json-number {
+    color: #b7791f;
+}
+
+body.light-theme .json-boolean {
+    color: #2b6cb0;
+}
+
+body.light-theme .json-null {
+    color: #c53030;
+}
+
+body.light-theme .json-bracket,
+body.light-theme .json-brace,
+body.light-theme .json-comma {
+    color: #4a5568;
+}
+
+body.light-theme .json-summary {
+    color: #4a5568;
+}
+
+/* Estilo para a barra de progresso de rolagem */
+.progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #1ab394, #18a689);
+    width: 0%;
+    transition: width 0.1s ease-out;
+}
+
+/* Ajustes para tema claro */
+body.light-theme .progress-container {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo para o indicador de carregamento */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Estilo para o rodapé com atalhos de teclado */
+.keyboard-shortcuts {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 1200px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #666;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.keyboard-shortcuts .shortcut {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 6px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.keyboard-shortcuts kbd {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    color: #333;
+    display: inline-block;
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    padding: 2px 6px;
+    white-space: nowrap;
+}
+
+/* Melhorias visuais para o tema escuro */
+body:not(.light-theme) .keyboard-shortcuts {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #aaa;
+}
+
+body:not(.light-theme) .keyboard-shortcuts .shortcut {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body:not(.light-theme) .keyboard-shortcuts kbd {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+.loading-overlay.fade-out {
+    opacity: 0;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border-top-color: #1ab394;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 15px;
+}
+
+.loading-message {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 80%;
+    line-height: 1.4;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Botão de rolagem para o topo */
+.scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #1ab394;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+}
+
+.scroll-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.scroll-to-top:hover {
+    background-color: #18a689;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-to-top:active {
+    transform: translateY(1px);
+}
+
+/* Ajustes para tema claro */
+body.light-theme .scroll-to-top {
+    background-color: #6c757d;
+}
+
+body.light-theme .scroll-to-top:hover {
+    background-color: #5a6268;
+}
+
+/* Melhorias de responsividade */
+/* Tablets e telas médias: 2 colunas */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .json-panels {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Telas grandes: 3 colunas */
+@media (min-width: 1200px) {
+    .json-panels {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 1200px) {
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .controls {
+        flex-wrap: wrap;
+    }
+    
+    .btn-format span {
+        display: none;
+    }
+    
+    .btn-format i {
+        margin: 0;
+    }
+    
+    .code-container {
+        height: clamp(320px, 45vh, 520px);
+    }
+    
+    textarea {
+        font-size: 12px;
+    }
+    
+    .scroll-to-top {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+        bottom: 20px;
+        right: 20px;
+    }
 }
 
 .error-message {
@@ -135,8 +940,7 @@ footer {
     color: #333;
     text-align: center;
     padding: 10px 0;
-    position: fixed;
-    bottom: 0;
+    position: static;
     width: 100%;
 }
 
@@ -146,33 +950,6 @@ footer {
         height: 150px;
         /* Altura menor para dispositivos menores */
     }
-}
-
-/* Correções para overlay de upload */
-.btn-upload {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* Mostra o botão apenas durante drag-and-drop */
-.code-container.dragover .btn-upload {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
-
-/* Esconde overlay por padrão */
-.drop-zone-overlay {
-    display: none !important;
-    opacity: 0 !important;
-}
-
-.code-container.dragover .drop-zone-overlay {
-    display: flex !important;
-    opacity: 1 !important;
 }
 
 #createListButton,
