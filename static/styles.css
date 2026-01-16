@@ -148,6 +148,33 @@ footer {
     }
 }
 
+/* Correções para overlay de upload */
+.btn-upload {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Mostra o botão apenas durante drag-and-drop */
+.code-container.dragover .btn-upload {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* Esconde overlay por padrão */
+.drop-zone-overlay {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+.code-container.dragover .drop-zone-overlay {
+    display: flex !important;
+    opacity: 1 !important;
+}
+
 #createListButton,
 #mappedJsonContainer {
     display: none;

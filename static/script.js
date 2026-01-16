@@ -94,6 +94,19 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Primeiro, extrai as chaves do JSON de origem
+        try {
+            const newKeysList = [];
+            generateKeysList(sourceJson, newKeysList);
+            keysList.length = 0;
+            keysList.push(...newKeysList);
+            console.log('[map] Chaves extraídas:', keysList.length, 'chaves:', keysList);
+        } catch (error) {
+            console.error('[map] Erro ao extrair chaves do JSON de origem:', error);
+            errorMessage.textContent = 'Erro ao processar JSON de origem.';
+            return;
+        }
+
         generateIndentedInputFields(outputJson, formContainer, sourceJson, keysList); // Generate input fields with indentation and provide sourceJson
 
         const mappedJson = performJMESPathMapping(keysList, outputJson);
@@ -189,24 +202,63 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (Array.isArray(value)) {
                     // Verifique se o valor é um array
+                    console.log('[generateFields] Processando array:', key, 'com', value.length, 'itens');
                     if (value.length > 0) {
-                        // Verifique se o array contém objetos
-                        if (typeof value[0] === 'object') {
-                            // Crie campos para cada objeto no array
-                            for (let i = 0; i < value.length; i++) {
+                        // Se o array contém objetos, cria campos para CADA objeto do array
+                        if (typeof value[0] === 'object' && value[0] !== null) {
+                            console.log('[generateFields] Array de objetos detectado, criando campos para cada item');
+                            
+                            // Itere sobre cada item do array e crie campos para ele
+                            value.forEach((item, index) => {
                                 const arrayItemContainer = document.createElement('div');
-                                arrayItemContainer.classList.add('array-item-container');
-                                arrayItemContainer.style.marginLeft = `${(depth + 1) * 20}px`; // Indentação adicional
+                                arrayItemContainer.classList.add('array-item-instance');
+                                arrayItemContainer.style.marginLeft = `${(depth + 1) * 20}px`;
+                                arrayItemContainer.style.marginTop = '10px';
+                                arrayItemContainer.style.padding = '10px';
+                                arrayItemContainer.style.border = '1px solid #ddd';
+                                arrayItemContainer.style.borderRadius = '4px';
 
-                                // Adicione o índice do objeto dentro do array
-                                const indexLabel = document.createElement('span');
-                                indexLabel.textContent = `${i}:`;
-                                arrayItemContainer.appendChild(indexLabel);
+                                // Adicione o índice do item
+                                const itemIndexLabel = document.createElement('span');
+                                itemIndexLabel.textContent = `${key}[${index}]:`;
+                                itemIndexLabel.style.fontWeight = 'bold';
+                                itemIndexLabel.style.color = '#1ab394';
+                                itemIndexLabel.style.display = 'block';
+                                itemIndexLabel.style.marginBottom = '8px';
+                                arrayItemContainer.appendChild(itemIndexLabel);
 
-                                // Crie campos para os objetos dentro do array
-                                generateIndentedInputFields(value[i], arrayItemContainer, sourceJson, keysList, depth + 1, `${keyPath}[${i}]`);
+                                console.log(`[generateFields] Criando campos para item ${index} do array ${key}:`, item);
+                                const childFields = generateIndentedInputFields(item, parentContainer, sourceJson, keysList, depth + 2, `${keyPath}[${index}]`);
+                                console.log(`[generateFields] childFields para item ${index}:`, childFields);
+                                
+                                if (childFields) {
+                                    arrayItemContainer.appendChild(childFields);
+                                }
                                 fieldContainer.appendChild(arrayItemContainer);
-                            }
+                            });
+                        } else {
+                            // Para arrays de valores primitivos, crie um único select
+                            const select = document.createElement('select');
+                            select.name = keyPath + '_select';
+                            select.style.width = '100%';
+                            select.style.padding = '5px';
+                            select.style.marginTop = '5px';
+
+                            // Adicione uma opção padrão
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Selecione a opção para mapeamento';
+                            select.appendChild(defaultOption);
+
+                            // Adicione as chaves disponíveis como opções
+                            keysList.forEach(key => {
+                                const option = document.createElement('option');
+                                option.value = key;
+                                option.textContent = key;
+                                select.appendChild(option);
+                            });
+
+                            fieldContainer.appendChild(select);
                         }
                     }
                 } else if (typeof value === 'object' && !Array.isArray(value)) {
@@ -304,7 +356,10 @@ document.addEventListener('DOMContentLoaded', function () {
         removeValues(outputJsonObject);
 
         // Converte o objeto JavaScript resultante de volta para JSON
-        const cleanedOutputJsonText = JSON.stringify(outputJsonObject, null, 2);
+        let cleanedOutputJsonText = JSON.stringify(outputJsonObject, null, 2);
+        
+        // Remove aspas de valores JMESPath no texto final
+        cleanedOutputJsonText = cleanedOutputJsonText.replace(/"([a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*(\[[0-9]+\])*)"/g, '$1');
 
         // Exibe o JSON limpo no elemento outputJsonContainer
         outputJsonContainer.textContent = cleanedOutputJsonText;
