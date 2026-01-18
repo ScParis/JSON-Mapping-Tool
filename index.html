@@ -1,79 +1,312 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Mapping Tool</title>
-    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/glyph-neue/64/22C3E6/baby-yoda.png">
+    <title>JSON Mapper - Ferramenta de Mapeamento de Dados</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="static/styles.css">
 </head>
-
 <body>
-    <div>
-      <header>
-        <h1 id="top_text">JSON Mapping Tool</h1>
-      </header>
-    </div>
-    <table>
-        <button id="newMappingButton">Novo Mapeamento</button>
-        <tr>
-            <th>
-                <h2>JSON de Origem</h2>
-            </th>
-            <th>
-                <h2>JSON de Saída</h2>
-            </th>
-            <th>
-                <h2>JSON Mapeado</h2>
-            </th>
-        </tr>
-        <tr>
-            <th>
-                <textarea id="sourceJsonTextarea" rows="10" cols="60"
-                    placeholder="Cole o JSON de origem aqui (exemplo: { 'nome': 'John', 'idade': 30 })"
-                    style="width: 917px; height: 801px;"></textarea>
+    <div class="app-container">
+        <!-- Header Moderno -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>JSON Mapper</h1>
+                        <span class="logo-subtitle">Ferramenta de Mapeamento de Dados</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <nav class="header-nav">
+                    <button class="nav-btn active" data-view="mapper">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Mapeador</span>
+                    </button>
+                    <button class="nav-btn" data-view="history">
+                        <i class="fas fa-history"></i>
+                        <span>Histórico</span>
+                    </button>
+                    <button class="nav-btn" data-view="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Config</span>
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="header-right">
+                <div class="header-actions">
+                    <button class="icon-btn" id="themeToggle" title="Alternar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="icon-btn" id="helpBtn" title="Ajuda">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button class="icon-btn" id="fullscreenBtn" title="Tela cheia">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
 
-            </th>
-            <th>
-                <textarea id="outputJsonTextarea" rows="10" cols="60"
-                    placeholder="Cole o JSON de saída aqui (exemplo: { 'nome': '', 'idade': 0 })"
-                    style="width: 917px; height: 801px;"></textarea>
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-rocket"></i>
+                        Ações Rápidas
+                    </h3>
+                    <div class="action-buttons">
+                        <button id="newMappingBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Novo Mapeamento
+                        </button>
+                        <button id="loadExamplesBtn" class="btn btn-secondary">
+                            <i class="fas fa-folder-open"></i>
+                            Carregar Exemplos
+                        </button>
+                        <button id="clearAllBtn" class="btn btn-outline">
+                            <i class="fas fa-eraser"></i>
+                            Limpar Tudo
+                        </button>
+                    </div>
+                </div>
 
-            </th>
-            <th>
-                <textarea id="outputJsonContainer" style="width: 917px; height: 801px;" readonly></textarea>
+                <div class="sidebar-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Informações
+                    </h3>
+                    <div class="info-card">
+                        <div class="info-item">
+                            <span class="info-label">Campos Mapeados:</span>
+                            <span class="info-value" id="mappedCount">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value status" id="mappingStatus">Pronto</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Última ação:</span>
+                            <span class="info-value" id="lastAction">Nenhuma</span>
+                        </div>
+                    </div>
+                </div>
 
-            </th>
-        </tr>
-        <tr>
-            <th>
-                <button id="createListButton">Criar lista de dados</button>
-            </th>
-            <th>
-                <div><button id="mapButton">Realizar Mapeamento</button></div>
+                <div class="sidebar-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Dicas
+                    </h3>
+                    <div class="tips-card">
+                        <p>Use o botão "Carregar Exemplos" para ver como funciona a ferramenta.</p>
+                        <p>O mapeamento é automático - basta selecionar as origens para cada destino.</p>
+                    </div>
+                </div>
+            </aside>
 
-            </th>
-            <th>
-                <button id="generateOutputJson">Gerar o Json de saída</button>
-            </th>
-        </tr>
-    </table>
+            <!-- Mapping Area -->
+            <section class="mapping-area">
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="toolbar-btn" id="validateJsonBtn">
+                            <i class="fas fa-check-circle"></i>
+                            Validar JSON
+                        </button>
+                        <button class="toolbar-btn" id="formatJsonBtn">
+                            <i class="fas fa-indent"></i>
+                            Format JSON
+                        </button>
+                        <button class="toolbar-btn" id="minifyJsonBtn">
+                            <i class="fas fa-compress"></i>
+                            Minify
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-right">
+                        <button class="toolbar-btn" id="importFileBtn">
+                            <i class="fas fa-file-import"></i>
+                            Importar
+                        </button>
+                        <button class="toolbar-btn" id="exportBtn">
+                            <i class="fas fa-file-export"></i>
+                            Exportar
+                        </button>
+                    </div>
+                </div>
 
-    <div id="errorMessage" class="error-message"></div>
-    <div id="mappedJsonContainer"></div>
-    </div>
-    <div id="mapping_json">
-        <div id="formContainer"></div>
-        <div id="keysListbox"></div>
-        <div id="previewJson"></div>
+                <!-- JSON Editors Grid -->
+                <div class="editors-grid">
+                    <!-- Source JSON -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fas fa-download"></i>
+                                JSON de Origem
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn" id="clearSourceBtn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button class="panel-btn" id="pasteSourceBtn">
+                                    <i class="fas fa-paste"></i>
+                                </button>
+                                <button class="panel-btn" id="uploadSourceBtn">
+                                    <i class="fas fa-upload"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <textarea 
+                                    id="sourceJson" 
+                                    class="json-editor"
+                                    placeholder='Cole seu JSON de origem aqui...'
+                                    spellcheck="false"
+                                ></textarea>
+                                <div class="editor-status" id="sourceStatus">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Válido</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target JSON -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fas fa-upload"></i>
+                                JSON de Saída
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn" id="clearTargetBtn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button class="panel-btn" id="pasteTargetBtn">
+                                    <i class="fas fa-paste"></i>
+                                </button>
+                                <button class="panel-btn" id="uploadTargetBtn">
+                                    <i class="fas fa-upload"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <textarea 
+                                    id="targetJson" 
+                                    class="json-editor"
+                                    placeholder='Cole o JSON de saída esperado aqui...'
+                                    spellcheck="false"
+                                ></textarea>
+                                <div class="editor-status" id="targetStatus">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Válido</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mapped JSON -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fas fa-exchange-alt"></i>
+                                JSON Mapeado
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn" id="copyMappedBtn">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="panel-btn" id="downloadMappedBtn">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <textarea 
+                                    id="mappedJson" 
+                                    class="json-editor"
+                                    readonly
+                                    placeholder="O JSON mapeado aparecerá aqui..."
+                                    spellcheck="false"
+                                ></textarea>
+                                <div class="editor-status" id="mappedStatus">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Aguardando mapeamento</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-bar">
+                    <button id="generateMappingBtn" class="btn btn-large btn-primary">
+                        <i class="fas fa-magic"></i>
+                        Gerar Mapeamento
+                    </button>
+                    <button id="executeMappingBtn" class="btn btn-large btn-success">
+                        <i class="fas fa-play"></i>
+                        Executar Mapeamento
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Mapping Modal -->
+        <div class="modal" id="mappingModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        Configurar Mapeamento
+                    </h2>
+                    <button class="modal-close" id="closeModalBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="mappingForm" class="mapping-form">
+                        <!-- Mapping form will be generated here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelMappingBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button class="btn btn-primary" id="saveMappingBtn">
+                        <i class="fas fa-save"></i>
+                        Salvar Mapeamento
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Processando...</p>
+            </div>
+        </div>
     </div>
 
     <script src="static/script.js"></script>
-    <footer>
-        <p>JSON Mapping Tool</p>
-    </footer>
-
 </body>
-
 </html>
