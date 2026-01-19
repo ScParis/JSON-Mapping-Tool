@@ -8,8 +8,6 @@
 
 *Uma ferramenta poderosa e intuitiva para transformar e mapear dados JSON com JMESPath*
 
-[📖 Ajuda & Tutorial JMESPath](jmespath-help.html)
-
 </div>
 
 ## 🌟 Visão Geral

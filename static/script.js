@@ -109,7 +109,7 @@ class JSONMapper {
         this.elements.saveMappingBtn?.addEventListener('click', () => this.saveMapping());
         
         // UI controls
-        this.elements.themeToggle?.addEventListener('change', (e) => this.toggleTheme(e.target.checked));
+        this.elements.themeToggle?.addEventListener('click', () => this.toggleTheme());
         this.elements.helpBtn?.addEventListener('click', () => this.showHelp());
         this.elements.fullscreenBtn?.addEventListener('click', () => this.toggleFullscreen());
         
@@ -132,7 +132,9 @@ class JSONMapper {
         
         if (isDark) {
             document.body.classList.add('dark-theme');
-            this.elements.themeToggle.checked = false;
+            this.elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            this.elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         }
     }
 
@@ -843,13 +845,17 @@ class JSONMapper {
 
     // ===== THEME AND UI =====
     
-    toggleTheme(isDark) {
+    toggleTheme() {
+        const isDark = document.body.classList.contains('dark-theme');
+        
         if (isDark) {
             document.body.classList.remove('dark-theme');
             localStorage.setItem('theme', 'light');
+            this.elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         } else {
             document.body.classList.add('dark-theme');
             localStorage.setItem('theme', 'dark');
+            this.elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         }
     }
 
