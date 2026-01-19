@@ -854,7 +854,8 @@ class JSONMapper {
     }
 
     showHelp() {
-        this.showToast('info', 'Ajuda', 'Use os botões para carregar exemplos e gerar mapeamentos');
+        // Navigate to help page in same window
+        window.location.href = 'jmespath-help.html';
     }
 
     toggleFullscreen() {

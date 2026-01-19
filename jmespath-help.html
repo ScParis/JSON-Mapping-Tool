@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JMESPath - Ajuda e Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/styles.css">
+    <style>
+        .help-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .help-nav {
+            margin-bottom: 2rem;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-500);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        
+        .back-btn:hover {
+            background: var(--primary-600);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+        
+        .help-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .help-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-600);
+            margin-bottom: 1rem;
+        }
+        
+        .help-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary-200);
+        }
+        
+        .help-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--secondary-600);
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 0.5rem 0.5rem 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .help-tab:hover {
+            background: var(--secondary-50);
+            color: var(--secondary-800);
+        }
+        
+        .help-tab.active {
+            background: var(--primary-500);
+            color: white;
+        }
+        
+        .help-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .help-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tutorial-section {
+            margin-bottom: 3rem;
+        }
+        
+        .tutorial-section h3 {
+            color: var(--primary-600);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .tutorial-example {
+            background: var(--secondary-50);
+            border: 1px solid var(--secondary-200);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .example-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            color: var(--secondary-800);
+        }
+        
+        .example-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .example-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary-500);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .example-btn:hover {
+            background: var(--primary-600);
+        }
+        
+        .example-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .example-input, .example-output {
+            background: white;
+            border: 1px solid var(--secondary-300);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        
+        .example-label {
+            font-weight: 600;
+            color: var(--secondary-700);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .example-code {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            background: var(--secondary-50);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--secondary-200);
+            min-height: 100px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .expression-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--secondary-300);
+            border-radius: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .expression-input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px var(--primary-100);
+        }
+        
+        .result-box {
+            background: var(--success-50);
+            border: 1px solid var(--success-200);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            min-height: 60px;
+        }
+        
+        .error-box {
+            background: var(--error-50);
+            border: 1px solid var(--error-200);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--error-700);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+        
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .reference-card {
+            background: var(--secondary-50);
+            border: 1px solid var(--secondary-200);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .reference-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .reference-title {
+            font-weight: 600;
+            color: var(--primary-600);
+            margin-bottom: 0.5rem;
+        }
+        
+        .reference-syntax {
+            font-family: var(--font-mono);
+            background: var(--secondary-100);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+        
+        .reference-description {
+            color: var(--secondary-600);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .playground-container {
+            background: var(--secondary-50);
+            border: 1px solid var(--secondary-200);
+            border-radius: 0.75rem;
+            padding: 2rem;
+        }
+        
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .playground-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .playground-label {
+            font-weight: 600;
+            color: var(--secondary-700);
+        }
+        
+        .playground-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 1px solid var(--secondary-300);
+            border-radius: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            resize: vertical;
+        }
+        
+        .playground-textarea:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px var(--primary-100);
+        }
+        
+        .playground-result {
+            background: white;
+            border: 1px solid var(--secondary-300);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-height: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 768px) {
+            .example-content,
+            .playground-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .help-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .help-tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="help-container">
+        <!-- Back Button -->
+        <div class="help-nav">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                Voltar para JSON Mapper
+            </button>
+        </div>
+        
+        <div class="help-header">
+            <h1><i class="fas fa-book"></i> JMESPath - Guia Completo</h1>
+            <p>Aprenda a usar JMESPath para transformar e extrair dados JSON</p>
+        </div>
+
+        <div class="help-tabs">
+            <button class="help-tab active" data-tab="tutorial">
+                <i class="fas fa-graduation-cap"></i> Tutorial
+            </button>
+            <button class="help-tab" data-tab="playground">
+                <i class="fas fa-play"></i> Playground
+            </button>
+            <button class="help-tab" data-tab="reference">
+                <i class="fas fa-book-open"></i> Referência
+            </button>
+        </div>
+
+        <!-- Tutorial Tab -->
+        <div class="help-content active" id="tutorial">
+            <div class="tutorial-section">
+                <h3><i class="fas fa-play-circle"></i> Começando com JMESPath</h3>
+                <p>JMESPath é uma linguagem de consulta para JSON que permite extrair e transformar elementos de documentos JSON de forma poderosa e concisa.</p>
+                
+                <div class="tutorial-example">
+                    <div class="example-header">
+                        <div class="example-title">Exemplo Básico - Acessar Propriedades</div>
+                        <div class="example-actions">
+                            <button class="example-btn" onclick="runExample('basic')">Executar</button>
+                            <button class="example-btn" onclick="resetExample('basic')">Resetar</button>
+                        </div>
+                    </div>
+                    <div class="example-content">
+                        <div class="example-input">
+                            <div class="example-label">JSON de Entrada:</div>
+                            <div class="example-code" id="basic-input">{
+  "pessoa": {
+    "nome": "João",
+    "idade": 30,
+    "cidade": "São Paulo"
+  }
+}</div>
+                        </div>
+                        <div class="example-output">
+                            <div class="example-label">Expressão JMESPath:</div>
+                            <input type="text" class="expression-input" id="basic-expression" value="pessoa.nome" placeholder="Digite sua expressão...">
+                            <div class="example-label">Resultado:</div>
+                            <div class="result-box" id="basic-result">"João"</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-example">
+                    <div class="example-header">
+                        <div class="example-title">Exemplo Avançado - Arrays e Filtros</div>
+                        <div class="example-actions">
+                            <button class="example-btn" onclick="runExample('array')">Executar</button>
+                            <button class="example-btn" onclick="resetExample('array')">Resetar</button>
+                        </div>
+                    </div>
+                    <div class="example-content">
+                        <div class="example-input">
+                            <div class="example-label">JSON de Entrada:</div>
+                            <div class="example-code" id="array-input">{
+  "produtos": [
+    {"nome": "Notebook", "preco": 3500, "categoria": "eletronico"},
+    {"nome": "Mouse", "preco": 120, "categoria": "acessorio"},
+    {"nome": "Teclado", "preco": 200, "categoria": "acessorio"}
+  ]
+}</div>
+                        </div>
+                        <div class="example-output">
+                            <div class="example-label">Expressão JMESPath:</div>
+                            <input type="text" class="expression-input" id="array-expression" value="produtos[?categoria=='acessorio']|[0]" placeholder="Digite sua expressão...">
+                            <div class="example-label">Resultado:</div>
+                            <div class="result-box" id="array-result">{"nome": "Mouse", "preco": 120, "categoria": "acessorio"}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-example">
+                    <div class="example-header">
+                        <div class="example-title">Exemplo Intermediário - Funções</div>
+                        <div class="example-actions">
+                            <button class="example-btn" onclick="runExample('functions')">Executar</button>
+                            <button class="example-btn" onclick="resetExample('functions')">Resetar</button>
+                        </div>
+                    </div>
+                    <div class="example-content">
+                        <div class="example-input">
+                            <div class="example-label">JSON de Entrada:</div>
+                            <div class="example-code" id="functions-input">{
+  "numeros": [1, 2, 3, 4, 5],
+  "texto": "JSON Mapping Tool"
+}</div>
+                        </div>
+                        <div class="example-output">
+                            <div class="example-label">Expressão JMESPath:</div>
+                            <input type="text" class="expression-input" id="functions-expression" value="{soma: sum(numeros), upper: upper_case(texto)}" placeholder="Digite sua expressão...">
+                            <div class="example-label">Resultado:</div>
+                            <div class="result-box" id="functions-result">{"soma": 15, "upper": "JSON MAPPING TOOL"}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutorial-example">
+                    <div class="example-header">
+                        <div class="example-title">Exemplo Avançado - Projeção com Filtro</div>
+                        <div class="example-actions">
+                            <button class="example-btn" onclick="runExample('advanced')">Executar</button>
+                            <button class="example-btn" onclick="resetExample('advanced')">Resetar</button>
+                        </div>
+                    </div>
+                    <div class="example-content">
+                        <div class="example-input">
+                            <div class="example-label">JSON de Entrada:</div>
+                            <div class="example-code" id="advanced-input">{
+  "usuarios": [
+    {"id": 1, "nome": "Ana", "idade": 25, "ativo": true},
+    {"id": 2, "nome": "Bruno", "idade": 30, "ativo": false},
+    {"id": 3, "nome": "Carla", "idade": 28, "ativo": true}
+  ]
+}</div>
+                        </div>
+                        <div class="example-output">
+                            <div class="example-label">Expressão JMESPath:</div>
+                            <input type="text" class="expression-input" id="advanced-expression" value="usuarios[?ativo].[nome]" placeholder="Digite sua expressão...">
+                            <div class="example-label">Resultado:</div>
+                            <div class="result-box" id="advanced-result">["Ana", "Carla"]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-section">
+                    <h3><i class="fas fa-lightbulb"></i> Conceitos Importantes</h3>
+                <ul style="line-height: 2; color: var(--secondary-700);">
+                    <li><strong>Acesso a propriedades:</strong> Use ponto (.) para acessar propriedades aninhadas</li>
+                    <li><strong>Arrays:</strong> Use colchetes [] para acessar elementos e aplicar filtros</li>
+                    <li><strong>Filtros:</strong> Use [?condição] para filtrar elementos de arrays</li>
+                    <li><strong>Projeções:</strong> Use [*] para criar arrays a partir de propriedades</li>
+                    <li><strong>Funções:</strong> Use funções como sum(), length(), upper_case()</li>
+                    <li><strong>Multi-seleção:</strong> Use {prop1: expr1, prop2: expr2} para criar objetos</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Playground Tab -->
+        <div class="help-content" id="playground">
+            <div class="playground-container">
+                <h3><i class="fas fa-flask"></i> Playground JMESPath</h3>
+                <p>Experimente expressões JMESPath com seus próprios dados JSON</p>
+                
+                <div class="playground-grid">
+                    <div class="playground-section">
+                        <div class="playground-label">JSON de Entrada:</div>
+                        <textarea class="playground-textarea" id="playground-json" placeholder='Cole seu JSON aqui...'>{
+  "usuarios": [
+    {"id": 1, "nome": "Ana", "idade": 25, "ativo": true},
+    {"id": 2, "nome": "Bruno", "idade": 30, "ativo": false},
+    {"id": 3, "nome": "Carla", "idade": 28, "ativo": true}
+  ],
+  "total": 3
+}</textarea>
+                    </div>
+                    <div class="playground-section">
+                        <div class="playground-label">Expressão JMESPath:</div>
+                        <textarea class="playground-textarea" id="playground-expression" placeholder="Digite sua expressão JMESPath aqui...">usuarios[?ativo].[nome]</textarea>
+                        <button class="example-btn" onclick="runPlayground()">
+                            <i class="fas fa-play"></i> Executar
+                        </button>
+                        <button class="example-btn" onclick="clearPlayground()">
+                            <i class="fas fa-eraser"></i> Limpar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="playground-section">
+                    <div class="playground-label">Resultado:</div>
+                    <div class="playground-result" id="playground-result">
+                        Clique em "Executar" para ver o resultado...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reference Tab -->
+        <div class="help-content" id="reference">
+            <h3><i class="fas fa-book"></i> Referência Rápida JMESPath</h3>
+            
+            <div class="reference-grid">
+                <div class="reference-card">
+                    <div class="reference-title">Acesso Básico</div>
+                    <div class="reference-syntax">pessoa.nome</div>
+                    <div class="reference-description">Acessa propriedades aninhadas usando notação de ponto.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Indexação de Arrays</div>
+                    <div class="reference-syntax">items[0]</div>
+                    <div class="reference-description">Acessa elementos específicos de arrays usando índices.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Projeção de Arrays</div>
+                    <div class="reference-syntax">items[*].nome</div>
+                    <div class="reference-description">Cria array com valores de propriedades de todos os elementos.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Filtros</div>
+                    <div class="reference-syntax">items[?preco>100]</div>
+                    <div class="reference-description">Filtra elementos baseados em condições.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Multi-seleção</div>
+                    <div class="reference-syntax">{nome: nome, idade: idade}</div>
+                    <div class="reference-description">Cria novo objeto com propriedades selecionadas.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Funções - Array</div>
+                    <div class="reference-syntax">length(items)</div>
+                    <div class="reference-description">Retorna o tamanho de arrays ou strings.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Funções - Matemáticas</div>
+                    <div class="reference-syntax">sum(preços)</div>
+                    <div class="reference-description">Calcula soma de valores numéricos.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Funções - String</div>
+                    <div class="reference-syntax">upper_case(texto)</div>
+                    <div class="reference-description">Converte strings para maiúsculas/minúsculas.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Pipe</div>
+                    <div class="reference-syntax">items | [0]</div>
+                    <div class="reference-description">Encadeia múltiplas operações.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Slice</div>
+                    <div class="reference-syntax">items[1:3]</div>
+                    <div class="reference-description">Extrai subconjunto de arrays (slice).</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Flatten</div>
+                    <div class="reference-syntax">[][]</div>
+                    <div class="reference-description">Achata arrays aninhados.</div>
+                </div>
+                
+                <div class="reference-card">
+                    <div class="reference-title">Sort</div>
+                    <div class="reference-syntax">sort_by(items, &idade)</div>
+                    <div class="reference-description">Ordena arrays por propriedades.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jmespath/0.16.0/jmespath.min.js"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.help-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('.help-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.help-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // Example data
+        const examples = {
+            basic: {
+                input: {
+                    "pessoa": {
+                        "nome": "João",
+                        "idade": 30,
+                        "cidade": "São Paulo"
+                    }
+                },
+                expression: "pessoa.nome",
+                result: "João"
+            },
+            array: {
+                input: {
+                    "produtos": [
+                        {"nome": "Notebook", "preco": 3500, "categoria": "eletronico"},
+                        {"nome": "Mouse", "preco": 120, "categoria": "acessorio"},
+                        {"nome": "Teclado", "preco": 200, "categoria": "acessorio"}
+                    ]
+                },
+                expression: "produtos[?categoria=='acessorio']|[0]",
+                result: {"nome": "Mouse", "preco": 120, "categoria": "acessorio"}
+            },
+            functions: {
+                input: {
+                    "numeros": [1, 2, 3, 4, 5],
+                    "texto": "JSON Mapping Tool"
+                },
+                expression: "{soma: sum(numeros), upper: upper_case(texto)}",
+                result: {"soma": 15, "upper": "JSON MAPPING TOOL"}
+            },
+            advanced: {
+                input: {
+                    "usuarios": [
+                        {"id": 1, "nome": "Ana", "idade": 25, "ativo": true},
+                        {"id": 2, "nome": "Bruno", "idade": 30, "ativo": false},
+                        {"id": 3, "nome": "Carla", "idade": 28, "ativo": true}
+                    ]
+                },
+                expression: "usuarios[?ativo].[nome]",
+                result: ["Ana", "Carla"]
+            }
+        };
+
+        function runExample(type) {
+            const example = examples[type];
+            const expression = document.getElementById(`${type}-expression`).value;
+            const resultDiv = document.getElementById(`${type}-result`);
+            
+            // Verificar se JMESPath está carregado
+            if (typeof jmespath === 'undefined') {
+                resultDiv.className = 'error-box';
+                resultDiv.textContent = 'Erro: Biblioteca JMESPath não foi carregada. Recarregue a página.';
+                return;
+            }
+            
+            try {
+                const result = jmespath.search(example.input, expression);
+                resultDiv.className = 'result-box';
+                resultDiv.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultDiv.className = 'error-box';
+                resultDiv.textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        function resetExample(type) {
+            const example = examples[type];
+            document.getElementById(`${type}-expression`).value = example.expression;
+            document.getElementById(`${type}-result`).className = 'result-box';
+            document.getElementById(`${type}-result`).textContent = JSON.stringify(example.result, null, 2);
+        }
+
+        function runPlayground() {
+            const jsonText = document.getElementById('playground-json').value;
+            const expression = document.getElementById('playground-expression').value;
+            const resultDiv = document.getElementById('playground-result');
+            
+            console.log('=== DEBUG PLAYGROUND ===');
+            console.log('JSON Text:', jsonText);
+            console.log('Expression:', expression);
+            console.log('JMESPath available:', typeof jmespath !== 'undefined');
+            
+            // Verificar se JMESPath está carregado
+            if (typeof jmespath === 'undefined') {
+                resultDiv.className = 'error-box';
+                resultDiv.textContent = 'Erro: Biblioteca JMESPath não foi carregada. Recarregue a página.';
+                return;
+            }
+            
+            try {
+                const jsonData = JSON.parse(jsonText);
+                console.log('Parsed JSON:', jsonData);
+                
+                const result = jmespath.search(jsonData, expression);
+                console.log('JMESPath Result:', result);
+                
+                resultDiv.className = 'playground-result';
+                resultDiv.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                console.error('JMESPath Error:', error);
+                resultDiv.className = 'error-box';
+                resultDiv.textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        function clearPlayground() {
+            document.getElementById('playground-json').value = '';
+            document.getElementById('playground-expression').value = '';
+            document.getElementById('playground-result').className = 'playground-result';
+            document.getElementById('playground-result').textContent = 'Clique em "Executar" para ver o resultado...';
+        }
+
+        // Initialize examples
+        Object.keys(examples).forEach(type => resetExample(type));
+        
+        // Initialize playground with expected result
+        document.addEventListener('DOMContentLoaded', function() {
+            const playgroundResult = document.getElementById('playground-result');
+            if (playgroundResult) {
+                playgroundResult.textContent = JSON.stringify([
+                    "Ana",
+                    "Carla"
+                ], null, 2);
+            }
+        });
+    </script>
+</body>
+</html>
