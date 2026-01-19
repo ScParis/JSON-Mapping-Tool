@@ -461,7 +461,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 - **Issues**: [GitHub Issues](https://github.com/ScParis/JSON-Mapping-Tool/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/ScParis/JSON-Mapping-Tool/discussions)
-- **Email**: [scparis@example.com](mailto:scparis@example.com)
+- **Email**: [schparis@gmail.com](mailto:schparis@gmail.com)
 
 ---
 
