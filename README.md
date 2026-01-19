@@ -8,7 +8,7 @@
 
 *Uma ferramenta poderosa e intuitiva para transformar e mapear dados JSON com JMESPath*
 
-[🚀 Demo Live](#) | [📖 Documentação](jmespath-help.html) | [🎓 Tutorial JMESPath](jmespath-help.html)
+[📖 Ajuda & Tutorial JMESPath](jmespath-help.html)
 
 </div>
 
@@ -444,7 +444,7 @@ open http://localhost:8080
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+Este projeto está licenciado sob a Licença MIT.
 
 ---
 
