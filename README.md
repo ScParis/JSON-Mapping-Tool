@@ -14,7 +14,25 @@
 
 O **JSON Mapper** é uma aplicação web moderna desenvolvida para simplificar o processo de transformação e mapeamento de dados JSON. Utilizando a poderosa linguagem de consulta **JMESPath**, a ferramenta permite que usuários extraiam, filtrem e transformem dados complexos de forma intuitiva e visual.
 
-### 🎯 Para Quem é Esta Ferramenta?
+## 📸 Screenshots
+
+### 🖥️ Interface Principal
+Interface limpa e organizada com três painéis: Origem, Destino e Mapeado.
+
+![Interface Principal](./docs/images/interface-principal.png)
+
+### � Mapeamento em Ação
+Veja como é simples carregar exemplos e executar a transformação de dados.
+
+![Fluxo de Mapeamento](./docs/images/mapeamento.webp)
+
+## 🌐 Teste Agora!
+
+[**👉 Clique aqui para testar online**](https://scparis.github.io/JSON-Mapping-Tool)
+
+*(Ou utilize o servidor local conforme instruções de instalação abaixo)*
+
+### �🎯 Para Quem é Esta Ferramenta?
 
 - **Desenvolvedores** que precisam transformar APIs responses
 - **Analistas de Dados** que trabalham com JSON complexos
@@ -419,6 +437,56 @@ open http://localhost:8080
 | `Ctrl + V` | Colar JSON |
 | `Escape` | Fechar modal |
 | `F11` | Tela cheia |
+
+---
+
+## ❓ FAQ
+
+**P: Posso usar expressões complexas no JMESPath?**
+R: Sim! A ferramenta suporta o padrão completo do JMESPath. Você pode usar filtros, projeções e funções integradas. Consulte a seção de "Expressões JMESPath Úteis" para exemplos.
+
+**P: Meus dados serão salvos?**
+R: Sim, seus mapeamentos e configurações são salvos automaticamente no `localStorage` do seu navegador. Você também pode exportar todo o histórico para um arquivo de backup nas configurações.
+
+**P: A ferramenta processa os dados no servidor?**
+R: Não. Todo o processamento é feito localmente no seu navegador, garantindo privacidade e segurança para seus dados.
+
+---
+
+## 🩺 Troubleshooting
+
+### Problema: "JSON inválido na posição X"
+- **Causa**: O JSON inserido possui erro de sintaxe (vírgula sobrando, aspas faltando, etc).
+- **Solução**: Use o botão **"Format JSON"** na toolbar para identificar onde a estrutura quebra.
+
+### Problema: "Mapeamento executado resultando em {}"
+- **Causa**: Você executou o mapeamento sem configurar as chaves no modal ou as expressões JMESPath não retornaram resultados.
+- **Solução**: Clique em **"Gerar Mapeamento"** primeiro, selecione as origens para cada campo de destino e salve antes de executar.
+
+### Problema: "Não consigo abrir arquivos"
+- **Causa**: Alguns navegadores antigos podem não suportar a File System Access API.
+- **Solução**: Certifique-se de estar usando uma versão recente do Chrome, Edge ou Firefox.
+
+---
+
+## 📋 Pré-requisitos
+
+- Navegador moderno (Chrome 86+, Edge 86+, Firefox 85+, Safari 14.1+)
+- JavaScript habilitado
+- Resolução de tela recomendada: 1280x720 ou superior
+
+---
+
+## 📝 Changelog
+
+### v2.0 (Atual)
+- ✨ Interface totalmente redesenhada com Design System 2026.
+- 🌓 Tema Dark/Light com persistência.
+- 📂 Suporte a File System Access API para manipulação de arquivos.
+- 🚀 Melhoria de performance no motor de mapeamento dinâmico.
+
+### v1.0
+- 🎉 Lançamento inicial da ferramenta com suporte básico a JMESPath.
 
 ---
 
