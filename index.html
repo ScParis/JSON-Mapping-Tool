@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Mapper - Ferramenta de Mapeamento de Dados</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="static/styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="static/styles.css?v=3">
+    <link rel="stylesheet" href="static/history-settings.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Header Moderno -->
@@ -23,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="header-center">
                 <nav class="header-nav">
                     <button class="nav-btn active" data-view="mapper">
@@ -40,7 +45,7 @@
                     </button>
                 </nav>
             </div>
-            
+
             <div class="header-right">
                 <div class="header-actions">
                     <button class="icon-btn" id="themeToggle" title="Alternar tema">
@@ -132,7 +137,7 @@
                             Minify
                         </button>
                     </div>
-                    
+
                     <div class="toolbar-right">
                         <button class="toolbar-btn" id="importFileBtn">
                             <i class="fas fa-file-import"></i>
@@ -168,12 +173,8 @@
                         </div>
                         <div class="panel-content">
                             <div class="editor-wrapper">
-                                <textarea 
-                                    id="sourceJson" 
-                                    class="json-editor"
-                                    placeholder='Cole seu JSON de origem aqui...'
-                                    spellcheck="false"
-                                ></textarea>
+                                <textarea id="sourceJson" class="json-editor"
+                                    placeholder='Cole seu JSON de origem aqui...' spellcheck="false"></textarea>
                                 <div class="editor-status" id="sourceStatus">
                                     <i class="fas fa-check-circle"></i>
                                     <span>Válido</span>
@@ -203,12 +204,8 @@
                         </div>
                         <div class="panel-content">
                             <div class="editor-wrapper">
-                                <textarea 
-                                    id="targetJson" 
-                                    class="json-editor"
-                                    placeholder='Cole o JSON de saída esperado aqui...'
-                                    spellcheck="false"
-                                ></textarea>
+                                <textarea id="targetJson" class="json-editor"
+                                    placeholder='Cole o JSON de saída esperado aqui...' spellcheck="false"></textarea>
                                 <div class="editor-status" id="targetStatus">
                                     <i class="fas fa-check-circle"></i>
                                     <span>Válido</span>
@@ -225,23 +222,19 @@
                                 JSON Mapeado
                             </div>
                             <div class="panel-actions">
-                                <button class="panel-btn" id="copyMappedBtn">
+
+                                <button class="panel-btn" id="copyMappedBtn" title="Copiar">
                                     <i class="fas fa-copy"></i>
                                 </button>
-                                <button class="panel-btn" id="downloadMappedBtn">
+                                <button class="panel-btn" id="downloadMappedBtn" title="Download">
                                     <i class="fas fa-download"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="panel-content">
                             <div class="editor-wrapper">
-                                <textarea 
-                                    id="mappedJson" 
-                                    class="json-editor"
-                                    readonly
-                                    placeholder="O JSON mapeado aparecerá aqui..."
-                                    spellcheck="false"
-                                ></textarea>
+                                <textarea id="mappedJson" class="json-editor" readonly
+                                    placeholder="O JSON mapeado aparecerá aqui..." spellcheck="false"></textarea>
                                 <div class="editor-status" id="mappedStatus">
                                     <i class="fas fa-info-circle"></i>
                                     <span>Aguardando mapeamento</span>
@@ -257,10 +250,86 @@
                         <i class="fas fa-magic"></i>
                         Gerar Mapeamento
                     </button>
-                    <button id="executeMappingBtn" class="btn btn-large btn-success">
-                        <i class="fas fa-play"></i>
-                        Executar Mapeamento
+
+                </div>
+            </section>
+
+            <!-- History Section (Hidden by default) -->
+            <section class="history-section" id="historySection" style="display: none;">
+                <div class="container">
+                    <h2><i class="fas fa-history"></i> Histórico de Mapeamentos</h2>
+                    <button id="clearHistoryBtn" class="btn btn-outline">
+                        <i class="fas fa-trash"></i> Limpar Histórico
                     </button>
+                    <div class="history-list" id="historyList">
+                        <!-- History items will be added here dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section (Hidden by default) -->
+            <section class="settings-section" id="settingsSection" style="display: none;">
+                <div class="container">
+                    <h2><i class="fas fa-cog"></i> Configurações</h2>
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <h3>Aparência</h3>
+                            <div class="setting-item">
+                                <label>Tema</label>
+                                <select id="themeSelect">
+                                    <option value="light">Claro</option>
+                                    <option value="dark">Escuro</option>
+                                    <option value="system">Sistema</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Tamanho da Fonte</label>
+                                <select id="fontSizeSelect">
+                                    <option value="small">Pequeno</option>
+                                    <option value="medium" selected>Médio</option>
+                                    <option value="large">Grande</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="setting-card">
+                            <h3>Funcionalidades</h3>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="autoSaveCheck" checked>
+                                    Salvamento Automático
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="notificationsCheck" checked>
+                                    Notificações
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-card">
+                            <h3>Dados</h3>
+                            <div class="setting-item">
+                                <button id="exportDataBtn" class="btn btn-secondary">
+                                    <i class="fas fa-download"></i> Exportar Dados
+                                </button>
+                            </div>
+                            <div class="setting-item">
+                                <button id="importDataBtn" class="btn btn-secondary">
+                                    <i class="fas fa-upload"></i> Importar Dados
+                                </button>
+                            </div>
+                            <div class="setting-item">
+                                <button id="resetDataBtn" class="btn btn-outline">
+                                    <i class="fas fa-redo"></i> Restaurar Padrão
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <button id="saveSettingsBtn" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
@@ -307,6 +376,9 @@
         </div>
     </div>
 
-    <script src="static/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jmespath/0.16.0/jmespath.min.js"></script>
+    <script src="static/script.js?v=4"></script>
+    <script src="static/history-settings.js"></script>
 </body>
+
 </html>

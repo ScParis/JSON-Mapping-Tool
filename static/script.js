@@ -7,7 +7,8 @@ class JSONMapper {
         this.mappedJson = null;
         this.keysList = [];
         this.mappingConfig = {};
-        
+
+
         this.init();
     }
 
@@ -25,31 +26,31 @@ class JSONMapper {
             sourceJson: document.getElementById('sourceJson'),
             targetJson: document.getElementById('targetJson'),
             mappedJson: document.getElementById('mappedJson'),
-            
+
             // Status indicators
             sourceStatus: document.getElementById('sourceStatus'),
             targetStatus: document.getElementById('targetStatus'),
             mappedStatus: document.getElementById('mappedStatus'),
-            
+
             // Info displays
             mappedCount: document.getElementById('mappedCount'),
             mappingStatus: document.getElementById('mappingStatus'),
             lastAction: document.getElementById('lastAction'),
-            
+
             // Buttons
             newMappingBtn: document.getElementById('newMappingBtn'),
             loadExamplesBtn: document.getElementById('loadExamplesBtn'),
             clearAllBtn: document.getElementById('clearAllBtn'),
             generateMappingBtn: document.getElementById('generateMappingBtn'),
-            executeMappingBtn: document.getElementById('executeMappingBtn'),
-            
+
+
             // Toolbar buttons
             validateJsonBtn: document.getElementById('validateJsonBtn'),
             formatJsonBtn: document.getElementById('formatJsonBtn'),
             minifyJsonBtn: document.getElementById('minifyJsonBtn'),
             importFileBtn: document.getElementById('importFileBtn'),
             exportBtn: document.getElementById('exportBtn'),
-            
+
             // Panel buttons
             clearSourceBtn: document.getElementById('clearSourceBtn'),
             pasteSourceBtn: document.getElementById('pasteSourceBtn'),
@@ -59,22 +60,23 @@ class JSONMapper {
             uploadTargetBtn: document.getElementById('uploadTargetBtn'),
             copyMappedBtn: document.getElementById('copyMappedBtn'),
             downloadMappedBtn: document.getElementById('downloadMappedBtn'),
-            
+
             // Modal elements
             mappingModal: document.getElementById('mappingModal'),
             mappingForm: document.getElementById('mappingForm'),
             closeModalBtn: document.getElementById('closeModalBtn'),
             cancelMappingBtn: document.getElementById('cancelMappingBtn'),
             saveMappingBtn: document.getElementById('saveMappingBtn'),
-            
+
             // Theme and UI
             themeToggle: document.getElementById('themeToggle'),
             helpBtn: document.getElementById('helpBtn'),
             fullscreenBtn: document.getElementById('fullscreenBtn'),
-            
+
             // Loading and notifications
             loadingOverlay: document.getElementById('loadingOverlay'),
-            toastContainer: document.getElementById('toastContainer')
+            toastContainer: document.getElementById('toastContainer'),
+
         };
     }
 
@@ -84,15 +86,15 @@ class JSONMapper {
         this.elements.loadExamplesBtn?.addEventListener('click', () => this.loadExamples());
         this.elements.clearAllBtn?.addEventListener('click', () => this.clearAll());
         this.elements.generateMappingBtn?.addEventListener('click', () => this.generateMapping());
-        this.elements.executeMappingBtn?.addEventListener('click', () => this.executeMapping());
-        
+
+
         // Toolbar buttons
         this.elements.validateJsonBtn?.addEventListener('click', () => this.validateJson());
         this.elements.formatJsonBtn?.addEventListener('click', () => this.formatJson());
         this.elements.minifyJsonBtn?.addEventListener('click', () => this.minifyJson());
         this.elements.importFileBtn?.addEventListener('click', () => this.importFile());
         this.elements.exportBtn?.addEventListener('click', () => this.exportMapping());
-        
+
         // Panel buttons
         this.elements.clearSourceBtn?.addEventListener('click', () => this.clearEditor('source'));
         this.elements.pasteSourceBtn?.addEventListener('click', () => this.pasteFromClipboard('source'));
@@ -102,34 +104,36 @@ class JSONMapper {
         this.elements.uploadTargetBtn?.addEventListener('click', () => this.uploadFile('target'));
         this.elements.copyMappedBtn?.addEventListener('click', () => this.copyToClipboard('mapped'));
         this.elements.downloadMappedBtn?.addEventListener('click', () => this.downloadMapped());
-        
+
         // Modal buttons
         this.elements.closeModalBtn?.addEventListener('click', () => this.closeModal());
         this.elements.cancelMappingBtn?.addEventListener('click', () => this.closeModal());
         this.elements.saveMappingBtn?.addEventListener('click', () => this.saveMapping());
-        
+
         // UI controls
         this.elements.themeToggle?.addEventListener('click', () => this.toggleTheme());
         this.elements.helpBtn?.addEventListener('click', () => this.showHelp());
         this.elements.fullscreenBtn?.addEventListener('click', () => this.toggleFullscreen());
-        
+
         // JSON editor events
         this.elements.sourceJson?.addEventListener('input', () => this.validateSourceJson());
         this.elements.targetJson?.addEventListener('input', () => this.validateTargetJson());
-        
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
-        
+
         // Navigation
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => this.handleNavigation(e));
         });
+
+
     }
 
     setupTheme() {
         const savedTheme = localStorage.getItem('theme');
         const isDark = savedTheme === 'dark';
-        
+
         if (isDark) {
             document.body.classList.add('dark-theme');
             this.elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -139,14 +143,14 @@ class JSONMapper {
     }
 
     // ===== JSON OPERATIONS =====
-    
+
     validateJson(jsonString) {
         try {
             JSON.parse(jsonString);
             return { isValid: true, error: null };
         } catch (error) {
-            return { 
-                isValid: false, 
+            return {
+                isValid: false,
                 error: {
                     message: error.message,
                     position: error.message.match(/(\d+)$/)?.[1] || 'desconhecida'
@@ -158,7 +162,7 @@ class JSONMapper {
     validateSourceJson() {
         const jsonText = this.elements.sourceJson.value;
         const validation = this.validateJson(jsonText);
-        
+
         if (validation.isValid) {
             this.updateStatus('source', 'valid', 'Válido');
             this.sourceJson = JSON.parse(jsonText);
@@ -166,14 +170,14 @@ class JSONMapper {
             this.updateStatus('source', 'error', `Erro: ${validation.error.message}`);
             this.sourceJson = null;
         }
-        
+
         return validation.isValid;
     }
 
     validateTargetJson() {
         const jsonText = this.elements.targetJson.value;
         const validation = this.validateJson(jsonText);
-        
+
         if (validation.isValid) {
             this.updateStatus('target', 'valid', 'Válido');
             this.targetJson = JSON.parse(jsonText);
@@ -181,7 +185,7 @@ class JSONMapper {
             this.updateStatus('target', 'error', `Erro: ${validation.error.message}`);
             this.targetJson = null;
         }
-        
+
         return validation.isValid;
     }
 
@@ -216,23 +220,34 @@ class JSONMapper {
     }
 
     // ===== MAPPING OPERATIONS =====
-    
+
     generateKeysList(json, prefix = '') {
         let keys = [];
-        
-        for (const key in json) {
-            if (json.hasOwnProperty(key)) {
-                const fullKey = prefix ? `${prefix}.${key}` : key;
-                
-                if (typeof json[key] === 'object' && json[key] !== null && !Array.isArray(json[key])) {
-                    keys = keys.concat(this.generateKeysList(json[key], fullKey));
-                } else {
-                    keys.push(fullKey);
+
+        if (Array.isArray(json)) {
+            const arrayPrefix = prefix ? `${prefix}[*]` : '[*]';
+            // Adiciona a própria entrada do array para permitir mapear o array todo
+            keys.push(arrayPrefix);
+
+            if (json.length > 0 && typeof json[0] === 'object' && json[0] !== null) {
+                keys = keys.concat(this.generateKeysList(json[0], arrayPrefix));
+            }
+        } else {
+            for (const key in json) {
+                if (json.hasOwnProperty(key)) {
+                    const fullKey = prefix ? `${prefix}.${key}` : key;
+
+                    if (typeof json[key] === 'object' && json[key] !== null) {
+                        keys = keys.concat(this.generateKeysList(json[key], fullKey));
+                    } else {
+                        keys.push(fullKey);
+                    }
                 }
             }
         }
-        
-        return keys;
+
+        // Remove duplicatas e ordena
+        return [...new Set(keys)].sort();
     }
 
     generateMapping() {
@@ -242,20 +257,20 @@ class JSONMapper {
         }
 
         this.showLoading(true, 'Gerando mapeamento...');
-        
+
         try {
             // Extract keys from source JSON
             this.keysList = this.generateKeysList(this.sourceJson);
-            
+
             // Generate mapping form
             this.generateMappingForm();
-            
+
             // Show modal
             this.openModal();
-            
+
             this.updateLastAction('Mapeamento gerado');
             this.showToast('success', 'Mapeamento Gerado', 'Configure o mapeamento dos campos');
-            
+
         } catch (error) {
             this.showToast('error', 'Erro', 'Não foi possível gerar o mapeamento');
             console.error('Error generating mapping:', error);
@@ -266,23 +281,23 @@ class JSONMapper {
 
     generateMappingForm() {
         this.elements.mappingForm.innerHTML = '';
-        
+
         const form = this.createMappingFields(this.targetJson, this.keysList);
         this.elements.mappingForm.appendChild(form);
     }
 
     createMappingFields(json, availablePaths, depth = 0, parentKeyPath = '') {
         const fragment = document.createDocumentFragment();
-        
+
         for (const key in json) {
             if (json.hasOwnProperty(key)) {
                 const value = json[key];
                 const keyPath = parentKeyPath ? `${parentKeyPath}.${key}` : key;
-                
+
                 const fieldContainer = document.createElement('div');
                 fieldContainer.className = 'mapping-field';
                 fieldContainer.style.marginLeft = `${depth * 20}px`;
-                
+
                 // Field label
                 const label = document.createElement('div');
                 label.className = 'mapping-field-label';
@@ -292,14 +307,14 @@ class JSONMapper {
                     <span class="field-path">${keyPath}</span>
                 `;
                 fieldContainer.appendChild(label);
-                
+
                 // Field type info
                 const typeInfo = document.createElement('div');
                 typeInfo.className = 'field-type-info';
                 typeInfo.style.fontSize = '0.75rem';
                 typeInfo.style.color = '#6b7280';
                 typeInfo.style.marginBottom = '8px';
-                
+
                 if (Array.isArray(value)) {
                     typeInfo.textContent = `Array[${value.length}]`;
                     if (value.length > 0 && typeof value[0] === 'object') {
@@ -311,18 +326,18 @@ class JSONMapper {
                             arrayItemContainer.style.padding = '8px';
                             arrayItemContainer.style.backgroundColor = '#f3f4f6';
                             arrayItemContainer.style.borderRadius = '6px';
-                            
+
                             const arrayHeader = document.createElement('div');
                             arrayHeader.style.fontWeight = '600';
                             arrayHeader.style.marginBottom = '8px';
                             arrayHeader.textContent = `Item [${index}]`;
                             arrayItemContainer.appendChild(arrayHeader);
-                            
+
                             const childFields = this.createMappingFields(item, availablePaths, depth + 1, `${keyPath}[${index}]`);
                             if (childFields) {
                                 arrayItemContainer.appendChild(childFields);
                             }
-                            
+
                             fieldContainer.appendChild(arrayItemContainer);
                         });
                     } else {
@@ -333,7 +348,7 @@ class JSONMapper {
                 } else if (typeof value === 'object' && value !== null) {
                     typeInfo.textContent = `Objeto com ${Object.keys(value).length} propriedades`;
                     fieldContainer.appendChild(typeInfo);
-                    
+
                     // Process nested object
                     const childFields = this.createMappingFields(value, availablePaths, depth + 1, keyPath);
                     if (childFields) {
@@ -342,51 +357,51 @@ class JSONMapper {
                 } else {
                     typeInfo.textContent = `Tipo: ${typeof value}`;
                     fieldContainer.appendChild(typeInfo);
-                    
+
                     // Create select for primitive value
                     const select = this.createSelectField(keyPath, availablePaths, key);
                     fieldContainer.appendChild(select);
                 }
-                
+
                 fragment.appendChild(fieldContainer);
             }
         }
-        
+
         return fragment;
     }
 
     createSelectField(keyPath, availablePaths, fieldName) {
         const selectContainer = document.createElement('div');
         selectContainer.style.marginTop = '8px';
-        
+
         const select = document.createElement('select');
         select.id = keyPath.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '');
         select.name = keyPath;
         select.className = 'mapping-field-select';
-        
+
         // Default option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = `-- Selecione origem para ${fieldName} --`;
         select.appendChild(defaultOption);
-        
+
         // Add available paths
         if (availablePaths && availablePaths.length > 0) {
             // Group paths by category
             const groupedPaths = this.groupPathsByCategory(availablePaths);
-            
+
             for (const [category, paths] of Object.entries(groupedPaths)) {
                 if (category !== 'root') {
                     const optgroup = document.createElement('optgroup');
                     optgroup.label = this.formatCategoryName(category);
-                    
+
                     paths.forEach(path => {
                         const option = document.createElement('option');
                         option.value = path;
                         option.textContent = path;
                         optgroup.appendChild(option);
                     });
-                    
+
                     select.appendChild(optgroup);
                 } else {
                     paths.forEach(path => {
@@ -398,63 +413,64 @@ class JSONMapper {
                 }
             }
         }
-        
+
         selectContainer.appendChild(select);
+
+        // Campo de expressão JMESPath livre
+        const previewInput = document.createElement('input');
+        previewInput.type = 'text';
+        previewInput.className = 'jmespath-expr-input';
+        previewInput.placeholder = 'Valor da origem aparecerá aqui...';
+        previewInput.readOnly = true;
+        previewInput.dataset.targetPath = keyPath;
+
+        // Quando o select muda, mostra o VALOR real da chave selecionada no JSON de origem
+        select.addEventListener('change', () => {
+            if (select.value && this.sourceJson) {
+                try {
+                    const value = jmespath.search(this.sourceJson, select.value);
+                    previewInput.value = typeof value === 'object' ? JSON.stringify(value) : String(value);
+                } catch (e) {
+                    previewInput.value = '(erro ao avaliar)';
+                }
+            } else {
+                previewInput.value = '';
+            }
+        });
+
+        selectContainer.appendChild(previewInput);
         return selectContainer;
     }
 
-    executeMapping() {
-        if (!this.sourceJson || !this.targetJson) {
-            this.showToast('error', 'Erro', 'Carregue os JSONs de origem e destino');
-            return;
-        }
+    gatherMappingConfig() {
+        const selects = this.elements.mappingForm.querySelectorAll('select');
+        this.mappingConfig = {};
 
-        this.showLoading(true, 'Executando mapeamento...');
-        
-        try {
-            // Get mapping configuration from form
-            const selects = this.elements.mappingForm.querySelectorAll('select');
-            this.mappingConfig = {};
-            
-            selects.forEach(select => {
-                if (select.value) {
-                    this.mappingConfig[select.name] = select.value;
-                }
-            });
-            
-            // Execute mapping
-            this.mappedJson = this.performMapping();
-            
-            // Display result
-            this.elements.mappedJson.value = JSON.stringify(this.mappedJson, null, 2);
-            this.updateStatus('mapped', 'success', 'Mapeamento concluído');
-            
-            // Update info
-            this.elements.mappedCount.textContent = Object.keys(this.mappingConfig).length;
-            this.elements.mappingStatus.textContent = 'Concluído';
-            this.elements.mappingStatus.className = 'info-value status success';
-            
-            this.updateLastAction('Mapeamento executado');
-            this.showToast('success', 'Mapeamento Concluído', `${Object.keys(this.mappingConfig).length} campos mapeados`);
-            
-            this.closeModal();
-            
-        } catch (error) {
-            this.showToast('error', 'Erro', 'Não foi possível executar o mapeamento');
-            console.error('Error executing mapping:', error);
-        } finally {
-            this.showLoading(false);
-        }
+        selects.forEach(select => {
+            if (select.value) {
+                this.mappingConfig[select.name] = select.value;
+            }
+        });
     }
+
 
     performMapping() {
         const result = {};
-        
-        for (const [targetPath, sourcePath] of Object.entries(this.mappingConfig)) {
-            const sourceValue = this.getNestedValue(this.sourceJson, sourcePath);
-            this.setNestedValue(result, targetPath, sourceValue);
+
+        // Ordenamos as chaves para garantir que criamos os arrays base antes dos itens
+        const sortedPaths = Object.entries(this.mappingConfig).sort(([a], [b]) => a.localeCompare(b));
+
+        for (const [targetPath, sourcePath] of sortedPaths) {
+            try {
+                // O valor no JSON mapeado é o próprio caminho de origem,
+                // convertendo [*] para [0] para representar o índice concreto
+                const displayPath = sourcePath.replace(/\[\*\]/g, '[0]');
+                this.setNestedValue(result, targetPath, displayPath);
+            } catch (e) {
+                console.warn(`Erro ao mapear ${sourcePath} para ${targetPath}:`, e);
+            }
         }
-        
+
         return result;
     }
 
@@ -472,38 +488,49 @@ class JSONMapper {
     setNestedValue(obj, path, value) {
         const keys = path.split('.');
         let current = obj;
-        
+
         for (let i = 0; i < keys.length - 1; i++) {
             const key = keys[i];
-            
+
             if (key.includes('[') && key.includes(']')) {
-                const [arrayKey, indexStr] = key.split('[');
-                const index = parseInt(indexStr.replace(']', ''));
-                
+                const [arrayKey, indexPart] = key.split('[');
+                const index = parseInt(indexPart.replace(']', ''));
+
                 if (!current[arrayKey]) current[arrayKey] = [];
                 if (!current[arrayKey][index]) current[arrayKey][index] = {};
-                
+
                 current = current[arrayKey][index];
             } else {
                 if (!current[key]) current[key] = {};
                 current = current[key];
             }
         }
-        
+
         const lastKey = keys[keys.length - 1];
         if (lastKey.includes('[') && lastKey.includes(']')) {
-            const [arrayKey, indexStr] = lastKey.split('[');
-            const index = parseInt(indexStr.replace(']', ''));
-            
+            const [arrayKey, indexPart] = lastKey.split('[');
+            const index = parseInt(indexPart.replace(']', ''));
+
             if (!current[arrayKey]) current[arrayKey] = [];
             current[arrayKey][index] = value;
         } else {
-            current[lastKey] = value;
+            // Especial para arrays de saída: 
+            // Se o valor for um array (resultado de projeção [*]) 
+            // e estivermos tentando setar em um campo de um objeto que JÁ ESTÁ dentro de um array de destino, 
+            // devemos distribuir os valores ou apenas setar o valor.
+
+            // Para resolver o problema do usuário onde items[0].code recebe products[*].SKU:
+            // Se o valor é um array de 1 item, extraímos ele para evitar o nesting [["NB-001"]]
+            if (Array.isArray(value) && value.length === 1 && !path.includes('[*]')) {
+                current[lastKey] = value[0];
+            } else {
+                current[lastKey] = value;
+            }
         }
     }
 
     // ===== UTILITY METHODS =====
-    
+
     getFieldIcon(fieldName) {
         const iconMap = {
             'id': 'hashtag',
@@ -537,7 +564,7 @@ class JSONMapper {
             'pagamento': 'credit-card',
             'payment': 'credit-card'
         };
-        
+
         return iconMap[fieldName.toLowerCase()] || 'chevron-right';
     }
 
@@ -547,7 +574,7 @@ class JSONMapper {
 
     groupPathsByCategory(paths) {
         const grouped = { root: [] };
-        
+
         paths.forEach(path => {
             const parts = path.split('.');
             if (parts.length === 1) {
@@ -560,7 +587,7 @@ class JSONMapper {
                 grouped[category].push(path);
             }
         });
-        
+
         return grouped;
     }
 
@@ -573,16 +600,16 @@ class JSONMapper {
             'pagamento': '💳 Pagamento',
             'entrega': '🚚 Entrega'
         };
-        
+
         return categoryMap[category.toLowerCase()] || `📁 ${category.charAt(0).toUpperCase() + category.slice(1)}`;
     }
 
     // ===== UI OPERATIONS =====
-    
+
     updateStatus(type, status, message) {
         const statusElement = this.elements[`${type}Status`];
         if (!statusElement) return;
-        
+
         const iconMap = {
             valid: 'check-circle',
             error: 'exclamation-circle',
@@ -590,7 +617,7 @@ class JSONMapper {
             warning: 'exclamation-triangle',
             info: 'info-circle'
         };
-        
+
         const colorMap = {
             valid: '#22c55e',
             error: '#ef4444',
@@ -598,7 +625,7 @@ class JSONMapper {
             warning: '#f59e0b',
             info: '#3b82f6'
         };
-        
+
         statusElement.innerHTML = `
             <i class="fas fa-${iconMap[status]}" style="color: ${colorMap[status]}"></i>
             <span>${message}</span>
@@ -622,14 +649,28 @@ class JSONMapper {
     }
 
     saveMapping() {
+        // Gather form values first
+        this.gatherMappingConfig();
+
+        // Execute mapping to generate the mapped JSON
+        this.mappedJson = this.performMapping();
+        this.elements.mappedJson.value = JSON.stringify(this.mappedJson, null, 2);
+        this.updateStatus('mapped', 'success', 'Mapeamento concluído');
+
+        // Update info
+        this.elements.mappedCount.textContent = Object.keys(this.mappingConfig).length;
+        this.elements.mappingStatus.textContent = 'Concluído';
+        this.elements.mappingStatus.className = 'info-value status success';
+
         // Save mapping configuration
         localStorage.setItem('mappingConfig', JSON.stringify(this.mappingConfig));
-        this.showToast('success', 'Mapeamento Salvo', 'Configuração salva com sucesso');
+        this.updateLastAction('Mapeamento salvo e executado');
+        this.showToast('success', 'Mapeamento Salvo', `${Object.keys(this.mappingConfig).length} campos mapeados`);
         this.closeModal();
     }
 
     // ===== FILE OPERATIONS =====
-    
+
     async importFile() {
         try {
             const [fileHandle] = await window.showOpenFilePicker({
@@ -638,15 +679,15 @@ class JSONMapper {
                     accept: { 'application/json': ['.json'] }
                 }]
             });
-            
+
             const file = await fileHandle.getFile();
             const content = await file.text();
-            
+
             // Determine if it's source or target based on user choice
             // For now, let's put it in source
             this.elements.sourceJson.value = content;
             this.validateSourceJson();
-            
+
             this.showToast('success', 'Arquivo Importado', 'JSON importado com sucesso');
         } catch (error) {
             if (error.name !== 'AbortError') {
@@ -662,15 +703,15 @@ class JSONMapper {
         }
 
         const dataStr = JSON.stringify(this.mappedJson, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
         const exportFileDefaultName = 'mapped-json.json';
-        
+
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
         linkElement.setAttribute('download', exportFileDefaultName);
         linkElement.click();
-        
+
         this.showToast('success', 'Exportado', 'JSON mapeado exportado com sucesso');
     }
 
@@ -682,13 +723,13 @@ class JSONMapper {
                     accept: { 'application/json': ['.json'] }
                 }]
             });
-            
+
             const file = await fileHandle.getFile();
             const content = await file.text();
-            
+
             this.elements[`${type}Json`].value = content;
             this[`validate${type.charAt(0).toUpperCase() + type.slice(1)}Json`]();
-            
+
             this.showToast('success', 'Arquivo Carregado', `JSON de ${type} carregado com sucesso`);
         } catch (error) {
             if (error.name !== 'AbortError') {
@@ -702,7 +743,7 @@ class JSONMapper {
             const text = await navigator.clipboard.readText();
             this.elements[`${type}Json`].value = text;
             this[`validate${type.charAt(0).toUpperCase() + type.slice(1)}Json`]();
-            
+
             this.showToast('success', 'Colado', 'JSON colado com sucesso');
         } catch (error) {
             this.showToast('error', 'Erro', 'Não foi possível colar da área de transferência');
@@ -713,7 +754,7 @@ class JSONMapper {
         try {
             const text = this.elements[`${type}Json`].value;
             await navigator.clipboard.writeText(text);
-            
+
             this.showToast('success', 'Copiado', 'JSON copiado para a área de transferência');
         } catch (error) {
             this.showToast('error', 'Erro', 'Não foi possível copiar para a área de transferência');
@@ -727,20 +768,20 @@ class JSONMapper {
         }
 
         const dataStr = JSON.stringify(this.mappedJson, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        
-        const exportFileDefaultName = `mapped-json-${new Date().toISOString().slice(0,10)}.json`;
-        
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+        const exportFileDefaultName = `mapped-json-${new Date().toISOString().slice(0, 10)}.json`;
+
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
         linkElement.setAttribute('download', exportFileDefaultName);
         linkElement.click();
-        
+
         this.showToast('success', 'Baixado', 'JSON mapeado baixado com sucesso');
     }
 
     // ===== ACTIONS =====
-    
+
     newMapping() {
         this.clearAll();
         this.showToast('info', 'Novo Mapeamento', 'Comece um novo mapeamento');
@@ -750,21 +791,21 @@ class JSONMapper {
         this.elements.sourceJson.value = '';
         this.elements.targetJson.value = '';
         this.elements.mappedJson.value = '';
-        
+
         this.sourceJson = null;
         this.targetJson = null;
         this.mappedJson = null;
         this.keysList = [];
         this.mappingConfig = {};
-        
+
         this.updateStatus('source', 'info', 'Vazio');
         this.updateStatus('target', 'info', 'Vazio');
         this.updateStatus('mapped', 'info', 'Aguardando');
-        
+
         this.elements.mappedCount.textContent = '0';
         this.elements.mappingStatus.textContent = 'Pronto';
         this.elements.mappingStatus.className = 'info-value status';
-        
+
         this.updateLastAction('Campos limpos');
         this.showToast('info', 'Limpo', 'Todos os campos foram limpos');
     }
@@ -835,19 +876,19 @@ class JSONMapper {
 
         this.elements.sourceJson.value = JSON.stringify(exampleSource, null, 2);
         this.elements.targetJson.value = JSON.stringify(exampleTarget, null, 2);
-        
+
         this.validateSourceJson();
         this.validateTargetJson();
-        
+
         this.updateLastAction('Exemplos carregados');
         this.showToast('success', 'Exemplos Carregados', 'JSONs de exemplo foram carregados');
     }
 
     // ===== THEME AND UI =====
-    
+
     toggleTheme() {
         const isDark = document.body.classList.contains('dark-theme');
-        
+
         if (isDark) {
             document.body.classList.remove('dark-theme');
             localStorage.setItem('theme', 'light');
@@ -877,13 +918,23 @@ class JSONMapper {
     handleNavigation(e) {
         const btn = e.currentTarget;
         const view = btn.dataset.view;
-        
+
         // Remove active class from all buttons
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        // Handle view changes (placeholder for future views)
-        this.showToast('info', 'Navegação', `Visualização: ${view}`);
+
+        // Handle view changes
+        if (view === 'mapper') {
+            // Hide other sections
+            document.getElementById('historySection').style.display = 'none';
+            document.getElementById('settingsSection').style.display = 'none';
+            this.showToast('info', 'Navegação', 'Visualização: Mapeador');
+        } else {
+            // Use HistorySettingsManager for other views
+            if (window.historyManager) {
+                window.historyManager.handleNavigation(view);
+            }
+        }
     }
 
     handleKeyboard(e) {
@@ -894,24 +945,24 @@ class JSONMapper {
                 this.exportMapping();
             }
         }
-        
+
         // Ctrl/Cmd + N: New mapping
         if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
             e.preventDefault();
             this.newMapping();
         }
-        
+
         // Ctrl/Cmd + O: Open file
         if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
             e.preventDefault();
             this.importFile();
         }
-        
+
         // Escape: Close modal
         if (e.key === 'Escape') {
             this.closeModal();
         }
-        
+
         // F11: Fullscreen
         if (e.key === 'F11') {
             e.preventDefault();
@@ -920,7 +971,7 @@ class JSONMapper {
     }
 
     // ===== NOTIFICATIONS =====
-    
+
     showLoading(show = true, message = 'Processando...') {
         if (show) {
             this.elements.loadingOverlay?.classList.add('active');
@@ -934,14 +985,14 @@ class JSONMapper {
     showToast(type, title, message) {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        
+
         const iconMap = {
             success: 'check-circle',
             error: 'exclamation-circle',
             warning: 'exclamation-triangle',
             info: 'info-circle'
         };
-        
+
         toast.innerHTML = `
             <div class="toast-icon">
                 <i class="fas fa-${iconMap[type]}"></i>
@@ -954,16 +1005,16 @@ class JSONMapper {
                 <i class="fas fa-times"></i>
             </button>
         `;
-        
+
         this.elements.toastContainer.appendChild(toast);
-        
+
         // Add close functionality
         const closeBtn = toast.querySelector('.toast-close');
         closeBtn.addEventListener('click', () => this.removeToast(toast));
-        
+
         // Auto remove after 5 seconds
         setTimeout(() => this.removeToast(toast), 5000);
-        
+
         // Trigger animation
         requestAnimationFrame(() => toast.classList.add('show'));
     }
@@ -980,5 +1031,12 @@ class JSONMapper {
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
-    new JSONMapper();
+    const jsonMapper = new JSONMapper();
+
+    // Initialize HistorySettingsManager after JSONMapper is ready
+    setTimeout(() => {
+        if (typeof HistorySettingsManager !== 'undefined') {
+            window.historyManager = new HistorySettingsManager(jsonMapper);
+        }
+    }, 100);
 });

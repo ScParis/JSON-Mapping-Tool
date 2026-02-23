@@ -28,7 +28,7 @@ Veja como é simples carregar exemplos e executar a transformação de dados.
 
 ## 🌐 Teste Agora!
 
-[**👉 Clique aqui para testar online**](https://scparis.github.io/JSON-Mapping-Tool)
+[**👉 Clique aqui para testar online**](https://json-formater.netlify.app/)
 
 *(Ou utilize o servidor local conforme instruções de instalação abaixo)*
 
