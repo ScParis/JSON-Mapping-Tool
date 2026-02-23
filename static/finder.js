@@ -24,6 +24,7 @@ class JSONFinder {
             pasteBtn: document.getElementById('pasteFinderBtn'),
             expandAllBtn: document.getElementById('expandAllBtn'),
             collapseAllBtn: document.getElementById('collapseAllBtn'),
+            searchInput: document.getElementById('finderSearchInput'),
 
             // Playground elements
             queryInput: document.getElementById('jmespathQueryInput'),
@@ -40,6 +41,10 @@ class JSONFinder {
         this.elements.pasteBtn?.addEventListener('click', () => this.paste());
         this.elements.expandAllBtn?.addEventListener('click', () => this.expandAll());
         this.elements.collapseAllBtn?.addEventListener('click', () => this.collapseAll());
+        this.elements.searchInput?.addEventListener('input', () => this.filterTree());
+
+        // Drag & Drop
+        this.setupDragAndDrop();
 
         // Playground events
         this.elements.queryInput?.addEventListener('input', () => this.handleQueryInput());
@@ -92,11 +97,17 @@ class JSONFinder {
         // Auto-expand root
         const rootToggle = root.querySelector('.tree-toggle');
         if (rootToggle) this.toggleNode(rootToggle);
+
+        // Clear search on new data
+        if (this.elements.searchInput) {
+            this.elements.searchInput.value = '';
+        }
     }
 
     createNode(key, value, path) {
         const container = document.createElement('div');
         container.className = 'tree-node';
+        container.dataset.key = key.toLowerCase();
 
         const isObject = typeof value === 'object' && value !== null;
         const currentPath = path ? (Array.isArray(value) ? path : path) : ''; // Path logic simplified for root
@@ -124,7 +135,9 @@ class JSONFinder {
         // Key/Index
         const keySpan = document.createElement('span');
         keySpan.className = 'tree-key';
-        keySpan.textContent = key === 'root' ? (Array.isArray(value) ? '[]' : '{}') : key;
+        const displayKey = key === 'root' ? (Array.isArray(value) ? '[]' : '{}') : key;
+        keySpan.textContent = displayKey;
+        keySpan.dataset.original = displayKey;
         content.appendChild(keySpan);
 
         if (!isObject) {
@@ -258,6 +271,88 @@ class JSONFinder {
         } catch (e) {
             this.mapper.showToast('error', 'Erro', 'Não foi possível copiar');
         }
+    }
+
+    filterTree() {
+        const query = this.elements.searchInput.value.toLowerCase().trim();
+        const nodes = this.elements.treeView.querySelectorAll('.tree-node');
+
+        if (!query) {
+            nodes.forEach(node => {
+                node.style.display = 'block';
+                const keySpan = node.querySelector('.tree-key');
+                if (keySpan) keySpan.innerHTML = keySpan.dataset.original;
+            });
+            return;
+        }
+
+        // Expand all when searching
+        this.expandAll();
+
+        nodes.forEach(node => {
+            const keySpan = node.querySelector('.tree-key');
+            if (!keySpan) return;
+
+            const keyText = keySpan.dataset.original.toLowerCase();
+            const isMatch = keyText.includes(query);
+
+            if (isMatch) {
+                // Highlight matching text
+                const original = keySpan.dataset.original;
+                const index = original.toLowerCase().indexOf(query);
+                const highlighted = original.substring(0, index) +
+                    `<span class="tree-highlight">${original.substring(index, index + query.length)}</span>` +
+                    original.substring(index + query.length);
+                keySpan.innerHTML = highlighted;
+
+                // Show this node and all ancestors
+                let current = node;
+                while (current && current.classList.contains('tree-node')) {
+                    current.style.display = 'block';
+                    current = current.parentElement.closest('.tree-node');
+                }
+            } else {
+                // Hide if no match found here (might be shown by children later)
+                node.style.display = 'none';
+            }
+        });
+    }
+
+    setupDragAndDrop() {
+        const dropZone = this.elements.input;
+        if (!dropZone) return;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+
+            if (file && file.type === "application/json") {
+                const reader = new FileReader();
+                reader.readAsText(file);
+                reader.onload = (event) => {
+                    this.elements.input.value = event.target.result;
+                    this.handleInput();
+                };
+            } else if (dt.getData('text/plain')) {
+                this.elements.input.value = dt.getData('text/plain');
+                this.handleInput();
+            }
+        }, false);
     }
 }
 

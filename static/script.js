@@ -22,6 +22,7 @@ class JSONMapper {
         this.setupEventListeners();
         this.setupTheme();
         this.loadExamples();
+        this.setupDragAndDrop();
     }
 
     setupElements() {
@@ -60,6 +61,8 @@ class JSONMapper {
             clearSourceBtn: document.getElementById('clearSourceBtn'),
             pasteSourceBtn: document.getElementById('pasteSourceBtn'),
             uploadSourceBtn: document.getElementById('uploadSourceBtn'),
+            copySourceBtn: document.getElementById('copySourceBtn'),
+            copyTargetBtn: document.getElementById('copyTargetBtn'),
             clearTargetBtn: document.getElementById('clearTargetBtn'),
             pasteTargetBtn: document.getElementById('pasteTargetBtn'),
             uploadTargetBtn: document.getElementById('uploadTargetBtn'),
@@ -116,6 +119,8 @@ class JSONMapper {
         this.elements.clearTargetBtn?.addEventListener('click', () => this.clearEditor('target'));
         this.elements.pasteTargetBtn?.addEventListener('click', () => this.pasteFromClipboard('target'));
         this.elements.uploadTargetBtn?.addEventListener('click', () => this.uploadFile('target'));
+        this.elements.copySourceBtn?.addEventListener('click', () => this.copyToClipboard('source'));
+        this.elements.copyTargetBtn?.addEventListener('click', () => this.copyToClipboard('target'));
         this.elements.copyMappedBtn?.addEventListener('click', () => this.copyToClipboard('mapped'));
         this.elements.downloadMappedBtn?.addEventListener('click', () => this.downloadMapped());
 
@@ -1158,6 +1163,52 @@ class JSONMapper {
                 toast.parentNode.removeChild(toast);
             }
         }, 300);
+    }
+
+    setupDragAndDrop() {
+        const dropZones = [
+            { el: this.elements.sourceJson, type: 'source' },
+            { el: this.elements.targetJson, type: 'target' }
+        ];
+
+        dropZones.forEach(zone => {
+            if (!zone.el) return;
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                zone.el.addEventListener(eventName, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                zone.el.addEventListener(eventName, () => zone.el.classList.add('drag-over'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                zone.el.addEventListener(eventName, () => zone.el.classList.remove('drag-over'), false);
+            });
+
+            zone.el.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+
+                if (file && (file.type === "application/json" || file.name.endsWith('.json'))) {
+                    const reader = new FileReader();
+                    reader.readAsText(file);
+                    reader.onload = (event) => {
+                        zone.el.value = event.target.result;
+                        if (zone.type === 'source') this.validateSourceJson();
+                        else this.validateTargetJson();
+                        this.showToast('success', 'Sucesso', `Arquivo ${file.name} carregado.`);
+                    };
+                } else if (dt.getData('text/plain')) {
+                    zone.el.value = dt.getData('text/plain');
+                    if (zone.type === 'source') this.validateSourceJson();
+                    else this.validateTargetJson();
+                }
+            }, false);
+        });
     }
 }
 
