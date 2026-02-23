@@ -21,10 +21,15 @@ Interface limpa e organizada com três painéis: Origem, Destino e Mapeado.
 
 ![Interface Principal](./docs/images/interface-principal.png)
 
-### � Mapeamento em Ação
+### 🚀 Mapeamento em Ação
 Veja como é simples carregar exemplos e executar a transformação de dados.
 
 ![Fluxo de Mapeamento](./docs/images/mapeamento.webp)
+
+### 🔍 Explorador Interativo (Finder)
+Localize caminhos complexos instantaneamente clicando na árvore de nós.
+
+![JSON Finder](file:///home/piperun/.gemini/antigravity/brain/2c97702d-2c4d-4131-9e63-73cb08dafac8/finder_working_path_copied_1771871901446.png)
 
 ## 🌐 Teste Agora!
 
@@ -32,7 +37,7 @@ Veja como é simples carregar exemplos e executar a transformação de dados.
 
 *(Ou utilize o servidor local conforme instruções de instalação abaixo)*
 
-### �🎯 Para Quem é Esta Ferramenta?
+### 🎯 Para Quem é Esta Ferramenta?
 
 - **Desenvolvedores** que precisam transformar APIs responses
 - **Analistas de Dados** que trabalham com JSON complexos
@@ -54,6 +59,12 @@ Veja como é simples carregar exemplos e executar a transformação de dados.
 - **Validação em Tempo Real**: Feedback instantâneo de sintaxe
 - **Formatação Automática**: JSON indentado e colorido
 - **Import/Export**: Upload de arquivos e cópia para área de transferência
+
+### 🔍 **JSON Finder (Inspirado no JSONPathFinder)**
+- **Exploração Visual**: Navegue em estruturas JSON complexas com uma árvore interativa
+- **Cálculo de Paths**: Gere caminhos absolutos clicando em qualquer nó (ex: `items[0].id`)
+- **Cópia Rápida**: Botão dedicado para copiar o path para uso no mapeador ou APIs
+- **Feedback Visual**: Destaque de seleção e ícones contextuais para tipos de dados
 
 ### 🎯 **Mapeamento Inteligente**
 - **Geração Automática**: Cria formulários baseados na estrutura do JSON de destino
@@ -130,6 +141,16 @@ Veja como é simples carregar exemplos e executar a transformação de dados.
 - Aplicar as regras de mapeamento
 - Gerar o JSON transformado
 - Exibir resultado no editor de mapeado
+```
+
+### **Extra: Localizando Caminhos com o Finder**
+```bash
+# Se você não sabe o caminho exato para um campo:
+1. Clique na aba "Finder" no header
+2. Cole seu JSON de origem no painel esquerdo
+3. Explore a árvore interativa no painel direito
+4. Clique no valor desejado para ver o caminho absoluto
+5. Clique em "Copiar Caminho" para usar no configurador de mapeamento
 ```
 
 ---
@@ -479,7 +500,13 @@ R: Não. Todo o processamento é feito localmente no seu navegador, garantindo p
 
 ## 📝 Changelog
 
-### v2.0 (Atual)
+### v2.1 (Atual)
+- 🔍 **Novo Módulo Finder**: Explorador interativo de JSON para facilitar a localização de caminhos.
+- 🔢 **Caminhos Indexados**: Suporte nativo a índices em arrays (ex: `itens[0]`) no mapeador.
+- 🚫 **Valores Unquoted**: Opção para exportar valores sem aspas no JSON mapeado (compatibilidade JMESPath).
+- 🏗️ **Refinamento de Layout**: Header mais compacto e navegação via modais para Ajuda e Configs.
+
+### v2.0
 - ✨ Interface totalmente redesenhada com Design System 2026.
 - 🌓 Tema Dark/Light com persistência.
 - 📂 Suporte a File System Access API para manipulação de arquivos.
