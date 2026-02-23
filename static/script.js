@@ -1061,12 +1061,12 @@ class JSONMapper {
 
             // Gerencia seções visíveis
             if (view === 'mapper') {
-                this.elements.mapperSection.style.display = 'block';
+                this.elements.mapperSection.style.display = 'flex';
                 this.elements.finderSection.style.display = 'none';
                 this.showToast('info', 'Navegação', 'Visualização: Mapeador');
             } else if (view === 'finder') {
                 this.elements.mapperSection.style.display = 'none';
-                this.elements.finderSection.style.display = 'block';
+                this.elements.finderSection.style.display = 'flex';
                 this.showToast('info', 'Navegação', 'Visualização: Finder');
             }
         }
