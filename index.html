@@ -319,12 +319,6 @@
                                 <i class="fas fa-tree"></i>
                                 Explorador Interativo
                             </div>
-                            <div class="header-search">
-                                <div class="query-input-wrapper">
-                                    <i class="fas fa-search query-icon"></i>
-                                    <input type="text" id="finderSearchInput" placeholder="Filtrar campos...">
-                                </div>
-                            </div>
                             <div class="panel-actions">
                                 <button class="panel-btn" id="expandAllBtn" title="Expandir Tudo">
                                     <i class="fas fa-expand-arrows-alt"></i>
@@ -335,10 +329,21 @@
                             </div>
                         </div>
 
-                        <div class="path-result-bar">
-                            <div class="path-label">Caminho Selecionado:</div>
-                            <div class="path-value-container">
-                                <code id="selectedPathResult">...</code>
+                        <div class="panel-controls">
+                            <div class="header-search">
+                                <div class="query-input-wrapper">
+                                    <i class="fas fa-search query-icon"></i>
+                                    <input type="text" id="finderSearchInput" placeholder="Filtrar campos...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-header secondary">
+                            <div class="panel-title">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Caminho Selecionado
+                            </div>
+                            <div class="panel-actions">
                                 <button class="panel-btn small" id="copyPathBtn" title="Copiar Caminho">
                                     <i class="fas fa-copy"></i>
                                 </button>
@@ -346,6 +351,7 @@
                         </div>
 
                         <div id="finderTreeView" class="tree-view-container">
+                            <div id="selectedPathResult" style="display:none">...</div>
                             <div class="tree-placeholder">
                                 <i class="fas fa-long-arrow-alt-left"></i>
                                 <p>Cole um JSON à esquerda para visualizar a estrutura</p>
@@ -367,7 +373,7 @@
                             </div>
                         </div>
 
-                        <div class="playground-controls">
+                        <div class="panel-controls">
                             <div class="query-input-wrapper">
                                 <i class="fas fa-search query-icon"></i>
                                 <input type="text" id="jmespathQueryInput"

@@ -1572,9 +1572,33 @@ body.dark-theme #finderInput {
   z-index: 5;
 }
 
-body.dark-theme .path-result-bar {
+.panel-controls {
+  padding: var(--space-4);
+  background: var(--secondary-50);
+  border-bottom: 1px solid var(--secondary-200);
+}
+
+body.dark-theme .panel-controls {
   background: var(--dark-bg-secondary);
   border-color: var(--dark-border);
+}
+
+.header-search #finderSearchInput {
+  width: 100%;
+  padding: 8px var(--space-3) 8px var(--space-8);
+  font-size: 0.85rem;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid var(--secondary-200);
+  font-family: var(--font-mono);
+  color: var(--primary-700);
+  transition: all var(--transition-fast);
+}
+
+.header-search #finderSearchInput:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
 .path-label {
@@ -1725,16 +1749,9 @@ body.dark-theme .header-search #finderSearchInput {
 
 /* Removal of legacy finder-playground class */
 
-
 .playground-controls {
-  padding: var(--space-4);
-  background: var(--secondary-50);
-  border-bottom: 1px solid var(--secondary-200);
-}
-
-body.dark-theme .playground-controls {
-  background: var(--dark-bg-secondary);
-  border-color: var(--dark-border);
+  display: none;
+  /* Replaced by panel-controls */
 }
 
 .query-input-wrapper {

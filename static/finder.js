@@ -187,7 +187,15 @@ class JSONFinder {
 
     selectPath(path) {
         this.selectedPath = path;
-        this.elements.pathResult.textContent = path || 'root';
+
+        // Update both the visible title and the hidden element
+        const pathDisplay = path || 'root';
+        this.elements.pathResult.textContent = pathDisplay;
+
+        const secondaryTitle = document.querySelector('#finderSection .editor-panel:nth-child(2) .panel-header.secondary .panel-title');
+        if (secondaryTitle) {
+            secondaryTitle.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${pathDisplay}`;
+        }
 
         // Highlight selection
         document.querySelectorAll('.tree-node-content.selected').forEach(el => el.classList.remove('selected'));
