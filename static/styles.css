@@ -1522,27 +1522,20 @@ body.dark-theme .help-image {
 
 .finder-container {
   display: grid;
-  grid-template-columns: 1.1fr 1.3fr 1.6fr;
+  grid-template-columns: 1fr 1.2fr 1.8fr;
   flex: 1;
   gap: var(--space-4);
   padding: var(--space-4);
   height: calc(100vh - 60px);
-  /* 100vh - header */
   overflow: hidden;
 }
 
-.finder-sidebar,
-.finder-main {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  position: relative;
+/* Remove direct sidebar styling to use editor-panel */
+.finder-container>.editor-panel {
+  min-width: 0;
+  /* Allow grid to control width */
 }
 
-.finder-sidebar {
-  min-width: 300px;
-}
 
 #finderInput {
   flex: 1;
@@ -1720,15 +1713,18 @@ body.dark-theme .tree-key {
   padding: 6px var(--space-3) 6px var(--space-8);
   font-size: 0.75rem;
   border-radius: var(--radius-sm);
+  background: white;
+  border: 1px solid var(--secondary-200);
 }
 
-.finder-playground {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  position: relative;
+body.dark-theme .header-search #finderSearchInput {
+  background: var(--dark-bg-primary);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
 }
+
+/* Removal of legacy finder-playground class */
+
 
 .playground-controls {
   padding: var(--space-4);

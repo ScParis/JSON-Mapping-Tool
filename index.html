@@ -284,28 +284,41 @@
             <!-- Módulo Finder (Oculto por padrão) -->
             <section id="finderSection" class="app-section" style="display: none;">
                 <div class="finder-container">
-                    <div class="finder-sidebar glass">
+                    <!-- Column 1: JSON Input -->
+                    <div class="editor-panel">
                         <div class="panel-header">
-                            <h3><i class="fas fa-edit"></i> JSON de Entrada</h3>
+                            <div class="panel-title">
+                                <i class="fas fa-edit"></i>
+                                JSON de Entrada
+                            </div>
                             <div class="panel-actions">
-                                <button id="clearFinderBtn" class="icon-btn" title="Limpar"><i
-                                        class="fas fa-trash"></i></button>
-                                <button id="pasteFinderBtn" class="icon-btn" title="Colar"><i
-                                        class="fas fa-paste"></i></button>
+                                <button class="panel-btn" id="clearFinderBtn" title="Limpar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="panel-btn" id="pasteFinderBtn" title="Colar">
+                                    <i class="fas fa-paste"></i>
+                                </button>
                             </div>
                         </div>
-                        <textarea id="finderInput" class="json-editor"
-                            placeholder="Cole seu JSON aqui para explorar..."></textarea>
-                        <div class="panel-footer">
-                            <div id="finderStatus" class="status-item">
-                                <i class="fas fa-info-circle"></i> <span>Aguardando entrada</span>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <textarea id="finderInput" class="json-editor"
+                                    placeholder="Cole seu JSON aqui para explorar..." spellcheck="false"></textarea>
+                                <div class="editor-status" id="finderStatus">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Aguardando entrada</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="finder-main glass">
+                    <!-- Column 2: Explorer -->
+                    <div class="editor-panel">
                         <div class="panel-header">
-                            <h3><i class="fas fa-tree"></i> Explorador Interativo</h3>
+                            <div class="panel-title">
+                                <i class="fas fa-tree"></i>
+                                Explorador Interativo
+                            </div>
                             <div class="header-search">
                                 <div class="query-input-wrapper">
                                     <i class="fas fa-search query-icon"></i>
@@ -313,10 +326,12 @@
                                 </div>
                             </div>
                             <div class="panel-actions">
-                                <button id="expandAllBtn" class="icon-btn" title="Expandir Tudo"><i
-                                        class="fas fa-expand-arrows-alt"></i></button>
-                                <button id="collapseAllBtn" class="icon-btn" title="Recolher Tudo"><i
-                                        class="fas fa-compress-arrows-alt"></i></button>
+                                <button class="panel-btn" id="expandAllBtn" title="Expandir Tudo">
+                                    <i class="fas fa-expand-arrows-alt"></i>
+                                </button>
+                                <button class="panel-btn" id="collapseAllBtn" title="Recolher Tudo">
+                                    <i class="fas fa-compress-arrows-alt"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -324,7 +339,7 @@
                             <div class="path-label">Caminho Selecionado:</div>
                             <div class="path-value-container">
                                 <code id="selectedPathResult">...</code>
-                                <button id="copyPathBtn" class="icon-btn small" title="Copiar Caminho">
+                                <button class="panel-btn small" id="copyPathBtn" title="Copiar Caminho">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
@@ -338,14 +353,20 @@
                         </div>
                     </div>
 
-                    <div class="finder-playground glass">
+                    <!-- Column 3: Playground -->
+                    <div class="editor-panel">
                         <div class="panel-header">
-                            <h3><i class="fas fa-vial"></i> JMESPath Playground</h3>
+                            <div class="panel-title">
+                                <i class="fas fa-vial"></i>
+                                JMESPath Playground
+                            </div>
                             <div class="panel-actions">
-                                <button id="clearPlaygroundBtn" class="icon-btn" title="Limpar"><i
-                                        class="fas fa-eraser"></i></button>
+                                <button class="panel-btn" id="clearPlaygroundBtn" title="Limpar">
+                                    <i class="fas fa-eraser"></i>
+                                </button>
                             </div>
                         </div>
+
                         <div class="playground-controls">
                             <div class="query-input-wrapper">
                                 <i class="fas fa-search query-icon"></i>
@@ -353,15 +374,26 @@
                                     placeholder="Digite sua expressão JMESPath... (ex: items[0].id)">
                             </div>
                         </div>
+
                         <div class="panel-header secondary">
-                            <h3><i class="fas fa-terminal"></i> Resultado</h3>
+                            <div class="panel-title">
+                                <i class="fas fa-terminal"></i>
+                                Resultado
+                            </div>
                             <div class="panel-actions">
-                                <button id="copyPlaygroundBtn" class="icon-btn small" title="Copiar Resultado"><i
-                                        class="fas fa-copy"></i></button>
+                                <button class="panel-btn small" id="copyPlaygroundBtn" title="Copiar Resultado">
+                                    <i class="fas fa-copy"></i>
+                                </button>
                             </div>
                         </div>
-                        <textarea id="jmespathResultOutput" class="json-editor" readonly
-                            placeholder="O resultado da sua consulta aparecerá aqui..."></textarea>
+
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <textarea id="jmespathResultOutput" class="json-editor" readonly
+                                    placeholder="O resultado da sua consulta aparecerá aqui..."
+                                    spellcheck="false"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
