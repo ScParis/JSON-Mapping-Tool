@@ -8,6 +8,8 @@
 
 *Uma ferramenta poderosa e intuitiva para transformar e mapear dados JSON com JMESPath*
 
+**Desenvolvido por [ScParis](https://github.com/ScParis)**
+
 </div>
 
 ## 🌟 Visão Geral
