@@ -1805,3 +1805,35 @@ body.dark-theme .panel-header.secondary {
 body.dark-theme #jmespathResultOutput {
   color: var(--dark-text-secondary);
 }
+
+/* ===== LEGAL LINKS ===== */
+.legal-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: 0.75rem;
+  color: var(--secondary-400);
+}
+
+.legal-links a {
+  color: var(--secondary-500);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.legal-links a:hover {
+  color: var(--primary-500);
+}
+
+.legal-links span {
+  color: var(--secondary-300);
+}
+
+body.dark-theme .legal-links a {
+  color: var(--dark-text-tertiary);
+}
+
+body.dark-theme .legal-links a:hover {
+  color: var(--primary-400);
+}

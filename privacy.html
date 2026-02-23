@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade - JSON Mapper</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="static/styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .dark-theme body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .legal-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .legal-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+        }
+
+        .legal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .legal-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .legal-header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .dark-theme .legal-header p {
+            color: #94a3b8;
+        }
+
+        .legal-content h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #0c4a6e;
+        }
+
+        .dark-theme .legal-content h2 {
+            color: #7dd3fc;
+        }
+
+        .legal-content p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+            color: #334155;
+        }
+
+        .dark-theme .legal-content p {
+            color: #cbd5e1;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            color: #0ea5e9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="dark-theme"> <!-- Default to dark as per app theme logic -->
+    <div class="legal-card">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Voltar para o App
+        </a>
+
+        <header class="legal-header">
+            <h1>Política de Privacidade</h1>
+            <p>Última atualização: 23 de Fevereiro de 2026</p>
+        </header>
+
+        <div class="legal-content">
+            <h2>1. Coleta de Dados</h2>
+            <p>O <strong>JSON Mapper</strong> é uma ferramenta que processa dados localmente em seu navegador. Não
+                coletamos, armazenamos ou transmitimos nenhum dos dados JSON que você insere ou mapeia nesta ferramenta.
+            </p>
+
+            <h2>2. Processamento Local</h2>
+            <p>Todo o processamento de mapeamento, validação e formatação ocorre exclusivamente no lado do cliente (seu
+                dispositivo). Nenhuma informação é enviada para nossos servidores ou para terceiros.</p>
+
+            <h2>3. Local Storage</h2>
+            <p>Utilizamos o <code>localStorage</code> do seu navegador apenas para salvar preferências de interface,
+                como a escolha entre o Tema Escuro e o Tema Claro, visando proporcionar uma experiência consistente em
+                seus próximos acessos.</p>
+
+            <h2>4. Cookies</h2>
+            <p>Não utilizamos cookies de rastreamento ou publicidade. Podem ser utilizados cookies técnicos estritamente
+                necessários para o funcionamento básico da infraestrutura de hospedagem (GitHub Pages).</p>
+
+            <h2>5. Segurança</h2>
+            <p>Como os dados não saem do seu computador, a segurança das informações que você processa depende
+                inteiramente da segurança do seu próprio dispositivo e navegador.</p>
+
+            <h2>6. Alterações</h2>
+            <p>Esta política pode ser atualizada ocasionalmente. Recomendamos revisar esta página periodicamente para
+                estar ciente de qualquer mudança.</p>
+        </div>
+
+        <div class="footer-note">
+            &copy; 2026 JSON Mapper - Professional Data Mapping Tool
+        </div>
+    </div>
+
+    <script>
+        // Apply theme from localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.remove('dark-theme');
+        }
+    </script>
+</body>
+
+</html>
