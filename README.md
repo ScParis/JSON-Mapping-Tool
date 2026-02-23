@@ -19,17 +19,17 @@ O **JSON Mapper** é uma aplicação web moderna desenvolvida para simplificar o
 ### 🖥️ Interface Principal
 Interface limpa e organizada com três painéis: Origem, Destino e Mapeado.
 
-![Interface Principal](./docs/images/interface-principal.png)
+![Interface Principal](docs/images/mapper-ux.png)
 
 ### 🚀 Mapeamento em Ação
 Veja como é simples carregar exemplos e executar a transformação de dados.
 
-![Fluxo de Mapeamento](./docs/images/mapeamento.webp)
+![Fluxo de Mapeamento](docs/images/mapeamento-sucesso.png)
 
 ### 🔍 Explorador Interativo (Finder)
 Localize caminhos complexos instantaneamente clicando na árvore de nós.
 
-![JSON Finder](file:///home/piperun/.gemini/antigravity/brain/2c97702d-2c4d-4131-9e63-73cb08dafac8/finder_working_path_copied_1771871901446.png)
+![JSON Finder](docs/images/finder-search.png)
 
 ## 🌐 Teste Agora!
 
