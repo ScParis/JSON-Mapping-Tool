@@ -1486,7 +1486,7 @@ body.dark-theme .help-image {
 
 .finder-container {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1.1fr 1.3fr 1.6fr;
   flex: 1;
   gap: var(--space-4);
   padding: var(--space-4);
@@ -1660,4 +1660,89 @@ body.dark-theme .tree-key {
   font-size: 0.95rem;
   max-width: 220px;
   text-align: center;
+}
+
+/* Playground Styling */
+.finder-playground {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+.playground-controls {
+  padding: var(--space-4);
+  background: var(--secondary-50);
+  border-bottom: 1px solid var(--secondary-200);
+}
+
+body.dark-theme .playground-controls {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+}
+
+.query-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.query-icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--secondary-400);
+  font-size: 0.8rem;
+}
+
+#jmespathQueryInput {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-8);
+  border: 1px solid var(--secondary-200);
+  border-radius: var(--radius-md);
+  background: white;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--primary-700);
+  transition: all var(--transition-fast);
+}
+
+#jmespathQueryInput:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+body.dark-theme #jmespathQueryInput {
+  background: var(--dark-bg-primary);
+  border-color: var(--dark-border);
+  color: var(--primary-400);
+}
+
+.panel-header.secondary {
+  background: var(--secondary-100);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--secondary-200);
+}
+
+body.dark-theme .panel-header.secondary {
+  background: var(--dark-bg-tertiary);
+  border-color: var(--dark-border);
+}
+
+.panel-header.secondary h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--secondary-500);
+}
+
+#jmespathResultOutput {
+  flex: 1;
+  background: transparent;
+  color: var(--secondary-700);
+}
+
+body.dark-theme #jmespathResultOutput {
+  color: var(--dark-text-secondary);
 }

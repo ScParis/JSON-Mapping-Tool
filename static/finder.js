@@ -23,7 +23,13 @@ class JSONFinder {
             clearBtn: document.getElementById('clearFinderBtn'),
             pasteBtn: document.getElementById('pasteFinderBtn'),
             expandAllBtn: document.getElementById('expandAllBtn'),
-            collapseAllBtn: document.getElementById('collapseAllBtn')
+            collapseAllBtn: document.getElementById('collapseAllBtn'),
+
+            // Playground elements
+            queryInput: document.getElementById('jmespathQueryInput'),
+            resultOutput: document.getElementById('jmespathResultOutput'),
+            clearPlaygroundBtn: document.getElementById('clearPlaygroundBtn'),
+            copyPlaygroundBtn: document.getElementById('copyPlaygroundBtn')
         };
     }
 
@@ -34,6 +40,11 @@ class JSONFinder {
         this.elements.pasteBtn?.addEventListener('click', () => this.paste());
         this.elements.expandAllBtn?.addEventListener('click', () => this.expandAll());
         this.elements.collapseAllBtn?.addEventListener('click', () => this.collapseAll());
+
+        // Playground events
+        this.elements.queryInput?.addEventListener('input', () => this.handleQueryInput());
+        this.elements.clearPlaygroundBtn?.addEventListener('click', () => this.clearPlayground());
+        this.elements.copyPlaygroundBtn?.addEventListener('click', () => this.copyPlaygroundResult());
     }
 
     handleInput() {
@@ -66,6 +77,11 @@ class JSONFinder {
             <i class="fas fa-${icon}" style="color: ${color}"></i>
             <span>${message}</span>
         `;
+
+        // If JSON is valid, we might want to re-evaluate the query
+        if (type === 'success' && this.elements.queryInput.value) {
+            this.handleQueryInput();
+        }
     }
 
     renderTree() {
@@ -205,6 +221,43 @@ class JSONFinder {
 
     collapseAll() {
         document.querySelectorAll('.tree-toggle:not(.collapsed)').forEach(btn => this.toggleNode(btn));
+    }
+
+    handleQueryInput() {
+        const query = this.elements.queryInput.value.trim();
+        if (!query) {
+            this.elements.resultOutput.value = '';
+            return;
+        }
+
+        if (!this.data) {
+            this.elements.resultOutput.value = 'Aguardando JSON válido...';
+            return;
+        }
+
+        try {
+            // jmespath should be available globally
+            const result = jmespath.search(this.data, query);
+            this.elements.resultOutput.value = JSON.stringify(result, null, 2);
+        } catch (e) {
+            this.elements.resultOutput.value = `Erro na expressão: ${e.message}`;
+        }
+    }
+
+    clearPlayground() {
+        this.elements.queryInput.value = '';
+        this.elements.resultOutput.value = '';
+    }
+
+    async copyPlaygroundResult() {
+        const result = this.elements.resultOutput.value;
+        if (!result) return;
+        try {
+            await navigator.clipboard.writeText(result);
+            this.mapper.showToast('success', 'Copiado', 'Resultado copiado para a área de transferência');
+        } catch (e) {
+            this.mapper.showToast('error', 'Erro', 'Não foi possível copiar');
+        }
     }
 }
 
