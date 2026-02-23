@@ -10,6 +10,11 @@ class JSONMapper {
 
 
         this.init();
+
+        // Initialize Finder Module
+        if (window.JSONFinder) {
+            this.finder = new window.JSONFinder(this);
+        }
     }
 
     init() {
@@ -72,6 +77,10 @@ class JSONMapper {
             // Resizers
             resizer1: document.getElementById('resizer-1'),
             resizer2: document.getElementById('resizer-2'),
+
+            // Sections
+            mapperSection: document.getElementById('mapperSection'),
+            finderSection: document.getElementById('finderSection'),
 
             // Theme and UI
             themeToggle: document.getElementById('themeToggle'),
@@ -1037,15 +1046,24 @@ class JSONMapper {
             return;
         }
 
-        if (view === 'mapper') {
-            // Se já estivermos no mapper, não precisamos fazer nada
+        if (view) {
+            // Se já estivermos na aba ativa, não faz nada
             if (btn.classList.contains('active')) return;
 
-            // Remove active de outros botões (exceto o de mapper que vamos ativar)
+            // Gerencia botões ativos
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            this.showToast('info', 'Navegação', 'Visualização: Mapeador');
+            // Gerencia seções visíveis
+            if (view === 'mapper') {
+                this.elements.mapperSection.style.display = 'block';
+                this.elements.finderSection.style.display = 'none';
+                this.showToast('info', 'Navegação', 'Visualização: Mapeador');
+            } else if (view === 'finder') {
+                this.elements.mapperSection.style.display = 'none';
+                this.elements.finderSection.style.display = 'block';
+                this.showToast('info', 'Navegação', 'Visualização: Finder');
+            }
         }
     }
 

@@ -274,6 +274,12 @@ body {
   overflow: hidden;
 }
 
+#mapperSection {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
 /* ===== SIDEBAR ===== */
 .sidebar {
   width: 18rem;
@@ -1467,4 +1473,186 @@ body.dark-theme .help-card ul {
 body.dark-theme .help-image {
   border-color: var(--dark-border);
   opacity: 0.9;
+}
+
+/* ===== FINDER MODULE ===== */
+
+#finderSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.finder-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  flex: 1;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  height: 100%;
+}
+
+.finder-sidebar,
+.finder-main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+.finder-sidebar {
+  min-width: 300px;
+}
+
+#finderInput {
+  flex: 1;
+  resize: none;
+  border: none;
+  background: transparent;
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--secondary-800);
+}
+
+body.dark-theme #finderInput {
+  color: var(--dark-text-primary);
+}
+
+.tree-view-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.path-result-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--secondary-50);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--secondary-200);
+}
+
+body.dark-theme .path-result-bar {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border);
+}
+
+.path-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--secondary-500);
+}
+
+.path-value-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+#selectedPathResult {
+  flex: 1;
+  color: var(--primary-600);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+body.dark-theme #selectedPathResult {
+  color: var(--primary-400);
+}
+
+/* Tree Nodes */
+.tree-node {
+  margin-left: 1.25rem;
+  position: relative;
+}
+
+.tree-node-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.tree-node-content:hover {
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.tree-node-content.selected {
+  background: rgba(14, 165, 233, 0.15);
+  color: var(--primary-700);
+}
+
+.tree-toggle {
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary-400);
+  transition: transform 0.2s;
+}
+
+.tree-toggle.collapsed i {
+  transform: rotate(-90deg);
+}
+
+.tree-key {
+  color: var(--secondary-800);
+  font-weight: 600;
+}
+
+body.dark-theme .tree-key {
+  color: var(--dark-text-primary);
+}
+
+.tree-value {
+  color: var(--primary-600);
+}
+
+.tree-value.string {
+  color: #059669;
+}
+
+.tree-value.number {
+  color: #d97706;
+}
+
+.tree-value.boolean {
+  color: #7c3aed;
+}
+
+.tree-value.null {
+  color: #94a3b8;
+}
+
+.tree-placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary-400);
+  gap: var(--space-4);
+}
+
+.tree-placeholder i {
+  font-size: 3rem;
+  opacity: 0.2;
+}
+
+.tree-placeholder p {
+  font-size: 0.95rem;
+  max-width: 220px;
+  text-align: center;
 }
