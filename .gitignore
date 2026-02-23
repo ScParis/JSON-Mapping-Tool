@@ -24,3 +24,4 @@ TestResults.xml
 bkp*
 /exemplos
 old/
+node_modules/

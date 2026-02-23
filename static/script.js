@@ -64,9 +64,14 @@ class JSONMapper {
             // Modal elements
             mappingModal: document.getElementById('mappingModal'),
             mappingForm: document.getElementById('mappingForm'),
+            modalSearchInput: document.getElementById('modalSearchInput'),
             closeModalBtn: document.getElementById('closeModalBtn'),
             cancelMappingBtn: document.getElementById('cancelMappingBtn'),
             saveMappingBtn: document.getElementById('saveMappingBtn'),
+
+            // Resizers
+            resizer1: document.getElementById('resizer-1'),
+            resizer2: document.getElementById('resizer-2'),
 
             // Theme and UI
             themeToggle: document.getElementById('themeToggle'),
@@ -109,6 +114,7 @@ class JSONMapper {
         this.elements.closeModalBtn?.addEventListener('click', () => this.closeModal());
         this.elements.cancelMappingBtn?.addEventListener('click', () => this.closeModal());
         this.elements.saveMappingBtn?.addEventListener('click', () => this.saveMapping());
+        this.elements.modalSearchInput?.addEventListener('input', (e) => this.filterMappingFields(e.target.value));
 
         // UI controls
         this.elements.themeToggle?.addEventListener('click', () => this.toggleTheme());
@@ -127,7 +133,87 @@ class JSONMapper {
             btn.addEventListener('click', (e) => this.handleNavigation(e));
         });
 
+        // Modal close generic
+        document.querySelectorAll('.closeModalBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const modal = e.target.closest('.modal');
+                if (modal) modal.classList.remove('active');
+            });
+        });
 
+        // Resizers
+        this.setupResizers();
+    }
+
+    setupResizers() {
+        const grid = document.querySelector('.editors-grid');
+        const resizer1 = this.elements.resizer1;
+        const resizer2 = this.elements.resizer2;
+
+        if (!resizer1 || !resizer2) return;
+
+        let activeResizer = null;
+
+        const onMouseDown = (e) => {
+            activeResizer = e.target;
+            activeResizer.classList.add('resizing');
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        };
+
+        const onMouseMove = (e) => {
+            if (!activeResizer) return;
+
+            const gridRect = grid.getBoundingClientRect();
+            const mouseX = e.clientX - gridRect.left;
+            const totalWidth = gridRect.width;
+
+            let col1, col3, col5;
+
+            if (activeResizer.id === 'resizer-1') {
+                const ratio = Math.max(0.1, Math.min(0.6, mouseX / totalWidth));
+                const remaining = 1 - ratio;
+                col1 = `${ratio * 100}%`;
+                col3 = `${(remaining / 2) * 100}%`;
+                col5 = `${(remaining / 2) * 100}%`;
+            } else {
+                const ratioRight = Math.max(0.1, Math.min(0.6, (totalWidth - mouseX) / totalWidth));
+                const remaining = 1 - ratioRight;
+                col5 = `${ratioRight * 100}%`;
+                col1 = `${(remaining / 2) * 100}%`;
+                col3 = `${(remaining / 2) * 100}%`;
+            }
+
+            grid.style.gridTemplateColumns = `${col1} 4px ${col3} 4px ${col5}`;
+        };
+
+        const onMouseUp = () => {
+            if (activeResizer) {
+                activeResizer.classList.remove('resizing');
+                activeResizer = null;
+            }
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+
+        resizer1.addEventListener('mousedown', onMouseDown);
+        resizer2.addEventListener('mousedown', onMouseDown);
+    }
+
+    filterMappingFields(query) {
+        const q = query.toLowerCase();
+        const fields = this.elements.mappingForm.querySelectorAll('.mapping-field');
+
+        fields.forEach(field => {
+            const text = field.textContent.toLowerCase();
+            if (text.includes(q)) {
+                field.style.display = 'block';
+            } else {
+                field.style.display = 'none';
+            }
+        });
     }
 
     setupTheme() {
@@ -225,19 +311,24 @@ class JSONMapper {
         let keys = [];
 
         if (Array.isArray(json)) {
-            const arrayPrefix = prefix ? `${prefix}[*]` : '[*]';
-            // Adiciona a própria entrada do array para permitir mapear o array todo
-            keys.push(arrayPrefix);
+            json.forEach((item, index) => {
+                const indexedPrefix = prefix ? `${prefix}[${index}]` : `[${index}]`;
 
-            if (json.length > 0 && typeof json[0] === 'object' && json[0] !== null) {
-                keys = keys.concat(this.generateKeysList(json[0], arrayPrefix));
-            }
-        } else {
+                // If it's a primitive in an array, add it. If it's an object, add it and recurse.
+                keys.push(indexedPrefix);
+
+                if (typeof item === 'object' && item !== null) {
+                    keys = keys.concat(this.generateKeysList(item, indexedPrefix));
+                }
+            });
+        } else if (typeof json === 'object' && json !== null) {
             for (const key in json) {
-                if (json.hasOwnProperty(key)) {
+                if (Object.prototype.hasOwnProperty.call(json, key)) {
                     const fullKey = prefix ? `${prefix}.${key}` : key;
 
                     if (typeof json[key] === 'object' && json[key] !== null) {
+                        // Add the object itself as a path option
+                        keys.push(fullKey);
                         keys = keys.concat(this.generateKeysList(json[key], fullKey));
                     } else {
                         keys.push(fullKey);
@@ -426,15 +517,19 @@ class JSONMapper {
 
         // Quando o select muda, mostra o VALOR real da chave selecionada no JSON de origem
         select.addEventListener('change', () => {
+            const fieldContainer = select.closest('.mapping-field');
             if (select.value && this.sourceJson) {
                 try {
                     const value = jmespath.search(this.sourceJson, select.value);
                     previewInput.value = typeof value === 'object' ? JSON.stringify(value) : String(value);
+                    fieldContainer?.classList.add('mapped');
                 } catch (e) {
                     previewInput.value = '(erro ao avaliar)';
+                    fieldContainer?.classList.remove('mapped');
                 }
             } else {
                 previewInput.value = '';
+                fieldContainer?.classList.remove('mapped');
             }
         });
 
@@ -462,10 +557,8 @@ class JSONMapper {
 
         for (const [targetPath, sourcePath] of sortedPaths) {
             try {
-                // O valor no JSON mapeado é o próprio caminho de origem,
-                // convertendo [*] para [0] para representar o índice concreto
-                const displayPath = sourcePath.replace(/\[\*\]/g, '[0]');
-                this.setNestedValue(result, targetPath, displayPath);
+                // Now paths are explicit (e.g., items[0]), so we use them directly
+                this.setNestedValue(result, targetPath, sourcePath);
             } catch (e) {
                 console.warn(`Erro ao mapear ${sourcePath} para ${targetPath}:`, e);
             }
@@ -639,6 +732,10 @@ class JSONMapper {
     }
 
     openModal() {
+        if (this.elements.modalSearchInput) {
+            this.elements.modalSearchInput.value = '';
+            this.filterMappingFields('');
+        }
         this.elements.mappingModal?.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -654,7 +751,11 @@ class JSONMapper {
 
         // Execute mapping to generate the mapped JSON
         this.mappedJson = this.performMapping();
-        this.elements.mappedJson.value = JSON.stringify(this.mappedJson, null, 2);
+
+        // Display with unquoted values
+        const formattedOutput = this.formatMappedJson(this.mappedJson);
+        this.elements.mappedJson.value = formattedOutput;
+
         this.updateStatus('mapped', 'success', 'Mapeamento concluído');
 
         // Update info
@@ -667,6 +768,16 @@ class JSONMapper {
         this.updateLastAction('Mapeamento salvo e executado');
         this.showToast('success', 'Mapeamento Salvo', `${Object.keys(this.mappingConfig).length} campos mapeados`);
         this.closeModal();
+    }
+
+    formatMappedJson(obj) {
+        // First stringify normally with indentation
+        const json = JSON.stringify(obj, null, 2);
+
+        // Use regex to remove quotes from values, but keep them for keys
+        // Matches ": " followed by a quoted string up to the next comma or closing brace
+        // This is a simplified regex that works for typical paths without escaped quotes
+        return json.replace(/: "([^"]+)"/g, ': $1');
     }
 
     // ===== FILE OPERATIONS =====
@@ -702,7 +813,7 @@ class JSONMapper {
             return;
         }
 
-        const dataStr = JSON.stringify(this.mappedJson, null, 2);
+        const dataStr = this.formatMappedJson(this.mappedJson);
         const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
         const exportFileDefaultName = 'mapped-json.json';
@@ -767,7 +878,7 @@ class JSONMapper {
             return;
         }
 
-        const dataStr = JSON.stringify(this.mappedJson, null, 2);
+        const dataStr = this.formatMappedJson(this.mappedJson);
         const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
         const exportFileDefaultName = `mapped-json-${new Date().toISOString().slice(0, 10)}.json`;
@@ -901,8 +1012,8 @@ class JSONMapper {
     }
 
     showHelp() {
-        // Navigate to help page in same window
-        window.location.href = 'jmespath-help.html';
+        const modal = document.getElementById('helpModal');
+        if (modal) modal.classList.add('active');
     }
 
     toggleFullscreen() {
@@ -918,22 +1029,23 @@ class JSONMapper {
     handleNavigation(e) {
         const btn = e.currentTarget;
         const view = btn.dataset.view;
+        const modalId = btn.dataset.modal;
 
-        // Remove active class from all buttons
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        if (modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('active');
+            return;
+        }
 
-        // Handle view changes
         if (view === 'mapper') {
-            // Hide other sections
-            document.getElementById('historySection').style.display = 'none';
-            document.getElementById('settingsSection').style.display = 'none';
+            // Se já estivermos no mapper, não precisamos fazer nada
+            if (btn.classList.contains('active')) return;
+
+            // Remove active de outros botões (exceto o de mapper que vamos ativar)
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
             this.showToast('info', 'Navegação', 'Visualização: Mapeador');
-        } else {
-            // Use HistorySettingsManager for other views
-            if (window.historyManager) {
-                window.historyManager.handleNavigation(view);
-            }
         }
     }
 
@@ -961,6 +1073,8 @@ class JSONMapper {
         // Escape: Close modal
         if (e.key === 'Escape') {
             this.closeModal();
+            // Also close other modals
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
         }
 
         // F11: Fullscreen
@@ -1033,10 +1147,10 @@ class JSONMapper {
 document.addEventListener('DOMContentLoaded', () => {
     const jsonMapper = new JSONMapper();
 
-    // Initialize HistorySettingsManager after JSONMapper is ready
+    // Initialize SettingsManager after JSONMapper is ready
     setTimeout(() => {
-        if (typeof HistorySettingsManager !== 'undefined') {
-            window.historyManager = new HistorySettingsManager(jsonMapper);
+        if (typeof SettingsManager !== 'undefined') {
+            window.settingsManager = new SettingsManager(jsonMapper);
         }
     }, 100);
 });

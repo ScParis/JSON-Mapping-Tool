@@ -1,6 +1,6 @@
-// ===== HISTORY & SETTINGS FUNCTIONALITY =====
+// ===== SETTINGS & HELP FUNCTIONALITY =====
 
-class HistorySettingsManager {
+class SettingsManager {
     constructor(jsonMapper) {
         this.jsonMapper = jsonMapper;
         this.init();
@@ -14,11 +14,9 @@ class HistorySettingsManager {
 
     setupElements() {
         this.elements = {
-            // History elements
-            historySection: document.getElementById('historySection'),
-            historyList: document.getElementById('historyList'),
-            clearHistoryBtn: document.getElementById('clearHistoryBtn'),
-            
+            // Help elements
+            helpSection: document.getElementById('helpSection'),
+
             // Settings elements
             settingsSection: document.getElementById('settingsSection'),
             themeSelect: document.getElementById('themeSelect'),
@@ -33,9 +31,6 @@ class HistorySettingsManager {
     }
 
     setupEventListeners() {
-        // History buttons
-        this.elements.clearHistoryBtn?.addEventListener('click', () => this.clearHistory());
-        
         // Settings buttons
         this.elements.saveSettingsBtn?.addEventListener('click', () => this.saveSettings());
         this.elements.exportDataBtn?.addEventListener('click', () => this.exportData());
@@ -46,14 +41,13 @@ class HistorySettingsManager {
     // ===== NAVIGATION =====
     handleNavigation(view) {
         // Hide all sections
-        this.elements.historySection.style.display = 'none';
+        this.elements.helpSection.style.display = 'none';
         this.elements.settingsSection.style.display = 'none';
-        
+
         // Show selected section
-        switch(view) {
-            case 'history':
-                this.elements.historySection.style.display = 'block';
-                this.loadHistory();
+        switch (view) {
+            case 'help':
+                this.elements.helpSection.style.display = 'block';
                 break;
             case 'settings':
                 this.elements.settingsSection.style.display = 'block';
@@ -62,134 +56,18 @@ class HistorySettingsManager {
         }
     }
 
-    // ===== HISTORY METHODS =====
-    loadHistory() {
-        const history = JSON.parse(localStorage.getItem('mappingHistory') || '[]');
-        this.elements.historyList.innerHTML = '';
-        
-        if (history.length === 0) {
-            this.elements.historyList.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-history"></i>
-                    <p>Nenhum mapeamento no histórico.</p>
-                </div>
-            `;
-            return;
-        }
-        
-        history.forEach((item, index) => {
-            const historyItem = this.createHistoryItem(item, index);
-            this.elements.historyList.appendChild(historyItem);
-        });
-    }
-    
-    createHistoryItem(item, index) {
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        
-        const date = new Date(item.timestamp);
-        const formattedDate = date.toLocaleString('pt-BR');
-        
-        div.innerHTML = `
-            <div class="history-item-header">
-                <div class="history-item-title">Mapeamento #${index + 1}</div>
-                <div class="history-item-date">${formattedDate}</div>
-            </div>
-            <div class="history-item-content">
-                <div class="history-item-preview">
-                    <strong>Origem:</strong> ${this.truncateJson(item.sourceJson)}
-                </div>
-                <div class="history-item-preview">
-                    <strong>Destino:</strong> ${this.truncateJson(item.targetJson)}
-                </div>
-            </div>
-            <div class="history-item-actions">
-                <button class="btn btn-sm btn-primary" onclick="historyManager.loadHistoryItem(${index})">
-                    <i class="fas fa-redo"></i> Carregar
-                </button>
-                <button class="btn btn-sm btn-outline" onclick="historyManager.deleteHistoryItem(${index})">
-                    <i class="fas fa-trash"></i> Excluir
-                </button>
-            </div>
-        `;
-        
-        return div;
-    }
-    
-    truncateJson(jsonString) {
-        if (!jsonString) return 'Vazio';
-        try {
-            const parsed = JSON.parse(jsonString);
-            const str = JSON.stringify(parsed);
-            return str.length > 100 ? str.substring(0, 100) + '...' : str;
-        } catch {
-            return jsonString.length > 100 ? jsonString.substring(0, 100) + '...' : jsonString;
-        }
-    }
-    
-    loadHistoryItem(index) {
-        const history = JSON.parse(localStorage.getItem('mappingHistory') || '[]');
-        const item = history[index];
-        
-        if (item) {
-            this.jsonMapper.elements.sourceJson.value = item.sourceJson;
-            this.jsonMapper.elements.targetJson.value = item.targetJson;
-            this.jsonMapper.elements.mappedJson.value = item.mappedJson || '';
-            this.jsonMapper.mappingConfig = item.mappingConfig || {};
-            
-            // Switch to mapper view
-            document.querySelector('.nav-btn[data-view="mapper"]').click();
-            
-            this.jsonMapper.showToast('success', 'Histórico', 'Mapeamento carregado com sucesso!');
-        }
-    }
-    
-    deleteHistoryItem(index) {
-        const history = JSON.parse(localStorage.getItem('mappingHistory') || '[]');
-        history.splice(index, 1);
-        localStorage.setItem('mappingHistory', JSON.stringify(history));
-        this.loadHistory();
-        this.jsonMapper.showToast('info', 'Histórico', 'Item excluído do histórico.');
-    }
-    
-    clearHistory() {
-        if (confirm('Tem certeza que deseja limpar todo o histórico?')) {
-            localStorage.removeItem('mappingHistory');
-            this.loadHistory();
-            this.jsonMapper.showToast('info', 'Histórico', 'Histórico limpo com sucesso.');
-        }
-    }
-    
-    addToHistory() {
-        if (!this.jsonMapper.sourceJson || !this.jsonMapper.targetJson) return;
-        
-        const history = JSON.parse(localStorage.getItem('mappingHistory') || '[]');
-        const newItem = {
-            sourceJson: this.jsonMapper.elements.sourceJson.value,
-            targetJson: this.jsonMapper.elements.targetJson.value,
-            mappedJson: this.jsonMapper.elements.mappedJson.value,
-            mappingConfig: this.jsonMapper.mappingConfig,
-            timestamp: new Date().toISOString()
-        };
-        
-        history.unshift(newItem);
-        if (history.length > 50) history.pop();
-        
-        localStorage.setItem('mappingHistory', JSON.stringify(history));
-    }
-
     // ===== SETTINGS METHODS =====
     loadSettings() {
         const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
-        
+
         this.elements.themeSelect.value = settings.theme || 'system';
         this.elements.fontSizeSelect.value = settings.fontSize || 'medium';
         this.elements.autoSaveCheck.checked = settings.autoSave !== false;
         this.elements.notificationsCheck.checked = settings.notifications !== false;
-        
+
         this.applySettings(settings);
     }
-    
+
     saveSettings() {
         const settings = {
             theme: this.elements.themeSelect.value,
@@ -197,12 +75,12 @@ class HistorySettingsManager {
             autoSave: this.elements.autoSaveCheck.checked,
             notifications: this.elements.notificationsCheck.checked
         };
-        
+
         localStorage.setItem('appSettings', JSON.stringify(settings));
         this.applySettings(settings);
         this.jsonMapper.showToast('success', 'Configurações', 'Configurações salvas com sucesso!');
     }
-    
+
     applySettings(settings) {
         // Apply theme
         if (settings.theme === 'dark') {
@@ -210,7 +88,7 @@ class HistorySettingsManager {
         } else if (settings.theme === 'light') {
             document.body.classList.remove('dark-theme');
         }
-        
+
         // Apply font size
         const root = document.documentElement;
         root.style.fontSize = {
@@ -219,25 +97,24 @@ class HistorySettingsManager {
             large: '18px'
         }[settings.fontSize] || '16px';
     }
-    
+
     exportData() {
         const data = {
             settings: JSON.parse(localStorage.getItem('appSettings') || '{}'),
-            history: JSON.parse(localStorage.getItem('mappingHistory') || '[]'),
             exportDate: new Date().toISOString()
         };
-        
+
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `json-mapper-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `json-mapper-settings-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        
-        this.jsonMapper.showToast('success', 'Dados', 'Dados exportados com sucesso!');
+
+        this.jsonMapper.showToast('success', 'Dados', 'Configurações exportadas com sucesso!');
     }
-    
+
     importData() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -249,18 +126,13 @@ class HistorySettingsManager {
                 reader.onload = (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
-                        
+
                         if (data.settings) {
                             localStorage.setItem('appSettings', JSON.stringify(data.settings));
                         }
-                        
-                        if (data.history) {
-                            localStorage.setItem('mappingHistory', JSON.stringify(data.history));
-                        }
-                        
+
                         this.loadSettings();
-                        this.loadHistory();
-                        this.jsonMapper.showToast('success', 'Dados', 'Dados importados com sucesso!');
+                        this.jsonMapper.showToast('success', 'Dados', 'Configurações importadas com sucesso!');
                     } catch (error) {
                         this.jsonMapper.showToast('error', 'Dados', 'Erro ao importar dados!');
                     }
@@ -270,17 +142,24 @@ class HistorySettingsManager {
         };
         input.click();
     }
-    
+
     resetData() {
-        if (confirm('Tem certeza que deseja restaurar as configurações padrão? Isso irá limpar todo o histórico e configurações.')) {
+        if (confirm('Tem certeza que deseja restaurar as configurações padrão?')) {
             localStorage.removeItem('appSettings');
-            localStorage.removeItem('mappingHistory');
             this.loadSettings();
-            this.loadHistory();
             this.jsonMapper.showToast('info', 'Configurações', 'Configurações restauradas com sucesso!');
         }
     }
 }
 
 // Global variable for access
-let historyManager;
+let settingsManager;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait for the main app to initialize, then attach settings manager
+    setTimeout(() => {
+        if (window.app) {
+            window.settingsManager = new SettingsManager(window.app);
+        }
+    }, 100);
+});
