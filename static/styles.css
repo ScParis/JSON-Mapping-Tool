@@ -135,7 +135,8 @@ body {
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: var(--secondary-50);
 }
 
@@ -1489,7 +1490,9 @@ body.dark-theme .help-image {
   flex: 1;
   gap: var(--space-4);
   padding: var(--space-4);
-  height: 100%;
+  height: calc(100vh - 60px);
+  /* 100vh - header */
+  overflow: hidden;
 }
 
 .finder-sidebar,
@@ -1533,9 +1536,11 @@ body.dark-theme #finderInput {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  background: var(--secondary-50);
+  background: var(--secondary-100);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--secondary-200);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  z-index: 5;
 }
 
 body.dark-theme .path-result-bar {
