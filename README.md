@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![JSON Mapper Logo](https://img.shields.io/badge/JSON%20Mapper-v2.0-blue?style=for-the-badge)
+![JSON Mapper Logo](https://img.shields.io/badge/JSON%20Mapper-v2.2-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 ![JMESPath](https://img.shields.io/badge/JMESPath-0.16.0-orange?style=for-the-badge)
 
@@ -32,6 +32,11 @@ Veja como é simples carregar exemplos e executar a transformação de dados.
 Localize caminhos complexos instantaneamente clicando na árvore de nós.
 
 ![JSON Finder](docs/images/finder-search.png)
+
+### 🎓 Tutorial JMESPath Interativo
+Aprenda JMESPath do básico ao avançado com exemplos práticos e executáveis.
+
+![Tutorial JMESPath](docs/images/tutorial-interactive.png)
 
 ## 🌐 Teste Agora!
 
@@ -75,10 +80,12 @@ Localize caminhos complexos instantaneamente clicando na árvore de nós.
 - **JMESPath Integration**: Usa expressões poderosas para transformações
 
 ### 🎓 **Sistema Educacional JMESPath**
-- **Tutorial Interativo**: 4 exemplos do básico ao avançado
-- **Playground Funcional**: Teste expressões em tempo real
-- **Referência Completa**: 12 operações documentadas
-- **Debug Detalhado**: Logs para troubleshooting
+- **Tutorial Completo**: 5 módulos progressivos do básico ao avançado
+- **Exemplos Interativos**: 10+ exemplos executáveis em tempo real
+- **Progress Tracking**: Acompanhamento do aprendizado com persistência
+- **Código Copiável**: Botões para copiar expressões e exemplos
+- **Referência Completa**: Documentação detalhada de todas as operações
+- **Debug Detalhado**: Logs e feedback para troubleshooting
 
 ### 🚀 **Recursos de Produtividade**
 - **Atalhos de Teclado**: Ctrl+S (salvar), Ctrl+N (novo), Ctrl+O (abrir)
@@ -154,6 +161,60 @@ Localize caminhos complexos instantaneamente clicando na árvore de nós.
 4. Clique no valor desejado para ver o caminho absoluto
 5. Clique em "Copiar Caminho" para usar no configurador de mapeamento
 ```
+
+---
+
+## 🎓 Tutorial JMESPath Interativo
+
+### **Módulos do Tutorial**
+
+O JSON Mapper inclui um tutorial completo de JMESPath com 5 módulos progressivos:
+
+#### **📚 Módulo 1: Básico**
+- Fundamentos do JMESPath
+- Sintaxe básica e operadores
+- Acesso a propriedades e arrays
+- Dicas importantes para iniciantes
+
+#### **🔍 Módulo 2: Filtros**
+- Operadores de comparação (==, >, <, !=)
+- Operadores lógicos (&&, ||, !)
+- Filtros complexos e aninhados
+- Boas práticas de filtragem
+
+#### **📊 Módulo 3: Projeções**
+- Lista projeção (seleção de campos)
+- Hash projeção (criação de objetos)
+- Transformações avançadas
+- Pipe operator
+
+#### **🧮 Módulo 4: Funções**
+- Funções de agregação (sum, length, max, min)
+- Funções de string (upper_case, split, join)
+- Funções de array (sort_by, reverse)
+- Composição de funções
+
+#### **🚀 Módulo 5: Avançado**
+- Pipe operator encadeado
+- Expressões condicionais ternárias
+- Consultas aninhadas complexas
+- Técnicas profissionais
+
+### **Recursos Educacionais**
+
+- **10+ Exemplos Interativos**: Execute expressões JMESPath em tempo real
+- **Progress Tracking**: Acompanhe seu aprendizado com persistência local
+- **Código Copiável**: Copie exemplos para uso em seus projetos
+- **Explicações Detalhadas**: Cada conceito com explicação clara
+- **Layout Responsivo**: Aprenda em qualquer dispositivo
+
+### **Como Acessar o Tutorial**
+
+1. Abra o JSON Mapper
+2. Clique no botão **"Tutorial"** no header
+3. Navegue pelos módulos progressivamente
+4. Execute os exemplos interativos
+5. Pratique com seus próprios dados
 
 ---
 
@@ -502,7 +563,17 @@ R: Não. Todo o processamento é feito localmente no seu navegador, garantindo p
 
 ## 📝 Changelog
 
-### v2.1 (Atual)
+### v2.2 (Atual - Fev 2026)
+- 🎓 **Tutorial JMESPath Completo**: 5 módulos progressivos do básico ao avançado
+- 🎯 **10+ Exemplos Interativos**: Execute expressões JMESPath em tempo real
+- 📊 **Progress Tracking**: Acompanhamento do aprendizado com persistência
+- 🎨 **Layout Otimizado**: Interface ocupa 100% da largura do navegador
+- 🌓 **Tema Unificado**: Controle de tema simplificado via botão único
+- 📱 **Responsividade Aprimorada**: Design adaptativo para todos os dispositivos
+- 🔗 **Links GitHub**: Acesso direto ao repositório no rodapé
+- 🗑️ **Interface Limpa**: Remoção de botões/configurações redundantes
+
+### v2.1
 - 🔍 **Novo Módulo Finder**: Explorador interativo de JSON para facilitar a localização de caminhos.
 - 🔢 **Caminhos Indexados**: Suporte nativo a índices em arrays (ex: `itens[0]`) no mapeador.
 - 🚫 **Valores Unquoted**: Opção para exportar valores sem aspas no JSON mapeado (compatibilidade JMESPath).
