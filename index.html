@@ -10,9 +10,10 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="static/styles.css?v=4">
+    <link rel="stylesheet" href="static/styles.css?v=6">
     <link rel="stylesheet" href="static/history-settings.css">
     <link rel="stylesheet" href="static/tutorial.css">
+    <link rel="stylesheet" href="static/changelog.css">
 </head>
 
 <body>
@@ -43,6 +44,10 @@
                     <button class="nav-btn" data-view="tutorial">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Tutorial</span>
+                    </button>
+                    <button class="nav-btn" data-view="changelog">
+                        <i class="fas fa-history"></i>
+                        <span>Changelog</span>
                     </button>
                     <button class="nav-btn" data-modal="helpModal">
                         <i class="fas fa-book"></i>
@@ -869,6 +874,11 @@ empresa.departamentos[*].funcionarios[?cargo=='gerente'].{nome: nome, salario: s
             </div>
         </div>
 
+        <!-- Changelog Section -->
+        <div id="changelogSection" class="changelog-container">
+            <!-- Changelog content will be dynamically loaded -->
+        </div>
+
         <!-- Loading Overlay -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="loading-spinner">
@@ -883,6 +893,7 @@ empresa.departamentos[*].funcionarios[?cargo=='gerente'].{nome: nome, salario: s
     <script src="static/history-settings.js"></script>
     <script src="static/finder.js"></script>
     <script src="static/tutorial.js"></script>
+    <script src="static/changelog.js"></script>
 </body>
 
 </html>

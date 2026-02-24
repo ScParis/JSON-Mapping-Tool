@@ -1064,23 +1064,44 @@ class JSONMapper {
                 this.elements.mapperSection.style.display = 'flex';
                 this.elements.finderSection.style.display = 'none';
                 const tutorialSection = document.getElementById('tutorialSection');
+                const changelogSection = document.getElementById('changelogSection');
                 if (tutorialSection) tutorialSection.style.display = 'none';
+                if (changelogSection) changelogSection.style.display = 'none';
                 this.showToast('info', 'Navegação', 'Visualização: Mapeador');
             } else if (view === 'finder') {
                 this.elements.mapperSection.style.display = 'none';
                 this.elements.finderSection.style.display = 'flex';
                 const tutorialSection = document.getElementById('tutorialSection');
+                const changelogSection = document.getElementById('changelogSection');
                 if (tutorialSection) tutorialSection.style.display = 'none';
+                if (changelogSection) changelogSection.style.display = 'none';
                 this.showToast('info', 'Navegação', 'Visualização: Finder');
             } else if (view === 'tutorial') {
                 this.elements.mapperSection.style.display = 'none';
                 this.elements.finderSection.style.display = 'none';
                 const tutorialSection = document.getElementById('tutorialSection');
+                const changelogSection = document.getElementById('changelogSection');
                 if (tutorialSection) {
                     tutorialSection.style.display = 'block';
                     tutorialSection.classList.add('active');
                 }
+                if (changelogSection) changelogSection.style.display = 'none';
                 this.showToast('info', 'Navegação', 'Visualização: Tutorial JMESPath');
+            } else if (view === 'changelog') {
+                this.elements.mapperSection.style.display = 'none';
+                this.elements.finderSection.style.display = 'none';
+                const tutorialSection = document.getElementById('tutorialSection');
+                const changelogSection = document.getElementById('changelogSection');
+                if (tutorialSection) tutorialSection.style.display = 'none';
+                if (changelogSection) {
+                    changelogSection.style.display = 'block';
+                    changelogSection.classList.add('active');
+                    // Initialize changelog if manager is available
+                    if (window.changelogManager) {
+                        window.changelogManager.showChangelog();
+                    }
+                }
+                this.showToast('info', 'Navegação', 'Visualização: Histórico de Alterações');
             }
         }
     }
