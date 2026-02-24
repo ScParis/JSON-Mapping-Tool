@@ -17,22 +17,19 @@ class SettingsManager {
             // Help elements
             helpSection: document.getElementById('helpSection'),
 
-            // Settings elements
-            settingsSection: document.getElementById('settingsSection'),
-            themeSelect: document.getElementById('themeSelect'),
+            // Settings elements (removidos - tema controlado por themeToggle)
+            // settingsSection: document.getElementById('settingsSection'), // Removido
             fontSizeSelect: document.getElementById('fontSizeSelect'),
             autoSaveCheck: document.getElementById('autoSaveCheck'),
             notificationsCheck: document.getElementById('notificationsCheck'),
             exportDataBtn: document.getElementById('exportDataBtn'),
             importDataBtn: document.getElementById('importDataBtn'),
-            resetDataBtn: document.getElementById('resetDataBtn'),
-            saveSettingsBtn: document.getElementById('saveSettingsBtn')
+            resetDataBtn: document.getElementById('resetDataBtn')
         };
     }
 
     setupEventListeners() {
-        // Settings buttons
-        this.elements.saveSettingsBtn?.addEventListener('click', () => this.saveSettings());
+        // Settings buttons (removido saveSettingsBtn - tema controlado por themeToggle)
         this.elements.exportDataBtn?.addEventListener('click', () => this.exportData());
         this.elements.importDataBtn?.addEventListener('click', () => this.importData());
         this.elements.resetDataBtn?.addEventListener('click', () => this.resetData());
@@ -42,17 +39,14 @@ class SettingsManager {
     handleNavigation(view) {
         // Hide all sections
         this.elements.helpSection.style.display = 'none';
-        this.elements.settingsSection.style.display = 'none';
+        // Removido settingsSection - modal de configurações removido
 
         // Show selected section
         switch (view) {
             case 'help':
                 this.elements.helpSection.style.display = 'block';
                 break;
-            case 'settings':
-                this.elements.settingsSection.style.display = 'block';
-                this.loadSettings();
-                break;
+            // Removido case 'settings' - modal de configurações removido
         }
     }
 
@@ -60,7 +54,7 @@ class SettingsManager {
     loadSettings() {
         const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
 
-        this.elements.themeSelect.value = settings.theme || 'system';
+        // Removido themeSelect - tema controlado por themeToggle
         this.elements.fontSizeSelect.value = settings.fontSize || 'medium';
         this.elements.autoSaveCheck.checked = settings.autoSave !== false;
         this.elements.notificationsCheck.checked = settings.notifications !== false;
@@ -70,7 +64,7 @@ class SettingsManager {
 
     saveSettings() {
         const settings = {
-            theme: this.elements.themeSelect.value,
+            // Removido theme - controlado por themeToggle
             fontSize: this.elements.fontSizeSelect.value,
             autoSave: this.elements.autoSaveCheck.checked,
             notifications: this.elements.notificationsCheck.checked
@@ -82,13 +76,8 @@ class SettingsManager {
     }
 
     applySettings(settings) {
-        // Apply theme
-        if (settings.theme === 'dark') {
-            document.body.classList.add('dark-theme');
-        } else if (settings.theme === 'light') {
-            document.body.classList.remove('dark-theme');
-        }
-
+        // Removido apply theme - controlado por themeToggle
+        
         // Apply font size
         const root = document.documentElement;
         root.style.fontSize = {

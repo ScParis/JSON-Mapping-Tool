@@ -12,6 +12,7 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="static/styles.css?v=4">
     <link rel="stylesheet" href="static/history-settings.css">
+    <link rel="stylesheet" href="static/tutorial.css">
 </head>
 
 <body>
@@ -39,13 +40,13 @@
                         <i class="fas fa-search"></i>
                         <span>Finder</span>
                     </button>
+                    <button class="nav-btn" data-view="tutorial">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Tutorial</span>
+                    </button>
                     <button class="nav-btn" data-modal="helpModal">
                         <i class="fas fa-book"></i>
                         <span>Ajuda</span>
-                    </button>
-                    <button class="nav-btn" data-modal="settingsModal">
-                        <i class="fas fa-cog"></i>
-                        <span>Config</span>
                     </button>
                 </nav>
             </div>
@@ -462,38 +463,6 @@
             </div>
         </div>
 
-        <!-- Settings Modal -->
-        <div class="modal" id="settingsModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title"><i class="fas fa-cog"></i> Configurações</h2>
-                    <button class="modal-close closeModalBtn">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="settings-grid">
-                        <div class="setting-card">
-                            <h3>Aparência</h3>
-                            <div class="setting-item">
-                                <label>Tema</label>
-                                <select id="themeSelect">
-                                    <option value="light">Claro</option>
-                                    <option value="dark">Escuro</option>
-                                    <option value="system">Sistema</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="saveSettingsBtn" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Salvar
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Mapping Modal -->
         <div class="modal" id="mappingModal">
             <div class="modal-content">
@@ -527,6 +496,371 @@
         <!-- Toast Container -->
         <div class="toast-container" id="toastContainer"></div>
 
+        <!-- Tutorial Section -->
+        <div id="tutorialSection" class="tutorial-container">
+            <div class="tutorial-header">
+                <h1><i class="fas fa-graduation-cap"></i> Tutorial JMESPath</h1>
+                <p>Aprenda a dominar JMESPath com exemplos interativos e explicações detalhadas</p>
+            </div>
+
+            <!-- Progress Tracker -->
+            <div class="progress-tracker">
+                <div class="progress-step" data-section="basics">
+                    <div class="progress-icon">1</div>
+                    <div class="progress-label">Básico</div>
+                </div>
+                <div class="progress-step" data-section="filters">
+                    <div class="progress-icon">2</div>
+                    <div class="progress-label">Filtros</div>
+                </div>
+                <div class="progress-step" data-section="projections">
+                    <div class="progress-icon">3</div>
+                    <div class="progress-label">Projeções</div>
+                </div>
+                <div class="progress-step" data-section="functions">
+                    <div class="progress-icon">4</div>
+                    <div class="progress-label">Funções</div>
+                </div>
+                <div class="progress-step" data-section="advanced">
+                    <div class="progress-icon">5</div>
+                    <div class="progress-label">Avançado</div>
+                </div>
+            </div>
+
+            <!-- Tutorial Navigation -->
+            <div class="tutorial-nav">
+                <button class="tutorial-nav-btn active" data-section="basics">
+                    <i class="fas fa-play-circle"></i>
+                    Básico
+                </button>
+                <button class="tutorial-nav-btn" data-section="filters">
+                    <i class="fas fa-filter"></i>
+                    Filtros
+                </button>
+                <button class="tutorial-nav-btn" data-section="projections">
+                    <i class="fas fa-project-diagram"></i>
+                    Projeções
+                </button>
+                <button class="tutorial-nav-btn" data-section="functions">
+                    <i class="fas fa-calculator"></i>
+                    Funções
+                </button>
+                <button class="tutorial-nav-btn" data-section="advanced">
+                    <i class="fas fa-code"></i>
+                    Avançado
+                </button>
+            </div>
+
+            <!-- Tutorial Content -->
+            <div id="basics-content" class="tutorial-content active">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-play-circle"></i> Fundamentos do JMESPath</h2>
+                    <p>JMESPath é uma linguagem de consulta para JSON que permite extrair e transformar dados de forma poderosa e elegante.</p>
+                    
+                    <h3><i class="fas fa-info-circle"></i> O que é JMESPath?</h3>
+                    <p>JMESPath (JSON Matching Expression Path) é uma linguagem que permite:</p>
+                    <ul>
+                        <li>Extrair dados específicos de estruturas JSON complexas</li>
+                        <li>Filtrar elementos com base em condições</li>
+                        <li>Transformar e reestruturar dados</li>
+                        <li>Realizar cálculos e agregações</li>
+                    </ul>
+
+                    <div class="code-block" data-language="JSON">
+                        <button class="copy-btn">Copiar</button>
+                        <pre>{
+  "usuario": {
+    "nome": "João Silva",
+    "email": "joao@example.com",
+    "idade": 30,
+    "endereco": {
+      "rua": "Rua das Flores",
+      "cidade": "São Paulo"
+    }
+  }
+}</pre>
+                    </div>
+
+                    <h3><i class="fas fa-arrow-right"></i> Sintaxe Básica</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-dot-circle"></i> Acesso a Propriedades</h4>
+                            <p>Use ponto (.) para acessar propriedades:</p>
+                            <div class="feature-example">usuario.nome</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-list"></i> Acesso a Arrays</h4>
+                            <p>Use colchetes [] para acessar elementos:</p>
+                            <div class="feature-example">produtos[0].preco</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-asterisk"></i> Wildcard</h4>
+                            <p>Use * para selecionar todos os elementos:</p>
+                            <div class="feature-example">usuarios[*].nome</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-compress"></i> Multi-seleção</h4>
+                            <p>Selecione múltiplos campos:</p>
+                            <div class="feature-example">usuario.[nome, email]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Dicas Importantes</h4>
+                    <ul>
+                        <li>JMESPath é case-sensitive - respeite maiúsculas e minúsculas</li>
+                        <li>Índices de arrays começam em 0, não em 1</li>
+                        <li>Use aspas para strings com caracteres especiais</li>
+                        <li>Combine operadores para criar consultas complexas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="filters-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-filter"></i> Filtrando Dados</h2>
+                    <p>Aprenda a filtrar elementos com base em condições específicas usando expressões poderosas.</p>
+                    
+                    <h3><i class="fas fa-equals"></i> Operadores de Comparação</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Igualdade</h4>
+                            <div class="feature-example">usuarios[?ativo==true]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Maior/Menor</h4>
+                            <div class="feature-example">produtos[?preco>100]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Diferente</h4>
+                            <div class="feature-example">itens[?categoria!='eletronicos']</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Contém</h4>
+                            <div class="feature-example">nomes[?contains(@, 'João')]</div>
+                        </div>
+                    </div>
+
+                    <h3><i class="fas fa-link"></i> Operadores Lógicos</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># AND lógico
+usuarios[?ativo==true && idade>25]
+
+# OR lógico  
+produtos[?categoria=='eletronicos' || preco>500]
+
+# NOT lógico
+itens[?!contains(nome, 'teste')]</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Atenção</h4>
+                    <p>Lembre-se de usar == para igualdade em JMESPath, não = como em muitas linguagens de programação.</p>
+                </div>
+            </div>
+
+            <div id="projections-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-project-diagram"></i> Projeções e Transformações</h2>
+                    <p>Aprenda a reestruturar dados criando novos objetos e selecionando campos específicos.</p>
+                    
+                    <h3><i class="fas fa-object-group"></i> Tipos de Projeções</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Lista Projeção</h4>
+                            <p>Seleciona campos como array:</p>
+                            <div class="feature-example">usuarios[*].[nome, email]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Hash Projeção</h4>
+                            <p>Cria novos objetos:</p>
+                            <div class="feature-example">usuarios[*].{nome: nome, email: email}</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Flatten Projeção</h4>
+                            <p>Achata arrays aninhados:</p>
+                            <div class="feature-example">dados[][]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Pipe Projeção</h4>
+                            <p>Encadeia operações:</p>
+                            <div class="feature-example">usuarios[?ativo==true] | [0]</div>
+                        </div>
+                    </div>
+
+                    <h3><i class="fas fa-magic"></i> Transformações Avançadas</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Concatenar strings
+usuarios[*].{nomeCompleto: nome + ' ' + sobrenome}
+
+# Expressões matemáticas
+produtos[*].{precoComDesconto: preco * 0.9}
+
+# Condicionais
+itens[*].{status: estoque > 0 ? 'Disponível' : 'Esgotado'}</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+            </div>
+
+            <div id="functions-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-calculator"></i> Funções Integradas</h2>
+                    <p>JMESPath oferece várias funções úteis para processamento de dados.</p>
+                    
+                    <h3><i class="fas fa-chart-bar"></i> Funções de Agregação</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>sum()</h4>
+                            <p>Soma valores numéricos:</p>
+                            <div class="feature-example">sum(vendas[*].valor)</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>length()</h4>
+                            <p>Conta elementos:</p>
+                            <div class="feature-example">length(usuarios)</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>max()/min()</h4>
+                            <p>Valores máximo/mínimo:</p>
+                            <div class="feature-example">max(produtos[*].preco)</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>avg()</h4>
+                            <p>Média aritmética:</p>
+                            <div class="feature-example">avg(notas[*])</div>
+                        </div>
+                    </div>
+
+                    <h3><i class="fas fa-font"></i> Funções de String</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Conversão de case
+nomes[*].upper_case(@)
+nomes[*].lower_case(@)
+
+# Manipulação
+split(texto, ' ')
+join(array, ', ')
+reverse(string)
+
+# Verificação
+contains(texto, 'buscar')
+starts_with(texto, 'prefixo')
+ends_with(texto, 'sufixo')</pre>
+                    </div>
+
+                    <h3><i class="fas fa-sort"></i> Funções de Array</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Ordenação
+sort_by(produtos, &preco)
+reverse(produtos)
+
+# União e interseção
+union(array1, array2)
+difference(array1, array2)</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+            </div>
+
+            <div id="advanced-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-code"></i> Técnicas Avançadas</h2>
+                    <p>Combine tudo o que você aprendeu para criar consultas complexas e poderosas.</p>
+                    
+                    <h3><i class="fas fa-pipe"></i> Pipe Operator</h3>
+                    <p>O operador | permite encadear múltiplas operações:</p>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Exemplo complexo: filtrar -> ordenar -> limitar
+usuarios[?ativo==true] | sort_by(@, &idade) | [0:5]
+
+# Transformação completa
+vendas[?valor>100] | {total: sum([].valor), quantidade: length(@)}</pre>
+                    </div>
+
+                    <h3><i class="fas fa-code-branch"></i> Expressões Condicionais</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Ternário completo
+produtos[*].{
+    nome: nome,
+    status: estoque > 10 ? 'Alto' : estoque > 0 ? 'Baixo' : 'Esgotado',
+    precoFinal: categoria == 'premium' ? preco * 1.2 : preco
+}</pre>
+                    </div>
+
+                    <h3><i class="fas fa-layer-group"></i> Consultas Aninhadas Complexas</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Extraindo dados de estruturas profundas
+empresa.departamentos[*].funcionarios[?cargo=='gerente'].{nome: nome, salario: salario}
+
+# Agregação múltipla
+{
+    totalVendas: sum(vendas[*].valor),
+    mediaVendas: avg(vendas[*].valor),
+    maiorVenda: max(vendas[*].valor),
+    vendedores: length(vendas[*].vendedor | unique(@))
+}</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-trophy"></i> Próximos Passos</h2>
+                    <p>Parabéns! Você completou o tutorial básico do JMESPath. Aqui estão algumas sugestões para continuar aprendendo:</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-book"></i> Documentação Oficial</h4>
+                            <p>Consulte a documentação completa do JMESPath para todos os detalhes.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-flask"></i> Playground</h4>
+                            <p>Pratique com diferentes dados e cenários no playground interativo.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-puzzle-piece"></i> Casos Reais</h4>
+                            <p>Apply JMESPath em projetos reais para solidificar seu conhecimento.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-users"></i> Comunidade</h4>
+                            <p>Participe de fóruns e comunidades para aprender com outros usuários.</p>
+                        </div>
+                    </div>
+
+                    <div class="tips-box">
+                        <h4><i class="fas fa-star"></i> Dica Final</h4>
+                        <p>A prática leva à perfeição! Comece com consultas simples e gradualmente aumente a complexidade. O JSON Mapper é uma ótima ferramenta para testar suas expressões JMESPath.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Loading Overlay -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="loading-spinner">
@@ -540,6 +874,7 @@
     <script src="static/script.js?v=6"></script>
     <script src="static/history-settings.js"></script>
     <script src="static/finder.js"></script>
+    <script src="static/tutorial.js"></script>
 </body>
 
 </html>

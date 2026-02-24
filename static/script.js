@@ -1063,11 +1063,24 @@ class JSONMapper {
             if (view === 'mapper') {
                 this.elements.mapperSection.style.display = 'flex';
                 this.elements.finderSection.style.display = 'none';
+                const tutorialSection = document.getElementById('tutorialSection');
+                if (tutorialSection) tutorialSection.style.display = 'none';
                 this.showToast('info', 'Navegação', 'Visualização: Mapeador');
             } else if (view === 'finder') {
                 this.elements.mapperSection.style.display = 'none';
                 this.elements.finderSection.style.display = 'flex';
+                const tutorialSection = document.getElementById('tutorialSection');
+                if (tutorialSection) tutorialSection.style.display = 'none';
                 this.showToast('info', 'Navegação', 'Visualização: Finder');
+            } else if (view === 'tutorial') {
+                this.elements.mapperSection.style.display = 'none';
+                this.elements.finderSection.style.display = 'none';
+                const tutorialSection = document.getElementById('tutorialSection');
+                if (tutorialSection) {
+                    tutorialSection.style.display = 'block';
+                    tutorialSection.classList.add('active');
+                }
+                this.showToast('info', 'Navegação', 'Visualização: Tutorial JMESPath');
             }
         }
     }
