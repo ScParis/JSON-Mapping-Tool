@@ -1,16 +1,17 @@
 {
   "name": "dev-studio",
   "version": "1.0.0",
-  "description": "",
+  "description": "Dev Studio — Toolkit completo para desenvolvimento: JSON Mapper, Mock Interceptor, JWT, Diff, Regex, SQL e mais.",
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["dev-studio", "json-mapper", "mock-interceptor", "jwt", "diff", "regex", "sql"],
+  "author": "ScParis",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "jmespath": "^0.16.0"
   }
 }

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Uso - JSON Mapper</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="static/styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .dark-theme body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .legal-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme .legal-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+        }
+
+        .legal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .legal-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .legal-header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .dark-theme .legal-header p {
+            color: #94a3b8;
+        }
+
+        .legal-content h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #0c4a6e;
+        }
+
+        .dark-theme .legal-content h2 {
+            color: #7dd3fc;
+        }
+
+        .legal-content p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+            color: #334155;
+        }
+
+        .dark-theme .legal-content p {
+            color: #cbd5e1;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            color: #0ea5e9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="dark-theme">
+    <div class="legal-card">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Voltar para o App
+        </a>
+
+        <header class="legal-header">
+            <h1>Termos de Uso</h1>
+            <p>Última atualização: 23 de Fevereiro de 2026</p>
+        </header>
+
+        <div class="legal-content">
+            <h2>1. Aceitação dos Termos</h2>
+            <p>Ao utilizar o <strong>JSON Mapper</strong>, você concorda com estes termos. Se você não concordar com
+                qualquer termo, interrompa o uso da ferramenta imediatamente.</p>
+
+            <h2>2. Licença MIT</h2>
+            <p>Esta ferramenta é distribuída sob a licença MIT. Isso significa que você pode usar, copiar, modificar e
+                distribuir o software livremente, desde que inclua o aviso de copyright original.</p>
+
+            <h2>3. Uso do Software</h2>
+            <p>O JSON Mapper é fornecido "no estado em que se encontra" (as is), sem garantias de qualquer tipo,
+                expressas ou implícitas. O uso da ferramenta é por sua conta e risco.</p>
+
+            <h2>4. Ausência de Garantias</h2>
+            <p>Não garantimos que a ferramenta estará sempre disponível, livre de erros ou que os resultados do
+                mapeamento serão 100% precisos em todos os cenários complexos do JMESPath. É responsabilidade do usuário
+                validar os resultados gerados.</p>
+
+            <h2>5. Limitação de Responsabilidade</h2>
+            <p>Em nenhuma circunstância os autores ou detentores de copyright serão responsáveis por quaisquer danos,
+                reclamações ou outras responsabilidades decorrentes do uso desta ferramenta.</p>
+
+            <h2>6. Propriedade Intelectual</h2>
+            <p>O design, logotipos e scripts originais são propriedade do projeto JSON Mapper, protegidos pelas leis de
+                copyright e distribuídos conforme a Licença MIT anexada ao código-fonte.</p>
+        </div>
+
+        <div class="footer-note">
+            &copy; 2026 JSON Mapper - Professional Data Mapping Tool<br>
+            Desenvolvido por <a href="https://github.com/ScParis" target="_blank"
+                style="color: #0ea5e9; text-decoration: none; font-weight: 500;">ScParis</a>
+        </div>
+    </div>
+
+    <script>
+        // Apply theme from localStorage
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.remove('dark-theme');
+        }
+    </script>
+</body>
+
+</html>

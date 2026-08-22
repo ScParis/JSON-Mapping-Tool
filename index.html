@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Mapper - Ferramenta de Mapeamento de Dados</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="static/styles.css?v=6">
+    <link rel="stylesheet" href="static/history-settings.css">
+    <link rel="stylesheet" href="static/tutorial.css">
+    <link rel="stylesheet" href="static/changelog.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header Moderno -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon small">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>JSON Mapper</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <nav class="header-nav">
+                    <button class="nav-btn active" data-view="mapper">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Mapeador</span>
+                    </button>
+                    <button class="nav-btn" data-view="finder">
+                        <i class="fas fa-search"></i>
+                        <span>Finder</span>
+                    </button>
+                    <button class="nav-btn" data-view="tutorial">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Tutorial</span>
+                    </button>
+                    <button class="nav-btn" data-view="changelog">
+                        <i class="fas fa-history"></i>
+                        <span>Changelog</span>
+                    </button>
+                    <button class="nav-btn" data-modal="helpModal">
+                        <i class="fas fa-book"></i>
+                        <span>Ajuda</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="header-right">
+                <div class="utility-group">
+                    <button class="icon-btn" id="themeToggle" title="Alternar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="icon-btn" id="fullscreenBtn" title="Tela cheia">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Módulo Mapeador -->
+            <div id="mapperSection">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-rocket"></i>
+                            Ações Rápidas
+                        </h3>
+                        <div class="action-buttons">
+                            <button id="newMappingBtn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Novo Mapeamento
+                            </button>
+                            <button id="loadExamplesBtn" class="btn btn-secondary">
+                                <i class="fas fa-folder-open"></i>
+                                Carregar Exemplos
+                            </button>
+                            <button id="clearAllBtn" class="btn btn-outline">
+                                <i class="fas fa-eraser"></i>
+                                Limpar Tudo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            Informações
+                        </h3>
+                        <div class="info-card">
+                            <div class="info-item">
+                                <span class="info-label">Campos Mapeados:</span>
+                                <span class="info-value" id="mappedCount">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value status" id="mappingStatus">Pronto</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Última ação:</span>
+                                <span class="info-value" id="lastAction">Nenhuma</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Dicas
+                        </h3>
+                        <div class="tips-card">
+                            <p>Use o botão "Carregar Exemplos" para ver como funciona a ferramenta.</p>
+                            <p>O mapeamento é automático - basta selecionar as origens para cada destino.</p>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section"
+                        style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);">
+                        <div class="legal-links">
+                            <a href="privacy.html">Privacidade</a>
+                            <span>•</span>
+                            <a href="terms.html">Termos</a>
+                            <span>•</span>
+                            <a href="LICENSE" target="_blank">Licença</a>
+                        </div>
+                        <div
+                            style="text-align: center; margin-top: 0.5rem; font-size: 0.75rem; color: var(--secondary-400);">
+                            Criado por <a href="https://github.com/ScParis" target="_blank"
+                                style="color: var(--primary-500); text-decoration: none; font-weight: 500;">ScParis</a> | 
+                            <a href="https://github.com/ScParis/JSON-Mapping-Tool" target="_blank"
+                               style="color: var(--primary-500); text-decoration: none; font-weight: 500;">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Mapping Area -->
+                <section class="mapping-area">
+                    <!-- Toolbar -->
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button class="toolbar-btn" id="validateJsonBtn">
+                                <i class="fas fa-check-circle"></i>
+                                Validar JSON
+                            </button>
+                            <button class="toolbar-btn" id="formatJsonBtn">
+                                <i class="fas fa-indent"></i>
+                                Format JSON
+                            </button>
+                            <button class="toolbar-btn" id="minifyJsonBtn">
+                                <i class="fas fa-compress"></i>
+                                Minify
+                            </button>
+                        </div>
+
+                        <div class="toolbar-right">
+                            <button class="toolbar-btn" id="importFileBtn">
+                                <i class="fas fa-file-import"></i>
+                                Importar
+                            </button>
+                            <button class="toolbar-btn" id="exportBtn">
+                                <i class="fas fa-file-export"></i>
+                                Exportar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- JSON Editors Grid -->
+                    <div class="editors-grid">
+                        <!-- Source JSON -->
+                        <div class="editor-panel">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <i class="fas fa-download"></i>
+                                    JSON de Origem
+                                </div>
+                                <div class="panel-actions">
+                                    <button class="panel-btn" id="clearSourceBtn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="panel-btn" id="copySourceBtn" title="Copiar">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <button class="panel-btn" id="pasteSourceBtn">
+                                        <i class="fas fa-paste"></i>
+                                    </button>
+                                    <button class="panel-btn" id="uploadSourceBtn">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="editor-wrapper">
+                                    <textarea id="sourceJson" class="json-editor"
+                                        placeholder='Cole seu JSON de origem aqui...' spellcheck="false"></textarea>
+                                    <div class="editor-status" id="sourceStatus">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Válido</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-resizer" id="resizer-1"></div>
+
+
+                        <!-- Target JSON -->
+                        <div class="editor-panel">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <i class="fas fa-upload"></i>
+                                    JSON de Saída
+                                </div>
+                                <div class="panel-actions">
+                                    <button class="panel-btn" id="clearTargetBtn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="panel-btn" id="copyTargetBtn" title="Copiar">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <button class="panel-btn" id="pasteTargetBtn">
+                                        <i class="fas fa-paste"></i>
+                                    </button>
+                                    <button class="panel-btn" id="uploadTargetBtn">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="editor-wrapper">
+                                    <textarea id="targetJson" class="json-editor"
+                                        placeholder='Cole o JSON de saída esperado aqui...'
+                                        spellcheck="false"></textarea>
+                                    <div class="editor-status" id="targetStatus">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Válido</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-resizer" id="resizer-2"></div>
+
+
+                        <!-- Mapped JSON -->
+                        <div class="editor-panel">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    JSON Mapeado
+                                </div>
+                                <div class="panel-actions">
+
+                                    <button class="panel-btn" id="copyMappedBtn" title="Copiar">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <button class="panel-btn" id="downloadMappedBtn" title="Download">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="editor-wrapper">
+                                    <textarea id="mappedJson" class="json-editor" readonly
+                                        placeholder="O JSON mapeado aparecerá aqui..." spellcheck="false"></textarea>
+                                    <div class="editor-status" id="mappedStatus">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>Aguardando mapeamento</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-bar">
+                        <button id="generateMappingBtn" class="btn btn-large btn-primary">
+                            <i class="fas fa-magic"></i>
+                            Gerar Mapeamento
+                        </button>
+
+                    </div>
+                </section>
+            </div>
+
+            <!-- Módulo Finder (Oculto por padrão) -->
+            <section id="finderSection" class="app-section" style="display: none;">
+                <div class="finder-container">
+                    <!-- Column 1: JSON Input -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fas fa-edit"></i>
+                                JSON de Entrada
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn" id="clearFinderBtn" title="Limpar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="panel-btn" id="pasteFinderBtn" title="Colar">
+                                    <i class="fas fa-paste"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <textarea id="finderInput" class="json-editor"
+                                    placeholder="Cole seu JSON aqui para explorar..." spellcheck="false"></textarea>
+                                <div class="editor-status" id="finderStatus">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Aguardando entrada</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Explorer -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fas fa-tree"></i>
+                                Explorador Interativo
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn" id="expandAllBtn" title="Expandir Tudo">
+                                    <i class="fas fa-expand-arrows-alt"></i>
+                                </button>
+                                <button class="panel-btn" id="collapseAllBtn" title="Recolher Tudo">
+                                    <i class="fas fa-compress-arrows-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="panel-controls">
+                            <div class="header-search">
+                                <div class="query-input-wrapper">
+                                    <i class="fas fa-search query-icon"></i>
+                                    <input type="text" id="finderSearchInput" placeholder="Filtrar campos...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-header secondary">
+                            <div class="panel-title">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Caminho Selecionado
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn small" id="copyPathBtn" title="Copiar Caminho">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="finderTreeView" class="tree-view-container">
+                            <div id="selectedPathResult" style="display:none">...</div>
+                            <div class="tree-placeholder">
+                                <i class="fas fa-long-arrow-alt-left"></i>
+                                <p>Cole um JSON à esquerda para visualizar a estrutura</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Playground -->
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fas fa-vial"></i>
+                                JMESPath Playground
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn" id="clearPlaygroundBtn" title="Limpar">
+                                    <i class="fas fa-eraser"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="panel-controls">
+                            <div class="query-input-wrapper">
+                                <i class="fas fa-search query-icon"></i>
+                                <input type="text" id="jmespathQueryInput"
+                                    placeholder="Digite sua expressão JMESPath... (ex: items[0].id)">
+                            </div>
+                        </div>
+
+                        <div class="panel-header secondary">
+                            <div class="panel-title">
+                                <i class="fas fa-terminal"></i>
+                                Resultado
+                            </div>
+                            <div class="panel-actions">
+                                <button class="panel-btn small" id="copyPlaygroundBtn" title="Copiar Resultado">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <textarea id="jmespathResultOutput" class="json-editor" readonly
+                                    placeholder="O resultado da sua consulta aparecerá aqui..."
+                                    spellcheck="false"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Help Modal -->
+        <div class="modal" id="helpModal">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h2 class="modal-title"><i class="fas fa-book"></i> Central de Ajuda & Manual</h2>
+                    <button class="modal-close closeModalBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-content">
+                        <div class="help-card">
+                            <h3><i class="fas fa-play-circle"></i> 1. Visão Geral</h3>
+                            <p>O <strong>JSON Mapper</strong> é uma ferramenta profissional para transformar dados JSON
+                                usando <strong>JMESPath</strong>. A interface é organizada em painéis sincronizados e
+                                editores com suporte a <strong>Drag & Drop</strong>.</p>
+                            <img src="docs/images/mapper-ux.png" alt="Interface Principal" class="help-image">
+                        </div>
+
+                        <div class="help-card">
+                            <h3><i class="fas fa-search"></i> 2. JSON Finder & Busca</h3>
+                            <p>Use a aba <strong>Finder</strong> para explorar visualmente seu JSON. A barra de busca
+                                permite filtrar campos instantaneamente com realce de termos.</p>
+                            <img src="docs/images/finder-search.png" alt="Finder Search" class="help-image">
+                        </div>
+
+                        <div class="help-card">
+                            <h3><i class="fas fa-flask"></i> 3. JMESPath Playground</h3>
+                            <p>Na terceira coluna do Finder, você pode testar expressões JMESPath complexas e ver o
+                                resultado em tempo real antes de aplicar ao mapeamento.</p>
+                            <img src="docs/images/finder-playground.png" alt="Playground" class="help-image">
+                        </div>
+
+                        <div class="help-card">
+                            <h3><i class="fas fa-exchange-alt"></i> 4. Fluxo de Mapeamento</h3>
+                            <p>Clique em <strong>Gerar Mapeamento</strong> no painel principal. Selecione a origem para
+                                cada campo de destino e visualize o resultado final no painel <strong>Mapeado</strong>.
+                            </p>
+                            <img src="docs/images/mapeamento-sucesso.png" alt="Mapeamento" class="help-image">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"
+                    style="justify-content: center; font-size: 0.85rem; color: var(--secondary-500);">
+                    <span>Desenvolvido com <i class="fas fa-heart" style="color: #ef4444;"></i> por <a
+                            href="https://github.com/ScParis" target="_blank"
+                            style="color: var(--primary-500); text-decoration: none; font-weight: 600;">ScParis</a> | 
+                        <a href="https://github.com/ScParis/JSON-Mapping-Tool" target="_blank"
+                           style="color: var(--primary-500); text-decoration: none; font-weight: 600;">
+                        <i class="fab fa-github"></i> GitHub Repository
+                    </a></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mapping Modal -->
+        <div class="modal" id="mappingModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        Configurar Mapeamento
+                    </h2>
+                    <button class="modal-close" id="closeModalBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="mappingForm" class="mapping-form">
+                        <!-- Mapping form will be generated here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelMappingBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button class="btn btn-primary" id="saveMappingBtn">
+                        <i class="fas fa-save"></i>
+                        Salvar Mapeamento
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Tutorial Section -->
+        <div id="tutorialSection" class="tutorial-container">
+            <div class="tutorial-header">
+                <h1><i class="fas fa-graduation-cap"></i> Tutorial JMESPath</h1>
+                <p>Aprenda a dominar JMESPath com exemplos interativos e explicações detalhadas</p>
+            </div>
+
+            <!-- Progress Tracker -->
+            <div class="progress-tracker">
+                <div class="progress-step" data-section="basics">
+                    <div class="progress-icon">1</div>
+                    <div class="progress-label">Básico</div>
+                </div>
+                <div class="progress-step" data-section="filters">
+                    <div class="progress-icon">2</div>
+                    <div class="progress-label">Filtros</div>
+                </div>
+                <div class="progress-step" data-section="projections">
+                    <div class="progress-icon">3</div>
+                    <div class="progress-label">Projeções</div>
+                </div>
+                <div class="progress-step" data-section="functions">
+                    <div class="progress-icon">4</div>
+                    <div class="progress-label">Funções</div>
+                </div>
+                <div class="progress-step" data-section="advanced">
+                    <div class="progress-icon">5</div>
+                    <div class="progress-label">Avançado</div>
+                </div>
+            </div>
+
+            <!-- Tutorial Navigation -->
+            <div class="tutorial-nav">
+                <button class="tutorial-nav-btn active" data-section="basics">
+                    <i class="fas fa-play-circle"></i>
+                    Básico
+                </button>
+                <button class="tutorial-nav-btn" data-section="filters">
+                    <i class="fas fa-filter"></i>
+                    Filtros
+                </button>
+                <button class="tutorial-nav-btn" data-section="projections">
+                    <i class="fas fa-project-diagram"></i>
+                    Projeções
+                </button>
+                <button class="tutorial-nav-btn" data-section="functions">
+                    <i class="fas fa-calculator"></i>
+                    Funções
+                </button>
+                <button class="tutorial-nav-btn" data-section="advanced">
+                    <i class="fas fa-code"></i>
+                    Avançado
+                </button>
+            </div>
+
+            <!-- Tutorial Content -->
+            <div id="basics-content" class="tutorial-content active">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-play-circle"></i> Fundamentos do JMESPath</h2>
+                    <p>JMESPath é uma linguagem de consulta para JSON que permite extrair e transformar dados de forma poderosa e elegante.</p>
+                    
+                    <h3><i class="fas fa-info-circle"></i> O que é JMESPath?</h3>
+                    <p>JMESPath (JSON Matching Expression Path) é uma linguagem que permite:</p>
+                    <ul>
+                        <li>Extrair dados específicos de estruturas JSON complexas</li>
+                        <li>Filtrar elementos com base em condições</li>
+                        <li>Transformar e reestruturar dados</li>
+                        <li>Realizar cálculos e agregações</li>
+                    </ul>
+
+                    <div class="code-block" data-language="JSON">
+                        <button class="copy-btn">Copiar</button>
+                        <pre>{
+  "usuario": {
+    "nome": "João Silva",
+    "email": "joao@example.com",
+    "idade": 30,
+    "endereco": {
+      "rua": "Rua das Flores",
+      "cidade": "São Paulo"
+    }
+  }
+}</pre>
+                    </div>
+
+                    <h3><i class="fas fa-arrow-right"></i> Sintaxe Básica</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-dot-circle"></i> Acesso a Propriedades</h4>
+                            <p>Use ponto (.) para acessar propriedades:</p>
+                            <div class="feature-example">usuario.nome</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-list"></i> Acesso a Arrays</h4>
+                            <p>Use colchetes [] para acessar elementos:</p>
+                            <div class="feature-example">produtos[0].preco</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-asterisk"></i> Wildcard</h4>
+                            <p>Use * para selecionar todos os elementos:</p>
+                            <div class="feature-example">usuarios[*].nome</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-compress"></i> Multi-seleção</h4>
+                            <p>Selecione múltiplos campos:</p>
+                            <div class="feature-example">usuario.[nome, email]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Dicas Importantes</h4>
+                    <ul>
+                        <li>JMESPath é case-sensitive - respeite maiúsculas e minúsculas</li>
+                        <li>Índices de arrays começam em 0, não em 1</li>
+                        <li>Use aspas para strings com caracteres especiais</li>
+                        <li>Combine operadores para criar consultas complexas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="filters-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-filter"></i> Filtrando Dados</h2>
+                    <p>Aprenda a filtrar elementos com base em condições específicas usando expressões poderosas.</p>
+                    
+                    <h3><i class="fas fa-equals"></i> Operadores de Comparação</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Igualdade</h4>
+                            <div class="feature-example">usuarios[?ativo==true]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Maior/Menor</h4>
+                            <div class="feature-example">produtos[?preco>100]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Diferente</h4>
+                            <div class="feature-example">itens[?categoria!='eletronicos']</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Contém</h4>
+                            <div class="feature-example">nomes[?contains(@, 'João')]</div>
+                        </div>
+                    </div>
+
+                    <h3><i class="fas fa-link"></i> Operadores Lógicos</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># AND lógico
+usuarios[?ativo==true && idade>25]
+
+# OR lógico  
+produtos[?categoria=='eletronicos' || preco>500]
+
+# NOT lógico
+itens[?!contains(nome, 'teste')]</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Atenção</h4>
+                    <p>Lembre-se de usar == para igualdade em JMESPath, não = como em muitas linguagens de programação.</p>
+                </div>
+            </div>
+
+            <div id="projections-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-project-diagram"></i> Projeções e Transformações</h2>
+                    <p>Aprenda a reestruturar dados criando novos objetos e selecionando campos específicos.</p>
+                    
+                    <h3><i class="fas fa-object-group"></i> Tipos de Projeções</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>Lista Projeção</h4>
+                            <p>Seleciona campos como array:</p>
+                            <div class="feature-example">usuarios[*].[nome, email]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Hash Projeção</h4>
+                            <p>Cria novos objetos:</p>
+                            <div class="feature-example">usuarios[*].{nome: nome, email: email}</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Flatten Projeção</h4>
+                            <p>Achata arrays aninhados:</p>
+                            <div class="feature-example">dados[][]</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>Pipe Projeção</h4>
+                            <p>Encadeia operações:</p>
+                            <div class="feature-example">usuarios[?ativo==true] | [0]</div>
+                        </div>
+                    </div>
+
+                    <h3><i class="fas fa-magic"></i> Transformações Avançadas</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Concatenar strings
+usuarios[*].{nomeCompleto: nome + ' ' + sobrenome}
+
+# Expressões matemáticas
+produtos[*].{precoComDesconto: preco * 0.9}
+
+# Condicionais
+itens[*].{status: estoque > 0 ? 'Disponível' : 'Esgotado'}</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+            </div>
+
+            <div id="functions-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-calculator"></i> Funções Integradas</h2>
+                    <p>JMESPath oferece várias funções úteis para processamento de dados.</p>
+                    
+                    <h3><i class="fas fa-chart-bar"></i> Funções de Agregação</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>sum()</h4>
+                            <p>Soma valores numéricos:</p>
+                            <div class="feature-example">sum(vendas[*].valor)</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>length()</h4>
+                            <p>Conta elementos:</p>
+                            <div class="feature-example">length(usuarios)</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>max()/min()</h4>
+                            <p>Valores máximo/mínimo:</p>
+                            <div class="feature-example">max(produtos[*].preco)</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4>avg()</h4>
+                            <p>Média aritmética:</p>
+                            <div class="feature-example">avg(notas[*])</div>
+                        </div>
+                    </div>
+
+                    <h3><i class="fas fa-font"></i> Funções de String</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Conversão de case
+nomes[*].upper_case(@)
+nomes[*].lower_case(@)
+
+# Manipulação
+split(texto, ' ')
+join(array, ', ')
+reverse(string)
+
+# Verificação
+contains(texto, 'buscar')
+starts_with(texto, 'prefixo')
+ends_with(texto, 'sufixo')</pre>
+                    </div>
+
+                    <h3><i class="fas fa-sort"></i> Funções de Array</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Ordenação
+sort_by(produtos, &preco)
+reverse(produtos)
+
+# União e interseção
+union(array1, array2)
+difference(array1, array2)</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+            </div>
+
+            <div id="advanced-content" class="tutorial-content">
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-code"></i> Técnicas Avançadas</h2>
+                    <p>Combine tudo o que você aprendeu para criar consultas complexas e poderosas.</p>
+                    
+                    <h3><i class="fas fa-pipe"></i> Pipe Operator</h3>
+                    <p>O operador | permite encadear múltiplas operações:</p>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Exemplo complexo: filtrar -> ordenar -> limitar
+usuarios[?ativo==true] | sort_by(@, &idade) | [0:5]
+
+# Transformação completa
+vendas[?valor>100] | {total: sum([].valor), quantidade: length(@)}</pre>
+                    </div>
+
+                    <h3><i class="fas fa-code-branch"></i> Expressões Condicionais</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Ternário completo
+produtos[*].{
+    nome: nome,
+    status: estoque > 10 ? 'Alto' : estoque > 0 ? 'Baixo' : 'Esgotado',
+    precoFinal: categoria == 'premium' ? preco * 1.2 : preco
+}</pre>
+                    </div>
+
+                    <h3><i class="fas fa-layer-group"></i> Consultas Aninhadas Complexas</h3>
+                    <div class="code-block" data-language="JMESPath">
+                        <button class="copy-btn">Copiar</button>
+                        <pre># Extraindo dados de estruturas profundas
+empresa.departamentos[*].funcionarios[?cargo=='gerente'].{nome: nome, salario: salario}
+
+# Agregação múltipla
+{
+    totalVendas: sum(vendas[*].valor),
+    mediaVendas: avg(vendas[*].valor),
+    maiorVenda: max(vendas[*].valor),
+    vendedores: length(vendas[*].vendedor | unique(@))
+}</pre>
+                    </div>
+                </div>
+
+                <div class="examples-container">
+                    <!-- Examples will be rendered here by JavaScript -->
+                </div>
+
+                <div class="tutorial-section">
+                    <h2><i class="fas fa-trophy"></i> Próximos Passos</h2>
+                    <p>Parabéns! Você completou o tutorial básico do JMESPath. Aqui estão algumas sugestões para continuar aprendendo:</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-book"></i> Documentação Oficial</h4>
+                            <p>Consulte a documentação completa do JMESPath para todos os detalhes.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-flask"></i> Playground</h4>
+                            <p>Pratique com diferentes dados e cenários no playground interativo.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-puzzle-piece"></i> Casos Reais</h4>
+                            <p>Apply JMESPath em projetos reais para solidificar seu conhecimento.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4><i class="fas fa-users"></i> Comunidade</h4>
+                            <p>Participe de fóruns e comunidades para aprender com outros usuários.</p>
+                        </div>
+                    </div>
+
+                    <div class="tips-box">
+                        <h4><i class="fas fa-star"></i> Dica Final</h4>
+                        <p>A prática leva à perfeição! Comece com consultas simples e gradualmente aumente a complexidade. O JSON Mapper é uma ótima ferramenta para testar suas expressões JMESPath.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Changelog Section -->
+        <div id="changelogSection" class="changelog-container">
+            <!-- Changelog content will be dynamically loaded -->
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Processando...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jmespath/0.16.0/jmespath.min.js"></script>
+    <script src="static/script.js?v=6"></script>
+    <script src="static/history-settings.js"></script>
+    <script src="static/finder.js"></script>
+    <script src="static/tutorial.js"></script>
+    <script src="static/changelog.js"></script>
+</body>
+
+</html>
