@@ -6,7 +6,7 @@ Modo Extenso: Use a base de conhecimento como prioridade, mas pode complementar 
 
 export const KNOWLEDGE_BASE_SEED: KnowledgeSource[] = [
   { id: '1', title: 'Documentação Meta Conversational', content: 'A API de conversação permite...', domain: 'meta.com' },
-  { id: '2', title: 'Integração PipeRun', content: 'Para integrar PipeRun com CRM...', domain: 'piperun.com' }
+  { id: '2', title: 'Integração de CRM Externo', content: 'Para integrar um CRM externo...', domain: 'crm.exemplo.com' }
 ];
 
 // Mapeamento para Feature Flags (Exemplos binários)

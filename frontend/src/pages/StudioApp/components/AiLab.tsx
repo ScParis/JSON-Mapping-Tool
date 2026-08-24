@@ -123,7 +123,7 @@ const AiLab: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4 w-full">
               {[
-                "Explain PipeRun API integration",
+                "Explain CRM API integration",
                 "Review my document structure",
                 "Generate a complex JSON schema",
                 "Optimize this SQL query"

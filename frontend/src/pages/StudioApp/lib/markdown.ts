@@ -20,7 +20,7 @@ export const CONTRACT_VARIABLES = [
   'VIGENCIA_DURACAO_HORAS_CONTRATADAS_NUM'
 ];
 
-export const PIPERUN_ENTITIES: Record<string, string[]> = {
+export const CRM_ENTITIES: Record<string, string[]> = {
   generico: ['paginaAtual', 'totalPaginas', 'hoje', 'hojeExtenso', 'saudacao'],
   usuario: ['id', 'nome', 'email', 'telefone', 'assinatura'],
   pessoa: ['id', 'nome', 'nomeSimples', 'cpf', 'email', 'telefone', 'enderecoCompleto', 'cargo'],
@@ -37,7 +37,7 @@ export const isVariableValid = (path: string): boolean => {
   if (cleanPath.includes('.')) {
     const segments = cleanPath.split('.');
     const entity = segments[0];
-    const attrs = PIPERUN_ENTITIES[entity];
+    const attrs = CRM_ENTITIES[entity];
     if (!attrs) return false;
     const baseAttr = segments[1].split('(')[0];
     return attrs.some(a => baseAttr.startsWith(a));

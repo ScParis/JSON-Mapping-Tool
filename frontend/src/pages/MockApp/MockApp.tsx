@@ -258,12 +258,12 @@ export default function MockApp() {
     // Preset & Format helpers
     const handleApplyPreset = (presetKey: string) => {
         if (!presetKey) return;
-        if (presetKey === 'piperun') {
+        if (presetKey === 'crm') {
             setRuleStatus(200);
             setRuleHeaders([{ key: 'Content-Type', value: 'application/json' }]);
             setRuleBody(JSON.stringify({
                 success: true,
-                message: "Webhook PipeRun recebido e processado com sucesso",
+                message: "Webhook CRM recebido e processado com sucesso",
                 data: { status: "processed", received_at: new Date().toISOString() }
             }, null, 2));
         } else if (presetKey === 'omie') {
@@ -1126,10 +1126,10 @@ export default function MockApp() {
                             <div className="flex items-center gap-1.5 flex-wrap">
                                 <button
                                     type="button"
-                                    onClick={() => handleApplyPreset('piperun')}
+                                    onClick={() => handleApplyPreset('crm')}
                                     className="px-2.5 py-1 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-200 text-[11px] font-medium transition-all"
                                 >
-                                    PipeRun Webhook
+                                    CRM Webhook
                                 </button>
                                 <button
                                     type="button"

@@ -7,7 +7,7 @@ import {
   FileText, Activity, Home, Link as LinkIcon, Zap
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
-import { detectFormat, renderPreview, DEFAULT_CONTENT, PIPERUN_ENTITIES, isVariableValid } from './lib/markdown';
+import { detectFormat, renderPreview, DEFAULT_CONTENT, CRM_ENTITIES, isVariableValid } from './lib/markdown';
 import { convertDocxToContent, exportToPDF, exportToDocx } from './lib/converter';
 import { processTextWithAI as runAi } from './services/geminiService';
 import { AIAction, TextFormat, View } from './types';
@@ -329,10 +329,10 @@ const App: React.FC = () => {
               <div className="max-w-5xl mx-auto">
                 <header className="mb-16">
                   <h1 className="text-5xl font-black tracking-tighter mb-4 text-gray-900 dark:text-gray-100">System Data Schema</h1>
-                  <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl leading-relaxed">Map variables from the PipeRun ecosystem into your documents with real-time validation.</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl leading-relaxed">Map system variables into your documents with real-time validation.</p>
                 </header>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {Object.entries(PIPERUN_ENTITIES).map(([entity, attrs]) => (
+                  {Object.entries(CRM_ENTITIES).map(([entity, attrs]) => (
                     <div key={entity} className="bg-gray-55/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[2rem] p-8 hover:border-blue-500 transition-all group hover:shadow-2xl hover:shadow-blue-500/5">
                       <div className="flex items-center justify-between mb-8">
                         <span className="text-xs font-black uppercase text-blue-500 tracking-widest">{entity}</span>

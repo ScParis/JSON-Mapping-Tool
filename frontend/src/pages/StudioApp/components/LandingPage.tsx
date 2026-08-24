@@ -113,8 +113,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     {
       id: 'dictionary',
       isStudioView: true,
-      title: 'Dicionário PipeRun CRM',
-      description: 'Navegação e injeção rápida de variáveis nativas e atributos dinâmicos do CRM PipeRun diretamente no seu documento.',
+      title: 'Dicionário de Variáveis',
+      description: 'Navegação e injeção rápida de variáveis nativas e atributos dinâmicos do sistema diretamente no seu documento.',
       icon: BookOpen,
       color: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
       category: 'studio'
@@ -333,8 +333,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </div>
             <div className="flex flex-col items-center md:items-start p-6 bg-white dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl">
               <Globe className="w-10 h-10 text-purple-500 mb-4" />
-              <h4 className="text-lg font-black mb-1 uppercase tracking-tight text-zinc-900 dark:text-white">Sincronização & CRM</h4>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">Integração nativa com variáveis dinâmicas do PipeRun CRM e geradores de API.</p>
+              <h4 className="text-lg font-black mb-1 uppercase tracking-tight text-zinc-900 dark:text-white">Sincronização & Integração</h4>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">Integração nativa com variáveis dinâmicas do sistema e geradores de API.</p>
             </div>
             <div className="flex flex-col items-center md:items-start p-6 bg-white dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl">
               <Activity className="w-10 h-10 text-emerald-500 mb-4" />

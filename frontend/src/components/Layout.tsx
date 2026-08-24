@@ -289,7 +289,7 @@ export const Layout = () => {
             } else if (viewParam === 'nexus-ai') {
                 title = 'Dev Studio | Nexus AI Chat';
             } else if (viewParam === 'dictionary') {
-                title = 'Dev Studio | Dicionário PipeRun CRM';
+                title = 'Dev Studio | Dicionário de Variáveis';
             } else if (viewParam === 'whatsapp-builder') {
                 title = 'Dev Studio | Gerador de Link WhatsApp';
             } else if (viewParam === 'ai-lab') {

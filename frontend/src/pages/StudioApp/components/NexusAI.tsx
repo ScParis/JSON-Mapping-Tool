@@ -72,7 +72,7 @@ const NexusAI: React.FC = () => {
       {
         id: 'init',
         sender: 'assistant',
-        text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas Meta WhatsApp ou no sequenciamento de Feature Flags do PipeRun hoje?',
+        text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas Meta WhatsApp ou no sequenciamento de Feature Flags do sistema hoje?',
         timestamp: 'Agora'
       }
     ]);
@@ -141,7 +141,7 @@ const NexusAI: React.FC = () => {
         {
           id: 'init',
           sender: 'assistant',
-          text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas Meta WhatsApp ou no sequenciamento de Feature Flags do PipeRun hoje?',
+          text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas Meta WhatsApp ou no sequenciamento de Feature Flags do sistema hoje?',
           timestamp: 'Agora'
         }
       ]);
@@ -298,7 +298,7 @@ const NexusAI: React.FC = () => {
                                 <h1 className="text-3xl font-black text-zinc-955 dark:text-zinc-50 tracking-tight flex items-center gap-2">
                                   <Sliders className="w-8 h-8 text-indigo-500" /> Decodificador de Feature Flags
                                 </h1>
-                                <p className="text-sm text-zinc-500">Insira valores numéricos decimais para analisar a ativação binária das flags de sistema PipeRun.</p>
+                                <p className="text-sm text-zinc-500">Insira valores numéricos decimais para analisar a ativação binária das flags de sistema.</p>
                             </header>
 
                             <div className="bg-white dark:bg-zinc-900/60 backdrop-blur-md rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 space-y-6">

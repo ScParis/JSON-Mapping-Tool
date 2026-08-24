@@ -22,7 +22,7 @@ const HsmStudio: React.FC = () => {
   const [footerText, setFooterText] = useState('Não deseja receber mais mensagens? Digite Sair.');
   const [buttons, setButtons] = useState<HsmButton[]>([
     { type: 'QUICK_REPLY', text: 'Rastrear Encomenda' },
-    { type: 'URL', text: 'Ir para o site', value: 'https://piperun.com' }
+    { type: 'URL', text: 'Ir para o site', value: 'https://example.com' }
   ]);
   
   // Variables map: {{1}} -> value
