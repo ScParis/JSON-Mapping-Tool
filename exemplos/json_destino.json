@@ -1,0 +1,24 @@
+{
+    "order": {
+        "number": "",
+        "date": "",
+        "items": [
+            {
+                "code": "",
+                "description": "",
+                "quantity": 0,
+                "unitPrice": 0,
+                "totalPrice": 0
+            }
+        ],
+        "delivery": {
+            "type": "",
+            "cost": 0
+        }
+    },
+    "customer": {
+        "id": "",
+        "name": "",
+        "contact": ""
+    }
+}

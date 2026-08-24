@@ -1,0 +1,30 @@
+{
+    "pedido": {
+        "id": 1,
+        "vendedor": "João Silva",
+        "data": "2023-09-16",
+        "entrega": {
+            "tipo": "Expressa",
+            "preco": 25.9
+        },
+        "itens": [
+            {
+                "id": 101,
+                "nome": "Notebook",
+                "quantidade": 2,
+                "preco": 3500
+            },
+            {
+                "id": 205,
+                "nome": "Mouse Sem Fio",
+                "quantidade": 1,
+                "preco": 120
+            }
+        ]
+    },
+    "cliente": {
+        "id": 42,
+        "nome": "Maria Oliveira",
+        "email": "maria@exemplo.com"
+    }
+}

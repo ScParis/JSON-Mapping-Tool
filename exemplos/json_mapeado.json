@@ -1,0 +1,24 @@
+{
+    "order": {
+        "number": "pedido.id",
+        "date": "pedido.data",
+        "items": [
+            {
+                "code": "pedido.itens[0].id",
+                "description": "pedido.itens[0].nome",
+                "quantity": "pedido.itens[0].quantidade",
+                "unitPrice": "pedido.itens[0].preco",
+                "totalPrice": "pedido.itens[0].preco"
+            }
+        ],
+        "delivery": {
+            "type": "pedido.entrega.tipo",
+            "cost": "pedido.entrega.preco"
+        }
+    },
+    "customer": {
+        "id": "cliente.id",
+        "name": "cliente.nome",
+        "contact": "cliente.email"
+    }
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Mapping Tool</title>
+    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/glyph-neue/64/22C3E6/baby-yoda.png">
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<body>
+    <div id="global-controls"></div>
+    <div class="main-container">
+      <header>
+        <h1 id="top_text">JSON Mapping Tool</h1>
+      </header>
+    <table>
+        <tr>
+            <td>
+                <div class="button-container">
+                    <button id="newMappingButton">Novo Mapeamento</button>
+                    <button id="loadExamplesBtn">Carregar Exemplos</button>
+                    <button id="clearFieldsBtn">Limpar Campos</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <h2>JSON de Origem</h2>
+            </th>
+            <th>
+                <h2>JSON de Saída</h2>
+            </th>
+            <th>
+                <h2>JSON Mapeado</h2>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <div class="code-container">
+                    <textarea id="sourceJsonTextarea" rows="10" cols="60"
+                        placeholder="Cole o JSON de origem aqui (exemplo: { 'nome': 'John', 'idade': 30 })"
+                        class="json-textarea"></textarea>
+                </div>
+            </td>
+            <td>
+                <div class="code-container">
+                    <textarea id="outputJsonTextarea" rows="10" cols="60"
+                        placeholder="Cole o JSON de saída aqui (exemplo: { 'nome': '', 'idade': 0 })"
+                        class="json-textarea"></textarea>
+                </div>
+            </td>
+            <td>
+                <div class="code-container">
+                    <textarea id="outputJsonContainer" class="json-textarea" readonly></textarea>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="button-container">
+                    <button id="createListButton">Criar lista de dados</button>
+                </div>
+            </td>
+            <td>
+                <div class="button-container">
+                    <button id="mapButton">Realizar Mapeamento</button>
+                </div>
+            </td>
+            <td>
+                <div class="button-container">
+                    <button id="generateOutputJson">Gerar o Json de saída</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div id="errorMessage" class="error-message"></div>
+    <div id="mappedJsonContainer"></div>
+    </div>
+    <div id="mapping_json">
+        <div id="formContainer"></div>
+        <div id="keysListbox"></div>
+        <div id="previewJson"></div>
+    </div>
+    </div> <!-- Fecha main-container -->
+
+    <script src="static/script.js"></script>
+    <footer>
+        <p>JSON Mapping Tool</p>
+    </footer>
+
+</body>
+
+</html>
