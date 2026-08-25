@@ -32,9 +32,7 @@ const NAV_GROUPS: { items: NavItem[] }[] = [
                     { id: 'editor', label: 'Workspace', icon: Code2, path: '/studio?view=editor' },
                     { id: 'hsm-studio', label: 'HSM Studio', icon: Zap, path: '/studio?view=hsm-studio' },
                     { id: 'nexus-ai', label: 'Nexus AI', icon: BrainCircuit, path: '/studio?view=nexus-ai' },
-                    { id: 'dictionary', label: 'Dicionário', icon: Activity, path: '/studio?view=dictionary' },
                     { id: 'whatsapp-builder', label: 'Link Builder', icon: LinkIcon, path: '/studio?view=whatsapp-builder' },
-                    { id: 'ai-lab', label: 'AI Research', icon: BrainCircuit, path: '/studio?view=ai-lab' },
                 ]
             },
         ]

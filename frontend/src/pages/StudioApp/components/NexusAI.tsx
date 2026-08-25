@@ -2,13 +2,14 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from '../lib/motionShim';
 import { 
   MessageSquarePlus, Brain, Plus, X, Shield, 
-  Loader2, ArrowRight, Check, Database, Sparkles, MessageSquare, Terminal, Sliders
+  Loader2, ArrowRight, Check, Database, Sparkles, MessageSquare, Terminal, Sliders, Settings
 } from 'lucide-react';
 import { KnowledgeSource } from '../types';
 import { FLAG_MAP } from '../constants';
 import * as kbService from '../services/knowledgeService';
 import { processTextWithAI } from '../services/geminiService';
 import { AIAction } from '../types';
+import { AiSettingsModal } from '../../../components/ui/AiSettingsModal';
 
 interface Message {
   id: string;
@@ -65,6 +66,7 @@ const NexusAI: React.FC = () => {
     const [isStrictMode, setIsStrictMode] = useState(true);
     const [flagInput, setFlagInput] = useState('11');
     const [showKbModal, setShowKbModal] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [sources, setSources] = useState<KnowledgeSource[]>([]);
     
     // Chat implementation states
@@ -167,12 +169,21 @@ const NexusAI: React.FC = () => {
                       </div>
                     </div>
 
-                    <button 
-                      onClick={handleClearHistory}
-                      className="flex items-center justify-center gap-2.5 w-full py-3.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:opacity-95 transition-opacity duration-150 shadow-lg shadow-purple-500/15"
-                    >
-                        <MessageSquarePlus className="w-4 h-4" /> Resetar Sessão
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button 
+                        onClick={handleClearHistory}
+                        className="flex items-center justify-center gap-2.5 w-full py-3.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:opacity-95 transition-opacity duration-150 shadow-lg shadow-purple-500/15"
+                      >
+                          <MessageSquarePlus className="w-4 h-4" /> Resetar Sessão
+                      </button>
+
+                      <button 
+                        onClick={() => setIsAiModalOpen(true)}
+                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-indigo-500 dark:text-indigo-400 rounded-xl font-bold text-xs hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                      >
+                          <Settings className="w-3.5 h-3.5" /> Configurar IA
+                      </button>
+                    </div>
 
                     <div className="w-full h-px bg-zinc-150 dark:bg-zinc-800/80 my-2" />
 
@@ -391,6 +402,7 @@ const NexusAI: React.FC = () => {
                 )}
             </main>
             {showKbModal && <KnowledgeBaseModal onClose={() => setShowKbModal(false)} onSave={async (s) => { await kbService.saveKnowledgeSource(s); setSources([...sources, s]); }} />}
+            <AiSettingsModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
         </div>
     );
 };

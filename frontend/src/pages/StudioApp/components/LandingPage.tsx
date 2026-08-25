@@ -111,31 +111,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       category: 'studio'
     },
     {
-      id: 'dictionary',
-      isStudioView: true,
-      title: 'Dicionário de Variáveis',
-      description: 'Navegação e injeção rápida de variáveis nativas e atributos dinâmicos do sistema diretamente no seu documento.',
-      icon: BookOpen,
-      color: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
-      category: 'studio'
-    },
-    {
       id: 'whatsapp-builder',
       isStudioView: true,
       title: 'Gerador WhatsApp Link',
       description: 'Construa links diretos de WhatsApp com mensagens codificadas e validação instantânea.',
       icon: Globe,
       color: 'bg-gradient-to-br from-teal-500 to-teal-600',
-      category: 'studio'
-    },
-    {
-      id: 'ai-lab',
-      isStudioView: true,
-      title: 'Laboratório IA (Gemini)',
-      description: 'Audite, resuma, estenda ou otimize o código e o texto dos seus templates em tempo real.',
-      icon: Cpu,
-      color: 'bg-gradient-to-br from-pink-500 to-pink-600',
-      badge: 'Pesquisa',
       category: 'studio'
     },
 

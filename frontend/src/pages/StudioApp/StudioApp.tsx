@@ -13,7 +13,6 @@ import { processTextWithAI as runAi } from './services/geminiService';
 import { AIAction, TextFormat, View } from './types';
 import JsonViewer from './components/JsonViewer';
 import LandingPage from './components/LandingPage';
-import AiLab from './components/AiLab';
 import WhatsappBuilder from './components/WhatsappBuilder';
 import NexusAI from './components/NexusAI';
 import HsmStudio from './components/HsmStudio';
@@ -324,33 +323,6 @@ const App: React.FC = () => {
             </>
           )}
 
-          {activeView === 'dictionary' && (
-            <div className="flex-1 overflow-y-auto p-20 bg-white dark:bg-[#111115] custom-scrollbar animate-modern">
-              <div className="max-w-5xl mx-auto">
-                <header className="mb-16">
-                  <h1 className="text-5xl font-black tracking-tighter mb-4 text-gray-900 dark:text-gray-100">System Data Schema</h1>
-                  <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl leading-relaxed">Map system variables into your documents with real-time validation.</p>
-                </header>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {Object.entries(CRM_ENTITIES).map(([entity, attrs]) => (
-                    <div key={entity} className="bg-gray-55/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[2rem] p-8 hover:border-blue-500 transition-all group hover:shadow-2xl hover:shadow-blue-500/5">
-                      <div className="flex items-center justify-between mb-8">
-                        <span className="text-xs font-black uppercase text-blue-500 tracking-widest">{entity}</span>
-                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-850 flex items-center justify-center border border-gray-200 dark:border-gray-800 text-[10px] font-bold text-gray-500 dark:text-gray-400">{attrs.length}</div>
-                      </div>
-                      <div className="grid grid-cols-1 gap-1.5">
-                        {attrs.map(attr => (
-                          <button key={attr} onClick={() => { setContent(prev => prev + ` {{ ${entity}.${attr} }} `); setActiveView('editor'); }} className="text-left px-4 py-2 text-[11px] font-bold text-gray-500 dark:text-gray-400 hover:bg-blue-500 hover:text-white rounded-xl transition-all">.{attr}</button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeView === 'ai-lab' && <AiLab />}
           {activeView === 'whatsapp-builder' && <WhatsappBuilder />}
           {activeView === 'nexus-ai' && <NexusAI />}
           {activeView === 'hsm-studio' && <HsmStudio />}

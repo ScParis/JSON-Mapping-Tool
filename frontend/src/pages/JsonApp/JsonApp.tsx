@@ -184,6 +184,54 @@ export default function JsonApp() {
     };
 
     // Parse JSONs on change
+// Helper para processar JSON Molde com sintaxe relaxada (aceitando expressões de caminho sem aspas)
+const parseRelaxedMoldJson = (rawStr: string): { parsed: any; error: string } => {
+    if (!rawStr || !rawStr.trim()) return { parsed: null, error: 'JSON de Destino vazio' };
+    
+    // Tenta primeiro o JSON.parse nativo
+    try {
+        const direct = JSON.parse(rawStr);
+        return { parsed: direct, error: '' };
+    } catch (e) {
+        // Fallback: tratar valores não aspeados (ex: "fullName": user.name)
+    }
+
+    try {
+        // Substituir identificadores/caminhos sem aspas após dois pontos por strings aspeadas
+        const sanitized = rawStr.replace(/:\s*([a-zA-Z_$][a-zA-Z0-9_$.*\[\]]*)(?=\s*[,}\n\r])/g, (match, path) => {
+            const trimmed = path.trim();
+            if (['true', 'false', 'null'].includes(trimmed) || !isNaN(Number(trimmed))) {
+                return match;
+            }
+            return `: "${trimmed}"`;
+        });
+
+        const parsed = JSON.parse(sanitized);
+        return { parsed, error: '' };
+    } catch (e: any) {
+        return { parsed: null, error: 'Estrutura JSON de Destino inválida' };
+    }
+};
+
+// Extrai valores texto de propriedades do molde de destino
+const extractTargetFieldValues = (obj: any, prefix = ''): Record<string, string> => {
+    let result: Record<string, string> = {};
+    if (!obj || typeof obj !== 'object') return result;
+
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            const currentPath = prefix ? `${prefix}.${key}` : key;
+            const val = obj[key];
+            if (typeof val === 'string' && val.trim() !== '') {
+                result[currentPath] = val.trim();
+            } else if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+                result = { ...result, ...extractTargetFieldValues(val, currentPath) };
+            }
+        }
+    }
+    return result;
+};
+
     useEffect(() => {
         try {
             const parsed = JSON.parse(sourceJsonStr);
@@ -196,30 +244,33 @@ export default function JsonApp() {
     }, [sourceJsonStr]);
 
     useEffect(() => {
-        try {
-            const parsed = JSON.parse(targetJsonStr);
-            setTargetJson(parsed);
-            setTargetError('');
-        } catch (e) {
-            setTargetError('JSON de Destino inválido');
-            setTargetJson(null);
-        }
+        const { parsed, error } = parseRelaxedMoldJson(targetJsonStr);
+        setTargetJson(parsed);
+        setTargetError(error);
     }, [targetJsonStr]);
 
     // Derived arrays of available paths
     const sourcePaths = useMemo(() => sourceJson ? generateKeysList(sourceJson, '', true) : [], [sourceJson]);
     const targetPaths = useMemo(() => targetJson ? generateKeysList(targetJson, '', false) : [], [targetJson]);
 
-    // Auto-init mapping config when target paths change
+    // Auto-init mapping config when target paths or target mold values change
     useEffect(() => {
         const initialConfig: Record<string, string> = {};
+        const extractedValues = targetJson ? extractTargetFieldValues(targetJson) : {};
+
         targetPaths.forEach(path => {
-            if (!mappingConfig[path]) {
+            const moldVal = extractedValues[path];
+            // Se o valor inserido no molde for um caminho de origem ou uma expressão (ex: user.name), usa ele como mapeamento
+            if (moldVal && (sourcePaths.includes(moldVal) || /^[a-zA-Z_$][a-zA-Z0-9_$.*\[\]]*$/.test(moldVal))) {
+                initialConfig[path] = moldVal;
+            } else if (mappingConfig[path] !== undefined) {
+                initialConfig[path] = mappingConfig[path];
+            } else {
                 initialConfig[path] = '';
             }
         });
-        setMappingConfig(prev => ({ ...initialConfig, ...prev }));
-    }, [targetPaths]);
+        setMappingConfig(initialConfig);
+    }, [targetPaths, targetJsonStr]);
 
     const handleCopyMapped = () => {
         const contentToCopy = resultTab === 'expression' ? mappedJsonStr : transformedJsonStr;
@@ -237,7 +288,7 @@ export default function JsonApp() {
         }));
     };
 
-    const executeMapping = () => {
+    const executeMapping = (notify = true) => {
         if (!sourceJson || !targetJson) return;
 
         const jmespathRule = buildJmespathExpression(mappingConfig, targetJson);
@@ -247,12 +298,19 @@ export default function JsonApp() {
             const result = jmespath.search(sourceJson, jmespathRule);
             setTransformedJsonStr(JSON.stringify(result, null, 2));
             setValidationError('');
-            showToast('Mapeamento executado com sucesso!');
+            if (notify) showToast('Mapeamento executado com sucesso!');
         } catch (e: any) {
             setValidationError('Expressão JMESPath inválida: ' + e.message);
             setTransformedJsonStr('');
         }
     };
+
+    // Auto-executa o mapeamento sempre que origem, destino ou regras atualizarem
+    useEffect(() => {
+        if (sourceJson && targetJson) {
+            executeMapping(false);
+        }
+    }, [sourceJson, targetJson, mappingConfig]);
 
     const handleDownloadMapped = () => {
         const content = resultTab === 'expression' ? mappedJsonStr : transformedJsonStr;
@@ -525,7 +583,7 @@ export default function JsonApp() {
                             {targetError ? (
                                 <Badge variant="error" size="sm">{targetError}</Badge>
                             ) : (
-                                <Badge variant="success" size="sm">Válido</Badge>
+                                <Badge variant="success" size="sm">Estrutura Válida</Badge>
                             )}
                         </div>
                     </div>

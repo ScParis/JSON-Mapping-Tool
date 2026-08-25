@@ -1,7 +1,92 @@
 import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import { Database, Sparkles, AlertCircle, Copy, Check } from 'lucide-react';
-import { PageHeader, Card, Button, Tabs } from '../../components/ui';
+import { Database, Sparkles, AlertCircle, Copy, Check, Wand2, Settings } from 'lucide-react';
+import { PageHeader, Card, Button, Tabs, AiSettingsModal } from '../../components/ui';
+import { runAiRequest, getAiConfig } from '../../services/aiConfig';
+
+// Formata SQL Offline
+const formatSqlOffline = (query: string): string => {
+    if (!query) return '';
+    const keywords = [
+        'SELECT', 'FROM', 'WHERE', 'INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'CROSS JOIN',
+        'JOIN', 'ON', 'GROUP BY', 'ORDER BY', 'HAVING', 'LIMIT', 'OFFSET',
+        'INSERT INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE FROM', 'DELETE',
+        'CREATE TABLE', 'ALTER TABLE', 'DROP TABLE', 'PRIMARY KEY', 'FOREIGN KEY',
+        'UNION ALL', 'UNION', 'AND', 'OR', 'ASC', 'DESC', 'AS', 'IN', 'IS NULL', 'IS NOT NULL'
+    ];
+
+    let formatted = query;
+    keywords.forEach(kw => {
+        const regex = new RegExp(`\\b${kw}\\b`, 'gi');
+        formatted = formatted.replace(regex, kw);
+    });
+
+    const majorClauses = ['FROM', 'WHERE', 'INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'JOIN', 'GROUP BY', 'ORDER BY', 'HAVING', 'LIMIT', 'SET', 'VALUES'];
+    majorClauses.forEach(clause => {
+        const regex = new RegExp(`\\s+(${clause})\\b`, 'g');
+        formatted = formatted.replace(regex, `\n$1`);
+    });
+
+    return formatted.trim();
+};
+
+// Diagnóstico Estático DBA Offline
+const explainSqlOffline = (query: string): string => {
+    let report = "### 📊 Relatório de Análise DBA (Modo Offline Estático)\n\n";
+    const qUpper = query.toUpperCase();
+    let issues = 0;
+
+    if (qUpper.includes("SELECT *")) {
+        report += "⚠️ **Atenção (SELECT *):** Evite selecionar todas as colunas. Especifique os campos necessários para otimizar o consumo de memória e I/O de rede.\n\n";
+        issues++;
+    }
+    if ((qUpper.includes("UPDATE") || qUpper.includes("DELETE")) && !qUpper.includes("WHERE")) {
+        report += "🚨 **Risco Crítico:** Execução de UPDATE ou DELETE sem cláusula WHERE altera/apaga todos os registros da tabela!\n\n";
+        issues++;
+    }
+    if (qUpper.includes("LIKE '%")) {
+        report += "⚠️ **Alerta de Performance:** Utilizar wildcards no início (`LIKE '%termo'`) impede a utilização de índices B-Tree, forçando um *Full Table Scan*.\n\n";
+        issues++;
+    }
+    if (qUpper.includes("JOIN") && !qUpper.includes("ON")) {
+        report += "⚠️ **Produto Cartesiano:** JOIN sem cláusula ON resulta em combinação cartesiana entre tabelas.\n\n";
+        issues++;
+    }
+
+    if (issues === 0) {
+        report += "✅ **Sintaxe e Estrutura Ok:** Nenhuma inconsistência crítica detectada nas regras estáticas de DBA.\n\n";
+    }
+
+    report += "💡 *Para análises avançadas com Inteligência Artificial, insira sua chave no botão 'Configurar IA'.*";
+    return report;
+};
+
+// Gerador de Dados Fictícios Offline
+const generateMockDataOffline = (prompt: string): string => {
+    const colMatches = Array.from(prompt.matchAll(/([a-zA-Z0-9_]+)\s+(?:VARCHAR|INT|BIGINT|DATE|DATETIME|DECIMAL|BOOLEAN|TEXT)/gi));
+    let columns = colMatches.map(m => m[1]);
+
+    if (columns.length === 0) {
+        columns = ['id', 'nome', 'email', 'status', 'data_registro'];
+    }
+
+    const mockRows = Array.from({ length: 5 }).map((_, idx) => {
+        const row: Record<string, any> = {};
+        columns.forEach(col => {
+            const lower = col.toLowerCase();
+            if (lower.includes('id')) row[col] = idx + 1;
+            else if (lower.includes('nome')) row[col] = `Usuário ${idx + 1}`;
+            else if (lower.includes('email')) row[col] = `user${idx + 1}@exemplo.com`;
+            else if (lower.includes('data')) row[col] = new Date(Date.now() - idx * 86400000).toISOString().split('T')[0];
+            else if (lower.includes('valor') || lower.includes('preco')) row[col] = Number((Math.random() * 100 + 10).toFixed(2));
+            else if (lower.includes('status')) row[col] = idx % 2 === 0 ? 'ativo' : 'pendente';
+            else row[col] = `Valor ${idx + 1}`;
+        });
+        return row;
+    });
+
+    return JSON.stringify(mockRows, null, 2);
+};
 
 export default function SqlApp() {
     const [theme, setTheme] = useState<'light' | 'dark' | 'midnight'>(() => {
@@ -15,8 +100,9 @@ export default function SqlApp() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     
-    // Feedback de cópia
+    // Feedback de cópia e Modal de IA
     const [copiedRaw, setCopiedRaw] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
     useEffect(() => {
         const handleThemeChange = () => {
@@ -27,87 +113,52 @@ export default function SqlApp() {
         return () => window.removeEventListener('theme-changed', handleThemeChange);
     }, []);
 
-    // Formatar SQL com IA
-    const formatSql = async () => {
+    // Formatar SQL (100% Offline e Instantâneo)
+    const formatSql = () => {
         if (!sqlQuery.trim()) return;
-        setIsLoading(true);
-        setError('');
-        try {
-            const response = await fetch('http://localhost:3001/api/ai/process', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: sqlQuery,
-                    action: 'FORMAT_SQL'
-                })
-            });
-            if (!response.ok) {
-                throw new Error('Falha ao formatar SQL.');
-            }
-            const data = await response.json();
-            setSqlQuery(data.text.trim());
-        } catch (e: any) {
-            setError(e.message || 'Erro ao conectar à IA.');
-        } finally {
-            setIsLoading(false);
-        }
+        const formatted = formatSqlOffline(sqlQuery);
+        setSqlQuery(formatted);
     };
 
-    // Explicar Query com IA
+    // Explicar Query (IA com Fallback Offline Estático)
     const explainQuery = async () => {
         if (!sqlQuery.trim()) return;
         setIsLoading(true);
         setError('');
         setAiResponse('');
+
         try {
-            const response = await fetch('http://localhost:3001/api/ai/process', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: sqlQuery,
-                    action: 'EXPLAIN_SQL'
-                })
-            });
-            if (!response.ok) {
-                throw new Error('Falha ao explicar SQL.');
-            }
-            const data = await response.json();
-            setAiResponse(data.text);
+            const prompt = `Atue como um DBA Sênior especialista em SQL e bancos de dados relacionais. Analise e explique a seguinte consulta SQL, pontuando melhorias de performance, índices e sintaxe:\n\n\`\`\`sql\n${sqlQuery}\n\`\`\``;
+            const reply = await runAiRequest(prompt);
+            setAiResponse(reply);
         } catch (e: any) {
-            setError(e.message || 'Erro ao conectar à IA.');
+            // Fallback offline estático se não houver chave
+            setAiResponse(explainSqlOffline(sqlQuery));
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Gerar Dados Fictícios com IA
+    // Gerar Dados Fictícios (IA com Fallback Offline Estático)
     const generateMockData = async () => {
         if (!mockPrompt.trim()) return;
         setIsLoading(true);
         setError('');
         setAiResponse('');
+
         try {
-            const response = await fetch('http://localhost:3001/api/ai/process', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: mockPrompt,
-                    action: 'GENERATE_MOCK'
-                })
-            });
-            if (!response.ok) {
-                throw new Error('Falha ao gerar dados fictícios.');
-            }
-            const data = await response.json();
-            setAiResponse(data.text);
+            const prompt = `Gere uma lista JSON contendo exatamente 5 registros fictícios realistas baseados na seguinte tabela SQL DDL/descrição. Retorne APENAS um array JSON válido sem marcações extras de markdown se possível:\n\n${mockPrompt}`;
+            const reply = await runAiRequest(prompt);
+            setAiResponse(reply);
         } catch (e: any) {
-            setError(e.message || 'Erro ao conectar à IA.');
+            // Fallback offline estático se não houver chave
+            setAiResponse(generateMockDataOffline(mockPrompt));
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Tenta interpretar a resposta da IA como JSON para exibição em tabela
+    // Interpreta resposta para exibição em tabela
     const parsedMockTable = React.useMemo(() => {
         if (activeTab !== 'mock' || !aiResponse) return null;
         try {
@@ -123,7 +174,7 @@ export default function SqlApp() {
                 return { headers, rows: parsed, rawJson: cleaned };
             }
         } catch (e) {
-            // Não é um JSON válido
+            // Não é JSON válido em array
         }
         return null;
     }, [aiResponse, activeTab]);
@@ -135,23 +186,34 @@ export default function SqlApp() {
     };
 
     const tabs = [
-        { id: 'explain', label: 'SQL Editor / Análise DBA' },
-        { id: 'mock', label: 'Mock Data Generator' }
+        { id: 'explain', label: 'SQL Editor & Análise DBA' },
+        { id: 'mock', label: 'Gerador de Mock Data' }
     ];
 
     return (
         <div className="ds-container flex flex-col h-full overflow-hidden flex-1">
             <PageHeader
-                title="SQL Toolset"
-                description="Escreva queries SQL, aplique formatação e realize análise de performance ou gere tabelas mock completas usando IA."
+                title="SQL Toolset & DBA Assistant"
+                description="Escreva queries SQL, aplique formatação instantânea, realize análise DBA de performance e gere dados fictícios com ou sem IA."
                 icon={Database}
                 badge="Ferramentas Dev"
                 actions={
-                    <Tabs
-                        tabs={tabs}
-                        activeTab={activeTab}
-                        onChange={(id) => { setActiveTab(id as any); setAiResponse(''); setError(''); }}
-                    />
+                    <div className="flex items-center gap-3">
+                        <Button
+                            onClick={() => setIsAiModalOpen(true)}
+                            variant="secondary"
+                            size="sm"
+                            icon={Sparkles}
+                            className="text-indigo-400 border-indigo-500/30"
+                        >
+                            Configurar IA
+                        </Button>
+                        <Tabs
+                            tabs={tabs}
+                            activeTab={activeTab}
+                            onChange={(id) => { setActiveTab(id as any); setAiResponse(''); setError(''); }}
+                        />
+                    </div>
                 }
             />
 
@@ -159,17 +221,16 @@ export default function SqlApp() {
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1.5fr_1.5fr] gap-6 overflow-hidden min-h-0">
                 {/* Left Side: Editor */}
                 <div className="flex flex-col gap-6 overflow-hidden h-full">
-                    {/* Dynamic Inputs based on selected mode */}
                     {activeTab === 'explain' ? (
                         <Card variant="glass" padding="none" className="overflow-hidden flex flex-col shadow-sm flex-1 min-h-[300px]">
                             <div className="h-10 border-b border-base/80 px-6 flex items-center justify-between bg-base/20 select-none">
                                 <span className="text-[10px] font-black uppercase text-muted tracking-widest">Query SQL</span>
                                 <Button
                                     onClick={formatSql}
-                                    disabled={isLoading}
                                     variant="ghost"
                                     size="sm"
-                                    className="text-indigo-500 font-bold"
+                                    icon={Wand2}
+                                    className="text-indigo-400 font-bold"
                                 >
                                     Formatar
                                 </Button>
@@ -214,7 +275,7 @@ export default function SqlApp() {
                                 size="md"
                                 icon={Sparkles}
                             >
-                                Análise DBA por IA
+                                Análise DBA (IA / Offline)
                             </Button>
                         ) : (
                             <Button
@@ -225,7 +286,7 @@ export default function SqlApp() {
                                 size="md"
                                 icon={Sparkles}
                             >
-                                Gerar Mock Data por IA
+                                Gerar Mock Data (IA / Offline)
                             </Button>
                         )}
                     </div>
@@ -262,7 +323,7 @@ export default function SqlApp() {
                                     <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                                     <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                 </div>
-                                <span className="text-[10px] font-bold text-muted uppercase tracking-widest">Processando requisição...</span>
+                                <span className="text-[10px] font-bold text-muted uppercase tracking-widest">Processando dados...</span>
                             </div>
                         ) : error ? (
                             <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500">
@@ -307,15 +368,17 @@ export default function SqlApp() {
                             <div className="flex flex-col items-center justify-center h-full text-center p-6 text-muted font-medium gap-2">
                                 <Database className="opacity-20" size={28} />
                                 {activeTab === 'explain' ? (
-                                    <p className="text-xs">Clique no botão <strong className="text-primary font-bold">Análise DBA por IA</strong> para obter diagnósticos completos e dicas de otimização de performance para a query editada.</p>
+                                    <p className="text-xs">Clique no botão <strong className="text-primary font-bold">Análise DBA</strong> para obter diagnósticos completos e dicas de otimização de performance para a query editada.</p>
                                 ) : (
-                                    <p className="text-xs">Insira a descrição da sua estrutura no editor e clique no botão <strong className="text-primary font-bold">Gerar Mock Data por IA</strong> para receber registros fictícios formatados.</p>
+                                    <p className="text-xs">Insira a descrição da sua estrutura no editor e clique no botão <strong className="text-primary font-bold">Gerar Mock Data</strong> para receber registros fictícios formatados.</p>
                                 )}
                             </div>
                         )}
                     </div>
                 </Card>
             </div>
+
+            <AiSettingsModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
         </div>
     );
 }

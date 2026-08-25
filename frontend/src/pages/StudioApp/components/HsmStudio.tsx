@@ -5,6 +5,7 @@ import {
   Sparkles, FileText, RefreshCcw, Image, Video, Link, Plus, Trash2, Shield
 } from 'lucide-react';
 import { auditHsmTemplate } from '../services/geminiService';
+import { AiSettingsModal } from '../../../components/ui/AiSettingsModal';
 
 interface HsmButton {
   type: 'QUICK_REPLY' | 'PHONE_NUMBER' | 'URL';
@@ -13,6 +14,7 @@ interface HsmButton {
 }
 
 const HsmStudio: React.FC = () => {
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   // Main states matching the specified enterprise layout
   const [apiMode, setApiMode] = useState<'CLOUD_API' | 'MM_LITE'>('CLOUD_API');
   const [headerType, setHeaderType] = useState<'NONE' | 'TEXT' | 'MEDIA'>('NONE');
@@ -141,6 +143,12 @@ const HsmStudio: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2.5 p-1.5 bg-white dark:bg-zinc-950/80 rounded-2xl border border-zinc-200 dark:border-zinc-800 self-start shadow-sm shadow-black/5">
+            <button 
+              onClick={() => setIsAiModalOpen(true)}
+              className="px-4 py-2 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500 hover:text-white flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Configurar IA
+            </button>
             <button 
               onClick={() => setApiMode('CLOUD_API')}
               className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${apiMode === 'CLOUD_API' ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/15' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
@@ -558,6 +566,7 @@ const HsmStudio: React.FC = () => {
 
         </div>
       </div>
+      <AiSettingsModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
     </div>
   );
 };

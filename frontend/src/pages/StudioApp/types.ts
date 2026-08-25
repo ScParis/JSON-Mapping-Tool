@@ -40,7 +40,7 @@ export interface KnowledgeSource {
   domain: string;
 }
 
-export type View = 'home' | 'editor' | 'dictionary' | 'ai-lab' | 'whatsapp-builder' | 'nexus-ai' | 'hsm-studio';
+export type View = 'home' | 'editor' | 'whatsapp-builder' | 'nexus-ai' | 'hsm-studio';
 
 export enum AIAction {
   REFINE = 'REFINE',
