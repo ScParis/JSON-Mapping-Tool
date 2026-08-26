@@ -40,6 +40,7 @@ const NAV_GROUPS: { items: NavItem[] }[] = [
     {
         items: [
             { id: 'json', label: 'JSON Mapper', icon: Brackets, path: '/json' },
+            { id: 'generate-data', label: 'Generate Data', icon: Database, path: '/generate-data' },
             { id: 'diff', label: 'Diff Viewer', icon: GitCompare, path: '/diff' },
             { id: 'jwt', label: 'JWT & Codes', icon: KeyRound, path: '/jwt' },
             { id: 'regex', label: 'Regex Playground', icon: Binary, path: '/regex' },

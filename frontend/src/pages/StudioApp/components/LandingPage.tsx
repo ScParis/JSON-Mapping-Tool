@@ -122,12 +122,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
     // --- Ferramentas Dev ---
     {
-      id: '/json',
+      id: 'json',
       isStudioView: false,
-      title: 'JSON Mapping Tool',
-      description: 'Transformador visual de estruturas JSON utilizando expressões JMESPath com pré-visualização instantânea.',
+      title: 'JSON Mapper',
+      description: 'Mapeamento visual e transformação de estruturas JSON complexas usando consultas e funções JMESPath.',
       icon: FileJson,
-      color: 'bg-gradient-to-br from-emerald-500 to-teal-500',
+      color: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+      category: 'dev'
+    },
+    {
+      id: 'generate-data',
+      isStudioView: false,
+      title: 'GenerateData (Massa de Dados)',
+      description: 'Gerador open-source de massa de dados de teste customizados em SQL, JSON, CSV, XML e TSV com suporte a importação de modelos.',
+      icon: Database,
+      color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+      badge: 'Novo',
       category: 'dev'
     },
     {

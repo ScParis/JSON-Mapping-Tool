@@ -12,6 +12,7 @@ import RegexApp from './pages/RegexApp/RegexApp';
 import SqlApp from './pages/SqlApp/SqlApp';
 import ApiApp from './pages/ApiApp/ApiApp';
 import MockApp from './pages/MockApp/MockApp';
+import GenerateDataApp from './pages/GenerateDataApp/GenerateDataApp';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="sql" element={<SqlApp />} />
           <Route path="api" element={<ApiApp />} />
           <Route path="mock" element={<MockApp />} />
+          <Route path="generate-data" element={<GenerateDataApp />} />
         </Route>
       </Routes>
     </BrowserRouter>
