@@ -644,7 +644,7 @@ const extractTargetFieldValues = (obj: any, prefix = ''): Record<string, string>
                     Configurar Mapeamento
                 </Button>
                 <Button
-                    onClick={executeMapping}
+                    onClick={() => executeMapping()}
                     disabled={!!sourceError || !!targetError || !sourceJson || !targetJson || Object.keys(mappingConfig).length === 0}
                     variant="primary"
                     size="lg"
