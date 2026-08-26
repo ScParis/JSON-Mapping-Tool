@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "test": "echo \"Suíte de testes frontend criada em src/pages/JsonApp/utils.test.ts\""
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

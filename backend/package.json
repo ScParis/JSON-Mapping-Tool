@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx ts-node -e \"import './src/security.test.ts'\""
   },
   "keywords": [],
   "author": "",
