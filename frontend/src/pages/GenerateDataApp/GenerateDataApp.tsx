@@ -125,26 +125,27 @@ export default function GenerateDataApp() {
         title="GenerateData"
         description="Gerador open-source de massa de dados e schemas para testes de banco de dados, APIs e testes automatizados."
         icon={Database}
-      >
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={Upload}
-            onClick={() => setIsImporterOpen(true)}
-          >
-            Importar Modelo (.json, .csv, .xlsx)
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            icon={Download}
-            onClick={handleDownload}
-          >
-            Baixar {rowCount} Registros
-          </Button>
-        </div>
-      </PageHeader>
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Upload}
+              onClick={() => setIsImporterOpen(true)}
+            >
+              Importar Modelo (.json, .csv, .xlsx)
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              icon={Download}
+              onClick={handleDownload}
+            >
+              Baixar {rowCount} Registros
+            </Button>
+          </div>
+        }
+      />
 
       {/* Top Configuration & Control Bar */}
       <Card className="p-5 bg-zinc-900/90 border-zinc-800">
