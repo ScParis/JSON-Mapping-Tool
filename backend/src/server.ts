@@ -25,17 +25,28 @@ let tunnelProvider: 'cloudflared' | 'localtunnel' | null = null;
 
 const CLOUDFLARED_BIN = path.join(__dirname, '..', 'bin', 'cloudflared');
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : [];
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
+
+// Origens de desenvolvimento local, liberadas apenas quando ALLOWED_ORIGINS não está definido.
+const isLocalhostOrigin = (origin: string) =>
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
+if (allowedOrigins.length === 0) {
+    console.warn('[CORS] ALLOWED_ORIGINS não definido: liberando apenas origens localhost. Configure ALLOWED_ORIGINS em produção.');
+}
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Bloqueado por política CORS'));
-        }
+        // Requests sem header Origin (curl, health checks, server-to-server) são permitidos.
+        if (!origin) return callback(null, true);
+        // Origens explicitamente autorizadas via ALLOWED_ORIGINS.
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        // Sem lista configurada, permite somente desenvolvimento local (nunca origens remotas arbitrárias).
+        if (allowedOrigins.length === 0 && isLocalhostOrigin(origin)) return callback(null, true);
+        return callback(new Error('Bloqueado por política CORS'));
     }
 }));
 app.use(express.json());

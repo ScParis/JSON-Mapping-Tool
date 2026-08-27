@@ -4,6 +4,7 @@ import {
   Smartphone, Settings, Zap, CheckCircle, AlertTriangle, 
   Sparkles, FileText, RefreshCcw, Image, Video, Link, Plus, Trash2, Shield
 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { auditHsmTemplate } from '../services/geminiService';
 import { AiSettingsModal } from '../../../components/ui/AiSettingsModal';
 
@@ -94,21 +95,32 @@ const HsmStudio: React.FC = () => {
   };
 
   // Safe WhatsApp Standard Markdown parser
+  const escapeHtml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   const renderFormattedBody = (rawText: string) => {
-    let text = rawText;
-    
-    // Inject Dynamic Variable Values or Fallbacks
+    // Escapa todo o input do usuário ANTES de formatar, para que qualquer HTML
+    // digitado (ex.: <img onerror=...>) seja tratado como texto e não executado.
+    let text = escapeHtml(rawText);
+
+    // Inject Dynamic Variable Values or Fallbacks (valores também escapados)
     detectedVariables.forEach(v => {
-      const val = variables[v] || `[Variável ${v}]`;
+      const val = escapeHtml(variables[v] || `[Variável ${v}]`);
       text = text.replace(new RegExp(`\\{\\{${v}\\}\\}`, 'g'), `<span class="bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold px-1.5 py-0.5 rounded-md text-xs border border-indigo-200 dark:border-indigo-800">${val}</span>`);
     });
 
-    // Formatting rules (*bold*, _italic_, ~strikeout~)
+    // Formatting rules (*bold*, _italic_, ~strikeout~) — geram apenas markup estático nosso
     text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
     text = text.replace(/_(.*?)_/g, '<em>$1</em>');
     text = text.replace(/~(.*?)~/g, '<del>$1</del>');
 
-    return { __html: text };
+    // Defesa em profundidade: sanitiza o HTML final permitindo só as tags que geramos.
+    const clean = DOMPurify.sanitize(text, {
+      ALLOWED_TAGS: ['span', 'strong', 'em', 'del', 'br'],
+      ALLOWED_ATTR: ['class'],
+    });
+
+    return { __html: clean };
   };
 
   const applyOtimizacao = () => {
