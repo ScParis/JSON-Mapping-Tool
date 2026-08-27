@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { Send, Plus, Trash2, ShieldAlert, Copy, Check, Clock, Database, Globe } from 'lucide-react';
 import { PageHeader, Card, Button, Input, Badge, Tabs, Select } from '../../components/ui';
+import { BACKEND_URL } from '../../config';
 
 interface KeyValuePair {
     id: string;
@@ -28,7 +29,7 @@ export default function ApiApp() {
 
     // Headers & Params
     const [headers, setHeaders] = useState<KeyValuePair[]>([
-        { id: '1', key: 'User-Agent', value: 'Dev-Studio-Client', enabled: true }
+        { id: '1', key: 'User-Agent', value: 'Nexora-Devkit-Client', enabled: true }
     ]);
     const [params, setParams] = useState<KeyValuePair[]>([]);
 
@@ -144,7 +145,7 @@ export default function ApiApp() {
                 processedHeaders['Content-Type'] = 'application/json';
             }
 
-            const response = await fetch('http://localhost:3001/api/proxy', {
+            const response = await fetch(`${BACKEND_URL}/api/proxy`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

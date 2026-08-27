@@ -659,11 +659,11 @@ const extractTargetFieldValues = (obj: any, prefix = ''): Record<string, string>
                 <div className="flex items-center gap-2">
                     <span>Desenvolvido por <strong className="text-zinc-300">ScParis</strong></span>
                     <span>•</span>
-                    <span>JSON Mapping Tool v2.2</span>
+                    <span>Nexora Devkit</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <a
-                        href="https://github.com/ScParis/JSON-Mapping-Tool"
+                        href="https://github.com/ScParis/nexora-devkit"
                         target="_blank"
                         rel="noreferrer"
                         className="hover:text-zinc-200 flex items-center gap-1 transition-colors"

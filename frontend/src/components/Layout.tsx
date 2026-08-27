@@ -262,39 +262,39 @@ export const Layout = () => {
         const searchParams = new URLSearchParams(location.search);
         const viewParam = searchParams.get('view');
 
-        let title = 'Dev Studio Pro';
+        let title = 'Nexora Devkit';
 
         if (path === '/') {
-            title = 'Dev Studio | Início & Dashboard';
+            title = 'Nexora Devkit |Início & Dashboard';
         } else if (path.startsWith('/json')) {
-            title = 'Dev Studio | JSON Mapper & JMESPath';
+            title = 'Nexora Devkit |JSON Mapper & JMESPath';
         } else if (path.startsWith('/diff')) {
-            title = 'Dev Studio | Diff Viewer & Comparador';
+            title = 'Nexora Devkit |Diff Viewer & Comparador';
         } else if (path.startsWith('/jwt')) {
-            title = 'Dev Studio | JWT & Criptografia';
+            title = 'Nexora Devkit |JWT & Criptografia';
         } else if (path.startsWith('/regex')) {
-            title = 'Dev Studio | Regex Playground';
+            title = 'Nexora Devkit |Regex Playground';
         } else if (path.startsWith('/sql')) {
-            title = 'Dev Studio | SQL Toolset & Conversor';
+            title = 'Nexora Devkit |SQL Toolset & Conversor';
         } else if (path.startsWith('/cnpj')) {
-            title = 'Dev Studio | Consulta CNPJ & CEP';
+            title = 'Nexora Devkit |Consulta CNPJ & CEP';
         } else if (path.startsWith('/api')) {
-            title = 'Dev Studio | API Client & Rest Tester';
+            title = 'Nexora Devkit |API Client & Rest Tester';
         } else if (path.startsWith('/mock')) {
-            title = 'Dev Studio | Mock API Server';
+            title = 'Nexora Devkit |Mock API Server';
         } else if (path.startsWith('/studio')) {
             if (viewParam === 'hsm-studio') {
-                title = 'Dev Studio | HSM Studio (WhatsApp Meta)';
+                title = 'Nexora Devkit |HSM Studio (WhatsApp Meta)';
             } else if (viewParam === 'nexus-ai') {
-                title = 'Dev Studio | Nexus AI Chat';
+                title = 'Nexora Devkit |Nexus AI Chat';
             } else if (viewParam === 'dictionary') {
-                title = 'Dev Studio | Dicionário de Variáveis';
+                title = 'Nexora Devkit |Dicionário de Variáveis';
             } else if (viewParam === 'whatsapp-builder') {
-                title = 'Dev Studio | Gerador de Link WhatsApp';
+                title = 'Nexora Devkit |Gerador de Link WhatsApp';
             } else if (viewParam === 'ai-lab') {
-                title = 'Dev Studio | Laboratório IA (Gemini)';
+                title = 'Nexora Devkit |Laboratório IA (Gemini)';
             } else {
-                title = 'Dev Studio | Universal Studio Pro Workspace';
+                title = 'Nexora Devkit |Universal Studio Pro Workspace';
             }
         }
 
@@ -372,7 +372,7 @@ export const Layout = () => {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#10B981]" />
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Dev Studio Pro</span>
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Nexora Devkit</span>
                         </div>
                         <span className="text-[10px] text-zinc-600 font-mono hidden sm:inline">
                             {currentPath === '/' ? 'Home' : currentPath.replace('/', '').toUpperCase()}

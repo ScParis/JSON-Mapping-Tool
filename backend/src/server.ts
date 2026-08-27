@@ -11,6 +11,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Túnel de desenvolvimento (cloudflared). Desligado por padrão.
+// Em produção o backend já é público, então o túnel é desnecessário.
+// Ative com ENABLE_TUNNEL=true apenas no ambiente local de desenvolvimento.
+const ENABLE_TUNNEL = process.env.ENABLE_TUNNEL === 'true';
+
 // ── Tunnel State ──────────────────────────────────────────────────────────────
 let tunnelProcess: ChildProcess | null = null;
 let tunnelUrl: string | null = null;
@@ -298,7 +303,7 @@ app.post('/api/ai/chat', rateLimiter(20, 60 * 1000), async (req, res) => {
             parts: [{ text: message }]
         });
 
-        const systemInstruction = `Você é o Assistente Gemini integrado no Universal Studio Pro do Dev-Studio.
+        const systemInstruction = `Você é o Assistente Gemini integrado no Universal Studio Pro do Nexora Devkit.
 O usuário está atualmente editando um arquivo no editor. O conteúdo do arquivo está listado abaixo.
 Use-o como contexto direto para responder, explicar, depurar ou realizar alterações conforme solicitado pelo usuário.
 Seja objetivo, técnico e amigável. Retorne respostas estruturadas em Markdown.
@@ -698,7 +703,7 @@ app.all(/^\/hooks\/([^\/]+)(?:\/(.*))?$/, (req, res) => {
         } else {
             responseBody = JSON.stringify({
                 status: 'success',
-                message: 'Request intercepted successfully by Dev-Studio',
+                message: 'Request intercepted successfully by Nexora Devkit',
                 details: {
                     endpointId,
                     subPath,
@@ -764,13 +769,16 @@ app.all(/^\/hooks\/([^\/]+)(?:\/(.*))?$/, (req, res) => {
 
 // ── Endpoint Base ─────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-    res.send('Dev-Studio Backend is Running');
+    res.send('Nexora Devkit Backend is Running');
 });
 
 // ── Tunnel Management API (Cloudflare Quick Tunnel) ───────────────────────────
 
 // GET /api/tunnel/status
 app.get('/api/tunnel/status', (req, res) => {
+    if (!ENABLE_TUNNEL) {
+        return res.json({ status: 'disabled', url: null, error: null, provider: null, publicHooksBase: null });
+    }
     res.json({
         status: tunnelStatus,
         url: tunnelUrl,
@@ -782,6 +790,9 @@ app.get('/api/tunnel/status', (req, res) => {
 
 // POST /api/tunnel/start — opens a Cloudflare Quick Tunnel
 app.post('/api/tunnel/start', async (req, res) => {
+    if (!ENABLE_TUNNEL) {
+        return res.status(400).json({ status: 'disabled', error: 'Túnel desativado. O backend já está público em produção, portanto o túnel não é necessário.' });
+    }
     if (tunnelProcess && tunnelStatus === 'open') {
         return res.json({ status: 'open', url: tunnelUrl, provider: tunnelProvider, publicHooksBase: tunnelUrl ? `${tunnelUrl}/hooks` : null });
     }
@@ -859,6 +870,9 @@ app.post('/api/tunnel/start', async (req, res) => {
 
 // POST /api/tunnel/stop
 app.post('/api/tunnel/stop', (req, res) => {
+    if (!ENABLE_TUNNEL) {
+        return res.json({ status: 'disabled' });
+    }
     if (tunnelProcess) {
         tunnelProcess.kill();
         tunnelProcess = null;

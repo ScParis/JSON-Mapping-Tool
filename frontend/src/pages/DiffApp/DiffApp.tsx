@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DiffEditor } from '@monaco-editor/react';
 import { Trash2, Sparkles, AlertCircle, GitCompare } from 'lucide-react';
 import { PageHeader, Card, Button, Select } from '../../components/ui';
+import { BACKEND_URL } from '../../config';
 
 const LANGUAGES = [
     { value: 'plaintext', label: 'Texto Simples' },
@@ -59,7 +60,7 @@ export default function DiffApp() {
 
         try {
             const promptText = `Por favor, realize uma análise de Diff/Diferenças técnicas entre as duas versões abaixo:\n\n=== ORIGINAL ===\n${original}\n\n=== MODIFICADO ===\n${modified}\n\nCompare o que mudou, explique as melhorias aplicadas (como segurança, legibilidade, etc) e se há algum risco potencial. Mantenha em português e responda de forma estruturada.`;
-            const response = await fetch('http://localhost:3001/api/ai/process', {
+            const response = await fetch(`${BACKEND_URL}/api/ai/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

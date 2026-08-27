@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Building2, MapPin, Copy, Check, Info } from 'lucide-react';
 import { PageHeader, Card, Button, Input, Badge } from '../../components/ui';
+import { BACKEND_URL } from '../../config';
 
 const fieldLabels: Record<string, string> = {
     abertura: "Data de Abertura",
@@ -166,7 +167,7 @@ export default function CnpjApp() {
         setCnpjData(null);
 
         try {
-            const response = await fetch(`http://localhost:3001/api/cnpj/${cleanCnpj}`);
+            const response = await fetch(`${BACKEND_URL}/api/cnpj/${cleanCnpj}`);
             const data = await response.json();
 
             if (!response.ok) {

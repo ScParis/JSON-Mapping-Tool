@@ -238,7 +238,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       <section className="pt-16 pb-12 px-6 md:px-16 relative">
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest mb-8 shadow-sm">
-            <Zap className="w-3.5 h-3.5 animate-pulse" /> Plataforma Unificada Dev-Studio Pro
+            <Zap className="w-3.5 h-3.5 animate-pulse" /> Plataforma Unificada Nexora Devkit
           </div>
           
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.95] text-zinc-900 dark:text-white">
@@ -344,9 +344,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <div className="w-9 h-9 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
                 <Cpu className="w-5 h-5 text-white" />
               </div>
-              <span className="font-black text-xl uppercase tracking-tighter">Dev-Studio Pro</span>
+              <span className="font-black text-xl uppercase tracking-tighter">Nexora Devkit</span>
             </div>
-            <p className="text-xs text-zinc-500">© 2026 Dev-Studio Pro. Todos os utilitários integrados em um único ecossistema.</p>
+            <p className="text-xs text-zinc-500">© 2026 Nexora Devkit. Todos os utilitários integrados em um único ecossistema.</p>
           </div>
         </div>
       </footer>

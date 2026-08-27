@@ -1,14 +1,14 @@
 {
-  "name": "dev-studio",
+  "name": "nexora-devkit",
   "version": "1.0.0",
-  "description": "Dev Studio — Toolkit completo para desenvolvimento: JSON Mapper, Mock Interceptor, JWT, Diff, Regex, SQL e mais.",
+  "description": "Nexora Devkit — Toolkit completo para desenvolvimento: JSON Mapper, Mock Interceptor, JWT, Diff, Regex, SQL e mais.",
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "build": "npm run build --prefix frontend",
     "test": "npm test --prefix backend && npm test --prefix frontend"
   },
-  "keywords": ["dev-studio", "json-mapper", "mock-interceptor", "jwt", "diff", "regex", "sql"],
+  "keywords": ["nexora", "nexora-devkit", "json-mapper", "mock-interceptor", "jwt", "diff", "regex", "sql"],
   "author": "ScParis",
   "license": "ISC",
   "dependencies": {

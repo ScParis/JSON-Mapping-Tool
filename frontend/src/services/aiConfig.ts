@@ -1,3 +1,5 @@
+import { BACKEND_URL } from '../config';
+
 export type AiProvider = 'openai' | 'gemini' | 'claude' | 'grok' | 'custom';
 
 export interface AiConfig {
@@ -146,7 +148,7 @@ export async function runAiRequest(prompt: string, options?: { systemPrompt?: st
 
 async function tryBackendFallback(prompt: string): Promise<string> {
     try {
-        const response = await fetch('http://localhost:3001/api/ai/process', {
+        const response = await fetch(`${BACKEND_URL}/api/ai/process`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: prompt, action: 'EXPLAIN' })

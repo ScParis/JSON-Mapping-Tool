@@ -1,8 +1,8 @@
-# 🚀 Dev Studio v3.0 — Toolkit Completo para Desenvolvedores
+# 🚀 Nexora Devkit — Toolkit Completo para Desenvolvedores
 
 <div align="center">
 
-![Dev Studio Version](https://img.shields.io/badge/Dev%20Studio-v3.0-blueviolet?style=for-the-badge)
+![Nexora Devkit Version](https://img.shields.io/badge/Nexora%20Devkit-v3.0-blueviolet?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)
 ![Node.js](https://img.shields.io/badge/Node.js-22.x-339933?style=for-the-badge&logo=node.js)
@@ -20,7 +20,7 @@
 
 ## 🌟 Visão Geral
 
-O **Dev Studio** é uma plataforma web moderna e unificada que reúne **9 ferramentas essenciais** para aumentar a produtividade no dia a dia de desenvolvimento de software.
+O **Nexora Devkit** é uma plataforma web moderna e unificada que reúne **9 ferramentas essenciais** para aumentar a produtividade no dia a dia de desenvolvimento de software.
 
 Com uma arquitetura Monorepo moderna composta por uma **Single Page Application (SPA) em React + Vite + TypeScript** no frontend e um **Servidor API Express + TypeScript** no backend integrado à **IA Google Gemini**, a suite oferece transformações de dados, testes de APIs, decodificação de segurança, geração de Mocks e assistente inteligente.
 
@@ -73,7 +73,7 @@ Com uma arquitetura Monorepo moderna composta por uma **Single Page Application 
 O repositório é estruturado em formato **Monorepo**:
 
 ```
-JSON-Mapping-Tool/
+nexora-devkit/
 ├── backend/                  # Servidor API Node.js + Express + TypeScript
 │   ├── src/
 │   │   ├── server.ts         # Endpoints REST, Proxies e Integração Gemini
@@ -84,7 +84,7 @@ JSON-Mapping-Tool/
 ├── frontend/                 # Application React + Vite + TailwindCSS
 │   ├── src/
 │   │   ├── components/       # Componentes de UI reutilizáveis
-│   │   ├── pages/            # As 9 ferramentas da suite Dev Studio
+│   │   ├── pages/            # As 9 ferramentas da suite Nexora Devkit
 │   │   ├── services/         # Integrações de API e configurações de IA
 │   │   └── App.tsx           # Roteamento central com React Router
 │   ├── package.json
@@ -114,8 +114,8 @@ JSON-Mapping-Tool/
 
 ### **Passo 1: Clonar o Repositório**
 ```bash
-git clone https://github.com/ScParis/JSON-Mapping-Tool.git
-cd JSON-Mapping-Tool
+git clone https://github.com/ScParis/nexora-devkit.git
+cd nexora-devkit
 ```
 
 ### **Passo 2: Configurar Variáveis de Ambiente**
@@ -169,7 +169,7 @@ npm test --prefix frontend
 ## 📝 Changelog Resumido
 
 ### **v3.0 (Atual - Fev 2026)**
-- 🚀 **Dev Studio Launch**: Evolução para suite Monorepo com React + Vite + Express.
+- 🚀 **Nexora Devkit Launch**: Evolução para suite Monorepo com React + Vite + Express.
 - 🤖 **Integração Gemini AI**: Assistente inteligente para SQL, Regex, Mocks e JSON.
 - 🛡️ **Segurança Avançada**: Proteção contra SSRF e Rate Limiting no backend.
 - 🧰 **9 Ferramentas**: JSON Mapper, CNPJ, Diff, JWT, Regex, SQL, API Client, Mock Server e Studio.

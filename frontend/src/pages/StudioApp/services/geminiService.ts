@@ -1,7 +1,6 @@
 import { AIAction } from "../types";
 import { runAiRequest, getAiConfig } from "../../../services/aiConfig";
-
-const BACKEND_URL = 'http://localhost:3001';
+import { BACKEND_URL } from "../../../config";
 
 export const processTextWithAI = async (text: string, action: AIAction): Promise<string> => {
   if (!text.trim()) return text;

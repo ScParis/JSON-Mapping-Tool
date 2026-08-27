@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Binary, Sparkles, AlertTriangle, Eye, HelpCircle } from 'lucide-react';
 import { PageHeader, Card, Button, Input, Badge, Tabs } from '../../components/ui';
+import { BACKEND_URL } from '../../config';
 
 export default function RegexApp() {
     const [pattern, setPattern] = useState('(\\w+)\\s(\\w+)');
@@ -96,7 +97,7 @@ export default function RegexApp() {
         setAiError('');
         setAiResponse('');
         try {
-            const response = await fetch('http://localhost:3001/api/ai/process', {
+            const response = await fetch(`${BACKEND_URL}/api/ai/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -121,7 +122,7 @@ export default function RegexApp() {
         setAiError('');
         setAiResponse('');
         try {
-            const response = await fetch('http://localhost:3001/api/ai/process', {
+            const response = await fetch(`${BACKEND_URL}/api/ai/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { PageHeader, Card, Button, Input, Badge, Tabs, Select } from '../../components/ui';
+import { BACKEND_URL } from '../../config';
 
 interface RuleMatchCondition {
     type: 'header' | 'query' | 'body';
@@ -89,7 +90,7 @@ export default function MockApp() {
     const [aiPreviewRule, setAiPreviewRule] = useState<any | null>(null);
 
     // Tunnel State
-    const [tunnelStatus, setTunnelStatus] = useState<'idle' | 'connecting' | 'open' | 'error'>('idle');
+    const [tunnelStatus, setTunnelStatus] = useState<'idle' | 'connecting' | 'open' | 'error' | 'disabled'>('idle');
     const [tunnelUrl, setTunnelUrl] = useState<string | null>(null);
     const [tunnelSubdomain, setTunnelSubdomain] = useState('');
     const [copiedTunnel, setCopiedTunnel] = useState(false);
@@ -112,7 +113,7 @@ export default function MockApp() {
     useEffect(() => {
         const checkTunnel = async () => {
             try {
-                const res = await fetch('http://localhost:3001/api/tunnel/status');
+                const res = await fetch(`${BACKEND_URL}/api/tunnel/status`);
                 if (res.ok) {
                     const data = await res.json();
                     setTunnelStatus(data.status);
@@ -132,7 +133,7 @@ export default function MockApp() {
     // Load endpoints on mount
     const fetchEndpoints = async () => {
         try {
-            const res = await fetch('http://localhost:3001/api/mock/endpoints');
+            const res = await fetch(`${BACKEND_URL}/api/mock/endpoints`);
             if (res.ok) {
                 const data = await res.json();
                 setEndpointsList(data);
@@ -153,7 +154,7 @@ export default function MockApp() {
             return;
         }
 
-        const eventSource = new EventSource(`http://localhost:3001/api/mock/endpoints/${activeEndpoint.id}/events`);
+        const eventSource = new EventSource(`${BACKEND_URL}/api/mock/endpoints/${activeEndpoint.id}/events`);
         setSseConnected(true);
 
         eventSource.onmessage = (event) => {
@@ -182,7 +183,7 @@ export default function MockApp() {
         if (!cleaned) return;
 
         try {
-            const res = await fetch('http://localhost:3001/api/mock/endpoints', {
+            const res = await fetch(`${BACKEND_URL}/api/mock/endpoints`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: cleaned })
@@ -209,7 +210,7 @@ export default function MockApp() {
             return;
         }
         try {
-            const res = await fetch(`http://localhost:3001/api/mock/endpoints/${slug}`, {
+            const res = await fetch(`${BACKEND_URL}/api/mock/endpoints/${slug}`, {
                 method: 'DELETE'
             });
             if (res.ok) {
@@ -386,7 +387,7 @@ export default function MockApp() {
         setAiError(null);
         setAiPreviewRule(null);
         try {
-            const res = await fetch('http://localhost:3001/api/ai/process', {
+            const res = await fetch(`${BACKEND_URL}/api/ai/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -458,12 +459,12 @@ export default function MockApp() {
             });
 
             if (editingRuleId) {
-                await fetch(`http://localhost:3001/api/mock/endpoints/${activeEndpoint.id}/rules/${editingRuleId}`, {
+                await fetch(`${BACKEND_URL}/api/mock/endpoints/${activeEndpoint.id}/rules/${editingRuleId}`, {
                     method: 'DELETE'
                 });
             }
 
-            const res = await fetch(`http://localhost:3001/api/mock/endpoints/${activeEndpoint.id}/rules`, {
+            const res = await fetch(`${BACKEND_URL}/api/mock/endpoints/${activeEndpoint.id}/rules`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -500,7 +501,7 @@ export default function MockApp() {
         if (!activeEndpoint) return;
         if (!confirm('Deseja excluir esta regra de resposta?')) return;
         try {
-            const res = await fetch(`http://localhost:3001/api/mock/endpoints/${activeEndpoint.id}/rules/${ruleId}`, {
+            const res = await fetch(`${BACKEND_URL}/api/mock/endpoints/${activeEndpoint.id}/rules/${ruleId}`, {
                 method: 'DELETE'
             });
             if (res.ok) {
@@ -519,7 +520,7 @@ export default function MockApp() {
 
         try {
             const qParams = new URLSearchParams(selectedRequest.query).toString();
-            const hookUrl = `http://localhost:3001/hooks/${activeEndpoint.id}${selectedRequest.path}${qParams ? '?' + qParams : ''}`;
+            const hookUrl = `${BACKEND_URL}/hooks/${activeEndpoint.id}${selectedRequest.path}${qParams ? '?' + qParams : ''}`;
 
             const headers = new Headers();
             Object.entries(selectedRequest.headers).forEach(([k, v]) => {
@@ -564,7 +565,7 @@ export default function MockApp() {
     const handleClearLogs = async () => {
         if (!activeEndpoint) return;
         try {
-            const res = await fetch(`http://localhost:3001/api/mock/endpoints/${activeEndpoint.id}/requests`, {
+            const res = await fetch(`${BACKEND_URL}/api/mock/endpoints/${activeEndpoint.id}/requests`, {
                 method: 'DELETE'
             });
             if (res.ok) {
@@ -594,7 +595,7 @@ export default function MockApp() {
         try {
             const ctrl = new AbortController();
             const timer = setTimeout(() => ctrl.abort(), 25000); // cloudflared can take ~10s
-            const res = await fetch('http://localhost:3001/api/tunnel/start', {
+            const res = await fetch(`${BACKEND_URL}/api/tunnel/start`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({}),
@@ -615,13 +616,13 @@ export default function MockApp() {
 
     const handleStopTunnel = async () => {
         try {
-            await fetch('http://localhost:3001/api/tunnel/stop', { method: 'POST' });
+            await fetch(`${BACKEND_URL}/api/tunnel/stop`, { method: 'POST' });
         } catch (_) {}
         setTunnelStatus('idle');
         setTunnelUrl(null);
     };
 
-    const mockUrl = activeEndpoint ? `http://localhost:3001/hooks/${activeEndpoint.id}` : '';
+    const mockUrl = activeEndpoint ? `${BACKEND_URL}/hooks/${activeEndpoint.id}` : '';
     const publicMockUrl = activeEndpoint && tunnelUrl ? `${tunnelUrl}/hooks/${activeEndpoint.id}` : null;
 
     const filteredRequests = requests.filter(req => {
@@ -650,7 +651,8 @@ export default function MockApp() {
                 badge={sseConnected ? "Conectado SSE" : "Desconectado"}
             />
 
-            {/* ── Tunnel Panel ─────────────────────────────────────────────── */}
+            {/* ── Tunnel Panel (oculto quando o backend está em produção/túnel desativado) ── */}
+            {tunnelStatus !== 'disabled' && (
             <Card
                 variant={tunnelStatus === 'open' ? 'glass' : 'outline'}
                 padding="md"
@@ -735,6 +737,7 @@ export default function MockApp() {
                     )}
                 </div>
             </Card>
+            )}
 
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden min-h-0">
                 {/* Endpoints Sidebar Card */}
