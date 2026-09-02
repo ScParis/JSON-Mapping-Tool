@@ -43,7 +43,7 @@ Se o código ainda não está no GitHub, resolva isso primeiro (peça ajuda a al
 
 1. No painel do Koyeb, clique em **Create Service** → **Web Service**.
 2. Em "Deployment method", escolha **GitHub**.
-3. Selecione o repositório do seu projeto (ex.: `JSON-Mapping-Tool`).
+3. Selecione o repositório do seu projeto (ex.: `nexora-devkit`).
 4. Em **Branch**, deixe a principal (geralmente `main`).
 
 ### Passo 1.3 — Apontar para a pasta do backend (MUITO IMPORTANTE)

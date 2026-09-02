@@ -170,7 +170,7 @@ function showMessage(message, type = 'info') {
 ## Estrutura de Arquivos Atualizada
 
 ```
-JSON-Mapping-Tool-main/
+nexora-devkit/
 ├── index.html              # HTML limpo e semântico
 ├── static/
 │   ├── script.js           # JavaScript otimizado e seguro

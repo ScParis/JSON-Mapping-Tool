@@ -750,7 +750,7 @@ const extractTargetFieldValues = (obj: any, prefix = ''): Record<string, string>
                 </div>
             )}
 
-            {/* Modals from JSON-Mapping-Tool */}
+            {/* Modals from nexora-devkit */}
             <JsonFinderModal
                 isOpen={isFinderModalOpen}
                 onClose={() => setIsFinderModalOpen(false)}

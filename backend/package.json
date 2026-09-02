@@ -7,7 +7,7 @@
     "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "npx ts-node -e \"import './src/security.test.ts'\""
+    "test": "npx ts-node -e \"import './src/test_security'; import './src/crypto.test';\""
   },
   "keywords": [],
   "author": "",
