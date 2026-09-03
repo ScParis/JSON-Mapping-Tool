@@ -14,7 +14,7 @@ const STORAGE_KEY = 'devstudio_ai_config_v1';
 export const DEFAULT_AI_CONFIG: AiConfig = {
     provider: 'gemini',
     apiKey: '',
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3.6-flash',
     baseUrl: ''
 };
 
@@ -24,9 +24,9 @@ export function getAiConfig(): AiConfig {
         if (raw) {
             const parsed = JSON.parse(raw);
             const config: AiConfig = { ...DEFAULT_AI_CONFIG, ...parsed };
-            // Migração automática para modelos Gemini descontinuados
-            if (config.provider === 'gemini' && (!config.model || config.model.includes('gemini-1.5') || config.model === 'gemini-pro')) {
-                config.model = 'gemini-2.5-flash';
+            // Migração automática para modelos Gemini descontinuados ou restritos
+            if (config.provider === 'gemini' && (!config.model || config.model.includes('gemini-1.5') || config.model.includes('gemini-2.5') || config.model === 'gemini-pro')) {
+                config.model = 'gemini-3.6-flash';
             }
             return config;
         }
@@ -55,32 +55,76 @@ export async function runAiRequest(prompt: string, options?: { systemPrompt?: st
         if (!apiKey) {
             return await tryBackendFallback(prompt);
         }
-        let model = config.model || 'gemini-2.5-flash';
-        if (model.includes('gemini-1.5') || model === 'gemini-pro') {
-            model = 'gemini-2.5-flash';
+
+        let primaryModel = config.model || 'gemini-3.6-flash';
+        if (primaryModel.includes('gemini-1.5') || primaryModel.includes('gemini-2.5') || primaryModel === 'gemini-pro') {
+            primaryModel = 'gemini-3.6-flash';
         }
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-        
+
+        // Fila de modelos com fallback para alta demanda (503) ou modelos indisponíveis
+        const candidateModels = [
+            primaryModel,
+            primaryModel !== 'gemini-3.6-flash' ? 'gemini-3.6-flash' : 'gemini-3.5-flash-lite',
+            'gemini-3.5-flash-lite'
+        ].filter((m, i, arr) => arr.indexOf(m) === i);
+
         const fullText = systemPrompt ? `${systemPrompt}\n\n${prompt}` : prompt;
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'x-goog-api-key': apiKey 
-            },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: fullText }] }]
-            })
-        });
+        let lastErrorMsg = '';
 
-        if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            const serverMsg = errJson.error?.message || `Erro Gemini API: ${res.status} ${res.statusText}`;
-            throw new Error(serverMsg);
+        for (const currentModel of candidateModels) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
+
+            for (let attempt = 0; attempt < 2; attempt++) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': apiKey 
+                        },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: fullText }] }]
+                        })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text) return text;
+                    }
+
+                    const errJson = await res.json().catch(() => ({}));
+                    lastErrorMsg = errJson.error?.message || `Erro Gemini API: ${res.status} ${res.statusText}`;
+
+                    // Se o modelo estiver com alta demanda (503) ou rate limit (429)
+                    if (res.status === 503 || res.status === 429) {
+                        if (attempt === 0) {
+                            await new Promise(r => setTimeout(r, 900));
+                            continue;
+                        }
+                        // Na segunda tentativa de 503, passa para o próximo modelo do fallback
+                        break;
+                    }
+
+                    // Se o modelo for descontinuado ou não encontrado (404)
+                    if (res.status === 404 || lastErrorMsg.includes('not found') || lastErrorMsg.includes('no longer available')) {
+                        break;
+                    }
+
+                    // Se for erro de autenticação ou chave inválida (400, 401, 403), propaga o erro imediatamente
+                    if (res.status === 400 || res.status === 401 || res.status === 403) {
+                        throw new Error(lastErrorMsg);
+                    }
+                } catch (fetchErr: any) {
+                    if (fetchErr.message && !fetchErr.message.includes('fetch') && !fetchErr.message.includes('network') && !fetchErr.message.includes('Failed to fetch')) {
+                        throw fetchErr;
+                    }
+                    lastErrorMsg = fetchErr.message || 'Falha de rede ao conectar à API do Google Gemini';
+                }
+            }
         }
 
-        const data = await res.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        throw new Error(lastErrorMsg || 'Serviço temporariamente indisponível. Por favor, tente novamente em instantes.');
     }
 
     if (config.provider === 'openai' || config.provider === 'grok' || config.provider === 'custom') {

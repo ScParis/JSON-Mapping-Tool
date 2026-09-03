@@ -32,7 +32,7 @@ export const AiSettingsModal: React.FC<AiSettingsModalProps> = ({ isOpen, onClos
 
     const handleProviderChange = (provider: AiProvider) => {
         let defaultModel = config.model;
-        if (provider === 'gemini') defaultModel = 'gemini-2.5-flash';
+        if (provider === 'gemini') defaultModel = 'gemini-3.6-flash';
         else if (provider === 'openai') defaultModel = 'gpt-4o-mini';
         else if (provider === 'grok') defaultModel = 'grok-2-latest';
         else if (provider === 'claude') defaultModel = 'claude-3-5-sonnet-20241022';
@@ -46,7 +46,7 @@ export const AiSettingsModal: React.FC<AiSettingsModalProps> = ({ isOpen, onClos
     };
 
     const suggestedModels: Record<AiProvider, string[]> = {
-        gemini: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-3.7-flash'],
+        gemini: ['gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.7-flash', 'gemini-3.1-pro-preview'],
         openai: ['gpt-4o-mini', 'gpt-4o', 'o3-mini'],
         grok: ['grok-2-latest', 'grok-beta'],
         claude: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022'],
@@ -141,7 +141,7 @@ export const AiSettingsModal: React.FC<AiSettingsModalProps> = ({ isOpen, onClos
                         </div>
                         <input
                             type="text"
-                            placeholder="ex: gemini-2.5-flash, gpt-4o, grok-2-latest..."
+                            placeholder="ex: gemini-3.6-flash, gemini-3.5-flash-lite, gpt-4o..."
                             value={config.model || ''}
                             onChange={e => setConfig({ ...config, model: e.target.value })}
                             className="w-full bg-zinc-900/90 border border-zinc-800 rounded-xl px-4 py-3 text-xs font-mono text-white placeholder-zinc-600 outline-none focus:border-indigo-500 transition-colors"

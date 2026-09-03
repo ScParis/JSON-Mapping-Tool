@@ -189,7 +189,7 @@ const NexusAI: React.FC = () => {
                             <Settings className="w-3.5 h-3.5 text-indigo-500" /> Configurar IA
                           </span>
                           <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-200/80 dark:bg-zinc-800 px-2 py-0.5 rounded-md truncate max-w-[110px]">
-                            {currentAiConfig.provider === 'gemini' ? (currentAiConfig.model || 'gemini-2.5-flash') : currentAiConfig.provider}
+                            {currentAiConfig.provider === 'gemini' ? (currentAiConfig.model || 'gemini-3.6-flash') : currentAiConfig.provider}
                           </span>
                       </button>
                     </div>
@@ -312,7 +312,7 @@ const NexusAI: React.FC = () => {
                                     <div className="bg-white dark:bg-[#0e1626] border border-zinc-200/80 dark:border-slate-800 rounded-[1.75rem] rounded-bl-none p-4 flex items-center gap-3 shadow-sm">
                                       <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />
                                       <span className="text-xs text-zinc-600 dark:text-slate-300 font-medium italic">
-                                        Processando resposta com {currentAiConfig.provider === 'gemini' ? (currentAiConfig.model || 'gemini-2.5-flash') : currentAiConfig.provider}...
+                                        Processando resposta com {currentAiConfig.provider === 'gemini' ? (currentAiConfig.model || 'gemini-3.6-flash') : currentAiConfig.provider}...
                                       </span>
                                     </div>
                                   </div>
