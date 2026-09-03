@@ -11,8 +11,8 @@ export const processTextWithAI = async (text: string, action: AIAction): Promise
       systemPrompt: 'Você é um assistente de IA especialista em engenharia de prompt e formatação de texto.'
     });
   } catch (error) {
-    console.warn("Retornando fallback para processTextWithAI:", error);
-    return text;
+    console.error("Erro em processTextWithAI:", error);
+    throw error;
   }
 };
 

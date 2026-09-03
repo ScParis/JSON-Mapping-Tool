@@ -14,7 +14,7 @@ const STORAGE_KEY = 'devstudio_ai_config_v1';
 export const DEFAULT_AI_CONFIG: AiConfig = {
     provider: 'gemini',
     apiKey: '',
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     baseUrl: ''
 };
 
@@ -23,7 +23,12 @@ export function getAiConfig(): AiConfig {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
             const parsed = JSON.parse(raw);
-            return { ...DEFAULT_AI_CONFIG, ...parsed };
+            const config: AiConfig = { ...DEFAULT_AI_CONFIG, ...parsed };
+            // Migração automática para modelos Gemini descontinuados
+            if (config.provider === 'gemini' && (!config.model || config.model.includes('gemini-1.5') || config.model === 'gemini-pro')) {
+                config.model = 'gemini-2.5-flash';
+            }
+            return config;
         }
     } catch (e) {
         console.error('Erro ao ler aiConfig:', e);
@@ -50,13 +55,19 @@ export async function runAiRequest(prompt: string, options?: { systemPrompt?: st
         if (!apiKey) {
             return await tryBackendFallback(prompt);
         }
-        const model = config.model || 'gemini-1.5-flash';
+        let model = config.model || 'gemini-2.5-flash';
+        if (model.includes('gemini-1.5') || model === 'gemini-pro') {
+            model = 'gemini-2.5-flash';
+        }
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         
         const fullText = systemPrompt ? `${systemPrompt}\n\n${prompt}` : prompt;
         const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-goog-api-key': apiKey 
+            },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: fullText }] }]
             })
@@ -64,7 +75,8 @@ export async function runAiRequest(prompt: string, options?: { systemPrompt?: st
 
         if (!res.ok) {
             const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson.error?.message || `Erro Gemini API: ${res.statusText}`);
+            const serverMsg = errJson.error?.message || `Erro Gemini API: ${res.status} ${res.statusText}`;
+            throw new Error(serverMsg);
         }
 
         const data = await res.json();

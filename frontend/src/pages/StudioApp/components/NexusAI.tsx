@@ -7,8 +7,7 @@ import {
 import { KnowledgeSource } from '../types';
 import { FLAG_MAP } from '../constants';
 import * as kbService from '../services/knowledgeService';
-import { processTextWithAI } from '../services/geminiService';
-import { AIAction } from '../types';
+import { runAiRequest, getAiConfig, AiConfig } from '../../../services/aiConfig';
 import { AiSettingsModal } from '../../../components/ui/AiSettingsModal';
 
 interface Message {
@@ -34,15 +33,15 @@ const KnowledgeBaseModal: React.FC<{ onClose: () => void; onSave: (s: KnowledgeS
                 <div className="space-y-5">
                     <div className="space-y-1">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Título Identificador</label>
-                      <input placeholder="Ex: Manual WhatsApp Cloud API" value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-slate-950 p-4 rounded-2xl border border-slate-800 text-sm placeholder-slate-600 outline-none focus:border-indigo-500 transition-colors"/>
+                      <input placeholder="Ex: Manual WhatsApp Cloud API" value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-slate-950 p-4 rounded-2xl border border-slate-800 text-sm text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition-colors"/>
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Domínio Técnico</label>
-                      <input placeholder="Ex: api.meta.com" value={domain} onChange={e => setDomain(e.target.value)} className="w-full bg-slate-950 p-4 rounded-xl border border-slate-800 text-sm placeholder-slate-600 outline-none focus:border-indigo-500 transition-colors"/>
+                      <input placeholder="Ex: api.meta.com" value={domain} onChange={e => setDomain(e.target.value)} className="w-full bg-slate-950 p-4 rounded-xl border border-slate-800 text-sm text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition-colors"/>
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Diretrizes / Conteúdo Oficial</label>
-                      <textarea placeholder="Insira o texto técnico que servirá de âncora para o modo estrito de IA..." value={content} onChange={e => setContent(e.target.value)} className="w-full bg-slate-950 p-4 rounded-xl border border-slate-800 text-sm placeholder-slate-600 h-32 resize-none outline-none focus:border-indigo-500 transition-colors custom-scrollbar"/>
+                      <textarea placeholder="Insira o texto técnico que servirá de âncora para o modo estrito de IA..." value={content} onChange={e => setContent(e.target.value)} className="w-full bg-slate-950 p-4 rounded-xl border border-slate-800 text-sm text-white placeholder-slate-500 h-32 resize-none outline-none focus:border-indigo-500 transition-colors custom-scrollbar"/>
                     </div>
                     <button 
                       onClick={() => { 
@@ -68,6 +67,7 @@ const NexusAI: React.FC = () => {
     const [showKbModal, setShowKbModal] = useState(false);
     const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [sources, setSources] = useState<KnowledgeSource[]>([]);
+    const [currentAiConfig, setCurrentAiConfig] = useState<AiConfig>(getAiConfig());
     
     // Chat implementation states
     const [messages, setMessages] = useState<Message[]>([
@@ -83,6 +83,11 @@ const NexusAI: React.FC = () => {
 
     useEffect(() => {
         kbService.getKnowledgeBase().then(setSources);
+        const handleConfigChanged = () => {
+            setCurrentAiConfig(getAiConfig());
+        };
+        window.addEventListener('ai-config-changed', handleConfigChanged);
+        return () => window.removeEventListener('ai-config-changed', handleConfigChanged);
     }, []);
 
     const decodedFlags = useMemo(() => {
@@ -99,7 +104,7 @@ const NexusAI: React.FC = () => {
       const userMsg: Message = {
         id: Date.now().toString(),
         sender: 'user',
-        text: inputQuestion,
+        text: inputQuestion.trim(),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -108,28 +113,27 @@ const NexusAI: React.FC = () => {
       setLoadingMessage(true);
 
       try {
-        // Construct prompt with embedded technical context if strict mode is active
-        let contextAddition = '';
+        let systemPrompt = 'Você é o assistente Nexus AI, especialista em conformidade e políticas do WhatsApp Meta Enterprise (Business Platform / Cloud API, regras e diretrizes de templates HSM antispam) e arquitetura de Feature Flags. Forneça respostas claras, profissionais, organizadas e úteis em português.';
+        
         if (isStrictMode && sources.length > 0) {
-          contextAddition = `Baseando-se estritamente nestas fontes técnicas oficiais da base de conhecimento local:\n${sources.map(s => `[Fonte: ${s.title} (${s.domain})]: ${s.content}`).join('\n\n')}\n\n`;
+          systemPrompt += `\n\n[MODO ESTRITO ATIVADO]: Baseie-se prioritariamente nestas diretrizes técnicas oficiais da sua base de conhecimento:\n${sources.map(s => `• [${s.title} (${s.domain})]: ${s.content}`).join('\n\n')}\n\nCaso a dúvida não conste na base, alerte o usuário com transparência.`;
         }
 
-        const fullPrompt = `${contextAddition}Pergunta do usuário: ${userMsg.text}`;
-        const reply = await processTextWithAI(fullPrompt, AIAction.EXPLAIN);
+        const reply = await runAiRequest(userMsg.text, { systemPrompt });
 
         const aiMsg: Message = {
           id: (Date.now() + 1).toString(),
           sender: 'assistant',
-          text: reply,
+          text: reply || 'Não recebi uma resposta válida do modelo. Por favor, tente novamente.',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages(prev => [...prev, aiMsg]);
-      } catch (e) {
-        console.error(e);
+      } catch (e: any) {
+        console.error('Erro na chamada da IA:', e);
         const errorMsg: Message = {
           id: (Date.now() + 1).toString(),
           sender: 'assistant',
-          text: 'Ocorreu um erro ao consultar o Nexus AI Enterprise Gateway. Por favor, cheque suas credenciais de ambiente.',
+          text: `⚠️ Erro ao consultar o provedor de IA:\n\n${e?.message || 'Falha de comunicação'}\n\nVerifique sua chave de API e modelo clicando no botão "Configurar IA" no menu lateral.`,
           timestamp: 'Erro'
         };
         setMessages(prev => [...prev, errorMsg]);
@@ -179,38 +183,43 @@ const NexusAI: React.FC = () => {
 
                       <button 
                         onClick={() => setIsAiModalOpen(true)}
-                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-indigo-500 dark:text-indigo-400 rounded-xl font-bold text-xs hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                        className="flex items-center justify-between w-full py-2.5 px-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-xl font-bold text-xs hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
                       >
-                          <Settings className="w-3.5 h-3.5" /> Configurar IA
+                          <span className="flex items-center gap-2">
+                            <Settings className="w-3.5 h-3.5 text-indigo-500" /> Configurar IA
+                          </span>
+                          <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-200/80 dark:bg-zinc-800 px-2 py-0.5 rounded-md truncate max-w-[110px]">
+                            {currentAiConfig.provider === 'gemini' ? (currentAiConfig.model || 'gemini-2.5-flash') : currentAiConfig.provider}
+                          </span>
                       </button>
                     </div>
 
-                    <div className="w-full h-px bg-zinc-150 dark:bg-zinc-800/80 my-2" />
+                    <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800/80 my-2" />
 
                     <div className="flex flex-col gap-2">
                         <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest mb-1 px-1">Navegação Módulos</span>
                         <button 
                           onClick={() => setActiveTab('chat')} 
-                          className={`flex items-center gap-2.5 p-3.5 rounded-xl text-xs font-bold transition-all text-left ${activeTab === 'chat' ? 'bg-indigo-550/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-550/20 dark:border-indigo-500/20' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
+                          className={`flex items-center gap-2.5 p-3.5 rounded-xl text-xs font-bold transition-all text-left ${activeTab === 'chat' ? 'bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-500/30' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
                         >
                           <MessageSquare className="w-4.5 h-4.5" /> Assistente Nexus AI
                         </button>
                         <button 
                           onClick={() => setActiveTab('flags')} 
-                          className={`flex items-center gap-2.5 p-3.5 rounded-xl text-xs font-bold transition-all text-left ${activeTab === 'flags' ? 'bg-indigo-550/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-550/20 dark:border-indigo-500/20' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
+                          className={`flex items-center gap-2.5 p-3.5 rounded-xl text-xs font-bold transition-all text-left ${activeTab === 'flags' ? 'bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-500/30' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
                         >
                           <Sliders className="w-4.5 h-4.5" /> Feature Flags
                         </button>
                         <button 
                           onClick={() => setActiveTab('kb')} 
-                          className={`flex items-center gap-2.5 p-3.5 rounded-xl text-xs font-bold transition-all text-left ${activeTab === 'kb' ? 'bg-indigo-550/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-550/20 dark:border-indigo-500/20' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
+                          className={`flex items-center gap-2.5 p-3.5 rounded-xl text-xs font-bold transition-all text-left ${activeTab === 'kb' ? 'bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-500/30' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
                         >
                           <Database className="w-4.5 h-4.5" /> Repositório de Conteúdo
                         </button>
                     </div>
                 </div>
 
-                <div className="p-4 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/65 text-xs text-zinc-500 mt-6 space-y-2">
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/65 text-xs text-zinc-600 dark:text-zinc-400 mt-6 space-y-2">
                   <div className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300 font-extrabold"><Shield className="w-3.5 h-3.5 text-indigo-500" /> Criptografia Ponta a Ponta</div>
                   <p className="leading-normal">Dados indexados e persistidos localmente no banco IndexedDB.</p>
                 </div>
@@ -223,13 +232,13 @@ const NexusAI: React.FC = () => {
                         {/* Upper Control Bar */}
                         <div className="h-16 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-8 bg-white/40 dark:bg-[#030711]/40 backdrop-blur-md shrink-0">
                             <div className="flex items-center gap-2">
-                              <h2 className="text-sm font-black text-zinc-955 dark:text-zinc-50 uppercase tracking-tight">Nexus AI Workspace</h2>
+                              <h2 className="text-sm font-black text-zinc-900 dark:text-zinc-50 uppercase tracking-tight">Nexus AI Workspace</h2>
                               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
                             </div>
                             
                             <button 
                               onClick={() => setIsStrictMode(!isStrictMode)} 
-                              className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-colors ${isStrictMode ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' : 'bg-emerald-500/10 text-emerald-550 border-emerald-500/20'}`}
+                              className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-colors ${isStrictMode ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'}`}
                             >
                                 {isStrictMode ? 'Modo Estrito (Sua Base)' : 'Modo Geral (Estendido)'}
                             </button>
@@ -247,13 +256,50 @@ const NexusAI: React.FC = () => {
                                       animate={{ opacity: 1, y: 0 }}
                                       className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                     >
-                                      <div className={`max-w-2xl rounded-[1.75rem] p-5.5 border ${
+                                      <div className={`max-w-2xl rounded-[1.75rem] p-5.5 border transition-all ${
                                         msg.sender === 'user' 
-                                        ? 'bg-gradient-to-tr from-indigo-500 to-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-500/10 rounded-br-none' 
-                                        : 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-150 border-zinc-200/60 dark:border-zinc-800 rounded-bl-none shadow-sm shadow-black/5'
+                                        ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-500/40 shadow-lg shadow-indigo-600/15 rounded-br-none' 
+                                        : 'bg-white dark:bg-[#0e1626] text-zinc-900 dark:text-slate-100 border-zinc-200/80 dark:border-slate-800 rounded-bl-none shadow-sm shadow-black/5'
                                       }`}>
-                                        <p className="text-xs font-semibold leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                                        <span className={`text-[8px] font-black uppercase tracking-widest mt-2 block text-right ${msg.sender === 'user' ? 'text-indigo-200' : 'text-zinc-400 dark:text-zinc-500'}`}>
+                                        {msg.sender === 'assistant' && (
+                                          <div className="flex items-center gap-1.5 mb-2.5 pb-2 border-b border-zinc-100 dark:border-slate-800/80">
+                                            <div className="w-5 h-5 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                              <Brain className="w-3 h-3" />
+                                            </div>
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                                              Nexus AI Assistant
+                                            </span>
+                                            {msg.timestamp === 'Erro' && (
+                                              <span className="text-[9px] font-bold uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded ml-auto">
+                                                Falha
+                                              </span>
+                                            )}
+                                          </div>
+                                        )}
+                                        <p className={`text-xs leading-relaxed whitespace-pre-wrap ${
+                                          msg.sender === 'user' 
+                                            ? 'text-white font-medium' 
+                                            : msg.timestamp === 'Erro'
+                                              ? 'text-rose-600 dark:text-rose-300 font-medium'
+                                              : 'text-zinc-800 dark:text-slate-100 font-normal'
+                                        }`}>
+                                          {msg.text}
+                                        </p>
+                                        {msg.timestamp === 'Erro' && (
+                                          <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-slate-800/80 flex justify-end">
+                                            <button
+                                              onClick={() => setIsAiModalOpen(true)}
+                                              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
+                                            >
+                                              <Settings className="w-3.5 h-3.5" /> Abrir Configurações de IA
+                                            </button>
+                                          </div>
+                                        )}
+                                        <span className={`text-[9px] font-bold uppercase tracking-widest mt-2 block text-right ${
+                                          msg.sender === 'user' 
+                                            ? 'text-indigo-200' 
+                                            : 'text-zinc-400 dark:text-slate-500'
+                                        }`}>
                                           {msg.timestamp}
                                         </span>
                                       </div>
@@ -263,9 +309,11 @@ const NexusAI: React.FC = () => {
 
                                 {loadingMessage && (
                                   <div className="flex justify-start">
-                                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800 rounded-[1.75rem] rounded-bl-none p-5.5 flex items-center gap-3">
-                                      <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />
-                                      <span className="text-xs text-zinc-500 font-semibold italic">Processando resposta contextualizada...</span>
+                                    <div className="bg-white dark:bg-[#0e1626] border border-zinc-200/80 dark:border-slate-800 rounded-[1.75rem] rounded-bl-none p-4 flex items-center gap-3 shadow-sm">
+                                      <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />
+                                      <span className="text-xs text-zinc-600 dark:text-slate-300 font-medium italic">
+                                        Processando resposta com {currentAiConfig.provider === 'gemini' ? (currentAiConfig.model || 'gemini-2.5-flash') : currentAiConfig.provider}...
+                                      </span>
                                     </div>
                                   </div>
                                 )}
@@ -273,12 +321,24 @@ const NexusAI: React.FC = () => {
                         </div>
 
                         {/* Interactive prompt-helpers and messaging inputs */}
-                        <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-[#030711]/40 backdrop-blur-md shrink-0">
+                        <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-[#030711]/70 backdrop-blur-md shrink-0">
                             <div className="w-full max-w-4xl mx-auto space-y-4">
                                 <div className="flex flex-wrap items-center gap-2 select-none">
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5 text-indigo-500"/> Sugestões de Prompt:</span>
-                                  <button onClick={() => loadPredefinedPrompt("Quais são as melhores práticas para evitar bloqueios de HSM no WhatsApp?")} className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 w-fit text-zinc-600 dark:text-zinc-400 hover:dark:text-zinc-200 rounded-xl text-[10px] font-bold duration-150 text-left truncate max-w-[200px]">💡 Práticas Antispam HSM</button>
-                                  <button onClick={() => loadPredefinedPrompt("Como funciona o processo de decodificação bivalente de Feature Flags?")} className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 w-fit text-zinc-600 dark:text-zinc-400 hover:dark:text-zinc-200 rounded-xl text-[10px] font-bold duration-150 text-left truncate max-w-[200px]">💡 Decodificar Bivalente Flags</button>
+                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-slate-400 flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5 text-indigo-500"/> Sugestões de Prompt:
+                                  </span>
+                                  <button 
+                                    onClick={() => loadPredefinedPrompt("Quais são as melhores práticas para evitar bloqueios de HSM no WhatsApp?")} 
+                                    className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-slate-900/90 hover:dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:dark:text-white border border-zinc-200/80 dark:border-slate-800 rounded-xl text-[11px] font-semibold transition-all duration-150 text-left truncate max-w-[240px]"
+                                  >
+                                    💡 Práticas Antispam HSM
+                                  </button>
+                                  <button 
+                                    onClick={() => loadPredefinedPrompt("Como funciona o processo de decodificação bivalente de Feature Flags?")} 
+                                    className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-slate-900/90 hover:dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:dark:text-white border border-zinc-200/80 dark:border-slate-800 rounded-xl text-[11px] font-semibold transition-all duration-150 text-left truncate max-w-[240px]"
+                                  >
+                                    💡 Decodificar Bivalente Flags
+                                  </button>
                                 </div>
 
                                 <div className="relative flex items-center justify-between">
@@ -288,11 +348,13 @@ const NexusAI: React.FC = () => {
                                       value={inputQuestion}
                                       onChange={e => setInputQuestion(e.target.value)}
                                       onKeyDown={e => { if (e.key === 'Enter') handleSendMessage(); }}
-                                      className="w-full h-16 pl-6 pr-18 bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-3xl text-sm focus:border-indigo-500 duration-150 outline-none font-sans"
+                                      className="w-full h-16 pl-6 pr-18 bg-white dark:bg-slate-900/90 border border-zinc-200 dark:border-slate-800 rounded-3xl text-sm text-zinc-900 dark:text-slate-100 placeholder-zinc-400 dark:placeholder-slate-500 focus:border-indigo-500 dark:focus:border-indigo-500 duration-150 outline-none font-sans shadow-sm"
                                     />
                                     <button 
                                       onClick={handleSendMessage}
-                                      className="absolute right-3.5 p-3.5 bg-indigo-500 text-white rounded-2xl hover:bg-indigo-600 transition-colors shadow-md shadow-indigo-500/10"
+                                      disabled={loadingMessage || !inputQuestion.trim()}
+                                      className="absolute right-3.5 p-3.5 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-indigo-600/20"
+                                      title="Enviar mensagem"
                                     >
                                       <ArrowRight className="w-4 h-4" />
                                     </button>
@@ -306,10 +368,10 @@ const NexusAI: React.FC = () => {
                     <div className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-8">
                         <div className="max-w-3xl mx-auto space-y-8">
                             <header className="space-y-2">
-                                <h1 className="text-3xl font-black text-zinc-955 dark:text-zinc-50 tracking-tight flex items-center gap-2">
+                                <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
                                   <Sliders className="w-8 h-8 text-indigo-500" /> Decodificador de Feature Flags
                                 </h1>
-                                <p className="text-sm text-zinc-500">Insira valores numéricos decimais para analisar a ativação binária das flags de sistema.</p>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400">Insira valores numéricos decimais para analisar a ativação binária das flags de sistema.</p>
                             </header>
 
                             <div className="bg-white dark:bg-zinc-900/60 backdrop-blur-md rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 space-y-6">
@@ -320,7 +382,7 @@ const NexusAI: React.FC = () => {
                                   placeholder="Inserir valor decimal..." 
                                   value={flagInput} 
                                   onChange={e => setFlagInput(e.target.value)} 
-                                  className="w-full bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-lg font-mono outline-none focus:border-indigo-500 transition-all font-bold" 
+                                  className="w-full bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 text-lg font-mono outline-none focus:border-indigo-500 transition-all font-bold" 
                                 />
                               </div>
 
@@ -348,7 +410,7 @@ const NexusAI: React.FC = () => {
                         <div className="max-w-4xl mx-auto space-y-8">
                             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
                                 <div className="space-y-1">
-                                    <h1 className="text-3xl font-black text-zinc-955 dark:text-zinc-50 tracking-tight flex items-center gap-2">
+                                    <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
                                       <Database className="w-8 h-8 text-indigo-500" /> Base de Conhecimento
                                     </h1>
                                     <p className="text-sm text-zinc-400">Repositório de regras corporativas que alimentam o modo de IA estrito.</p>

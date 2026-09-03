@@ -32,7 +32,7 @@ export const AiSettingsModal: React.FC<AiSettingsModalProps> = ({ isOpen, onClos
 
     const handleProviderChange = (provider: AiProvider) => {
         let defaultModel = config.model;
-        if (provider === 'gemini') defaultModel = 'gemini-1.5-flash';
+        if (provider === 'gemini') defaultModel = 'gemini-2.5-flash';
         else if (provider === 'openai') defaultModel = 'gpt-4o-mini';
         else if (provider === 'grok') defaultModel = 'grok-2-latest';
         else if (provider === 'claude') defaultModel = 'claude-3-5-sonnet-20241022';
@@ -43,6 +43,14 @@ export const AiSettingsModal: React.FC<AiSettingsModalProps> = ({ isOpen, onClos
             provider,
             model: defaultModel
         }));
+    };
+
+    const suggestedModels: Record<AiProvider, string[]> = {
+        gemini: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-3.7-flash'],
+        openai: ['gpt-4o-mini', 'gpt-4o', 'o3-mini'],
+        grok: ['grok-2-latest', 'grok-beta'],
+        claude: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022'],
+        custom: ['llama3', 'mistral', 'qwen2.5-coder']
     };
 
     return (
@@ -118,18 +126,45 @@ export const AiSettingsModal: React.FC<AiSettingsModalProps> = ({ isOpen, onClos
                                 {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
                         </div>
+                        {config.provider === 'gemini' && (
+                            <p className="text-[11px] text-zinc-400 leading-tight">
+                                Suporta chaves do Google AI Studio tanto no formato novo (<code className="text-indigo-400 font-mono">AQ....</code>) quanto tradicional (<code className="text-indigo-400 font-mono">AIza...</code>).
+                            </p>
+                        )}
                     </div>
 
                     {/* Model Name */}
                     <div className="space-y-2">
-                        <label className="text-xs font-extrabold uppercase tracking-wider text-zinc-400">Modelo da IA</label>
+                        <div className="flex items-center justify-between">
+                            <label className="text-xs font-extrabold uppercase tracking-wider text-zinc-400">Modelo da IA</label>
+                            <span className="text-[10px] text-zinc-500">Clique para selecionar</span>
+                        </div>
                         <input
                             type="text"
-                            placeholder="ex: gemini-1.5-flash, gpt-4o, grok-2-latest..."
+                            placeholder="ex: gemini-2.5-flash, gpt-4o, grok-2-latest..."
                             value={config.model || ''}
                             onChange={e => setConfig({ ...config, model: e.target.value })}
                             className="w-full bg-zinc-900/90 border border-zinc-800 rounded-xl px-4 py-3 text-xs font-mono text-white placeholder-zinc-600 outline-none focus:border-indigo-500 transition-colors"
                         />
+                        {/* Quick model selection chips */}
+                        {suggestedModels[config.provider] && (
+                            <div className="flex flex-wrap gap-1.5 pt-1">
+                                {suggestedModels[config.provider].map(m => (
+                                    <button
+                                        key={m}
+                                        type="button"
+                                        onClick={() => setConfig({ ...config, model: m })}
+                                        className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all border ${
+                                            config.model === m
+                                                ? 'bg-indigo-600/30 text-indigo-300 border-indigo-500/50 font-bold'
+                                                : 'bg-zinc-900/80 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+                                        }`}
+                                    >
+                                        {m}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Base URL (only for Custom) */}
