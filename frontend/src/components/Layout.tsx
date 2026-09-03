@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Code, Home, Moon, Sun, Palette, Brackets, GitCompare, KeyRound, Binary,
     Database, Send, Radio, Building2, Sparkles, Code2, Zap, BrainCircuit,
-    Activity, Link as LinkIcon, ChevronRight, X, LayoutGrid
+    Activity, Link as LinkIcon, ChevronRight, X, LayoutGrid, FileCode2
 } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -52,6 +52,7 @@ const NAV_GROUPS: { items: NavItem[] }[] = [
             { id: 'cnpj', label: 'Consulta CNPJ', icon: Building2, path: '/cnpj' },
             { id: 'api', label: 'API Tester', icon: Send, path: '/api' },
             { id: 'mock', label: 'Mock API Server', icon: Radio, path: '/mock' },
+            { id: 'swagger', label: 'Swagger / OpenAPI', icon: FileCode2, path: '/swagger' },
         ]
     },
 ];

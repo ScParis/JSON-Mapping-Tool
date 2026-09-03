@@ -4,7 +4,7 @@ import {
   Search, Code2, FileJson, Sparkles, 
   ArrowRight, Cpu, MessageSquare, Layers, Zap,
   Globe, Shield, Activity, BookOpen, Building2,
-  Binary, Database, Send, Radio
+  Binary, Database, Send, Radio, FileCode2
 } from 'lucide-react';
 import { DEFAULT_CONTENT } from '../constants';
 import { View, TextFormat } from '../types';
@@ -203,6 +203,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       description: 'Simulação de webhooks e endpoints REST com registro de logs em tempo real (SSE) e respostas dinâmicas.',
       icon: Radio,
       color: 'bg-gradient-to-br from-pink-600 to-purple-600',
+      category: 'api'
+    },
+    {
+      id: '/swagger',
+      isStudioView: false,
+      title: 'Swagger / OpenAPI Studio',
+      description: 'Editor e visualizador interativo de especificações OpenAPI 3.0/3.1 com Monaco Editor, Try It Out em tempo real, geração de TypeScript e Copilot de IA.',
+      icon: FileCode2,
+      color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+      badge: 'Novo Módulo',
       category: 'api'
     }
   ];
