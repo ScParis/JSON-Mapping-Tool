@@ -82,19 +82,18 @@ const SubNavPanel: React.FC<SubNavPanelProps> = ({ item, isOpen, onClose, active
             )}
             {/* Panel */}
             <div
-                className={`absolute left-16 top-0 bottom-0 z-40 w-56 flex flex-col border-r border-zinc-800/80 bg-[#0a0e1a]/95 backdrop-blur-xl transition-all duration-300 ease-out ${
+                className={`absolute left-16 top-0 bottom-0 z-40 w-56 flex flex-col border-r border-zinc-200 dark:border-zinc-800/80 bg-white/97 dark:bg-[#0a0e1a]/95 backdrop-blur-xl transition-all duration-300 ease-out ${
                     isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none'
                 }`}
             >
-                {/* Panel Header */}
-                <div className="h-14 flex items-center justify-between px-4 border-b border-zinc-800/60">
+                <div className="h-14 flex items-center justify-between px-4 border-b border-zinc-200 dark:border-zinc-800/60">
                     <div className="flex items-center gap-2.5">
-                        <item.icon size={15} className="text-indigo-400 flex-shrink-0" />
-                        <span className="text-xs font-black text-white tracking-tight truncate">{item.label}</span>
+                        <item.icon size={15} className="text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
+                        <span className="text-xs font-black text-zinc-900 dark:text-white tracking-tight truncate">{item.label}</span>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all"
+                        className="p-1 rounded-lg text-zinc-400 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
                     >
                         <X size={13} />
                     </button>
@@ -110,8 +109,8 @@ const SubNavPanel: React.FC<SubNavPanelProps> = ({ item, isOpen, onClose, active
                                 onClick={() => { navigate(child.path!); onClose(); }}
                                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
                                     isActive
-                                        ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20'
-                                        : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                                        ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20'
+                                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                                 }`}
                             >
                                 <child.icon size={14} className={isActive ? 'text-indigo-400' : 'opacity-70'} />
@@ -181,8 +180,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, isActive, onClick }) =>
                 onClick={onClick}
                 className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 group ${
                     isActive
-                        ? 'bg-indigo-500/15 text-indigo-400'
-                        : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60'
+                        ? 'bg-indigo-500/15 text-indigo-500 dark:text-indigo-400'
+                        : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                 }`}
             >
                 {isActive && (
@@ -312,20 +311,20 @@ export const Layout = () => {
         <div className="flex h-screen w-screen bg-app bg-grid-pattern text-primary font-sans overflow-hidden relative">
 
             {/* ── Icon Sidebar ─────────────────────────────────────────────── */}
-            <aside className="relative z-50 w-16 flex-shrink-0 flex flex-col items-center py-3 gap-1 border-r border-zinc-800/60 bg-[#070b14]/80 backdrop-blur-xl">
+        <aside className="relative z-50 w-16 flex-shrink-0 flex flex-col items-center py-3 gap-1 border-r border-zinc-200 dark:border-zinc-800/60 bg-[var(--color-sidebar-bg)] backdrop-blur-xl">
 
                 {/* Logo */}
                 <Link to="/" className="w-10 h-10 mb-2 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-lg shadow-indigo-500/25 hover:scale-105 transition-transform flex-shrink-0">
                     <Code size={18} className="text-white" strokeWidth={2.5} />
                 </Link>
 
-                <div className="w-6 h-px bg-zinc-800/80 my-1" />
+                <div className="w-6 h-px bg-zinc-200 dark:bg-zinc-800/80 my-1" />
 
                 {/* Nav Groups */}
                 <nav className="flex-1 flex flex-col items-center gap-1 w-full px-3">
                     {NAV_GROUPS.map((group, gIdx) => (
                         <React.Fragment key={gIdx}>
-                            {gIdx > 0 && <div className="w-5 h-px bg-zinc-800/60 my-1.5" />}
+                            {gIdx > 0 && <div className="w-5 h-px bg-zinc-200 dark:bg-zinc-800/60 my-1.5" />}
                             {group.items.map(item => (
                                 <SidebarItem
                                     key={item.id}
@@ -343,7 +342,7 @@ export const Layout = () => {
                     <Tooltip label={themeLabel}>
                         <button
                             onClick={cycleTheme}
-                            className="w-10 h-10 flex items-center justify-center rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+                            className="w-10 h-10 flex items-center justify-center rounded-xl text-zinc-400 dark:text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all"
                         >
                             <ThemeIcon size={16} />
                         </button>
@@ -371,21 +370,21 @@ export const Layout = () => {
                 </div>
 
                 {/* ── Status Bar ────────────────────────────────────────────── */}
-                <div className="h-7 flex-shrink-0 flex items-center justify-between px-4 border-t border-zinc-800/60 bg-[#070b14]/60 backdrop-blur-sm">
+                <div className="h-7 flex-shrink-0 flex items-center justify-between px-4 border-t border-zinc-200 dark:border-zinc-800/60 bg-[var(--color-statusbar-bg)] backdrop-blur-sm">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#10B981]" />
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Nexora Devkit</span>
+                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Nexora Devkit</span>
                         </div>
-                        <span className="text-[10px] text-zinc-600 font-mono hidden sm:inline">
+                        <span className="text-[10px] text-zinc-400 dark:text-zinc-600 font-mono hidden sm:inline">
                             {currentPath === '/' ? 'Home' : currentPath.replace('/', '').toUpperCase()}
                         </span>
                     </div>
                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest hidden md:inline">
+                        <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest hidden md:inline">
                             {theme}
                         </span>
-                        <span className="text-[10px] text-zinc-700">v3.0</span>
+                        <span className="text-[10px] text-zinc-300 dark:text-zinc-700">v3.0</span>
                     </div>
                 </div>
             </main>

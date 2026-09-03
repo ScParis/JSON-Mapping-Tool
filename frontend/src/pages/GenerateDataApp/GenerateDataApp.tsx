@@ -148,25 +148,25 @@ export default function GenerateDataApp() {
       />
 
       {/* Top Configuration & Control Bar */}
-      <Card className="p-5 bg-zinc-900/90 border-zinc-800">
+      <Card className="p-5 bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Nome da Tabela / Entidade</label>
+            <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Nome da Tabela / Entidade</label>
             <input
               type="text"
               value={tableName}
               onChange={(e) => setTableName(e.target.value)}
               placeholder="ex: usuarios"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Formato de Saída</label>
+            <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Formato de Saída</label>
             <select
               value={format}
               onChange={(e) => setFormat(e.target.value as ExportFormat)}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
             >
               <option value="sql">SQL (INSERT Statement)</option>
               <option value="json">JSON Array</option>
@@ -178,11 +178,11 @@ export default function GenerateDataApp() {
 
           {format === 'sql' && (
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Dialeto SQL</label>
+              <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Dialeto SQL</label>
               <select
                 value={sqlDialect}
                 onChange={(e) => setSqlDialect(e.target.value as SqlDialect)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
               >
                 <option value="postgres">PostgreSQL</option>
                 <option value="mysql">MySQL / MariaDB</option>
@@ -193,11 +193,11 @@ export default function GenerateDataApp() {
           )}
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Qtd. Linhas para Exportar</label>
+            <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Qtd. Linhas para Exportar</label>
             <select
               value={rowCount}
               onChange={(e) => setRowCount(Number(e.target.value))}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
             >
               <option value={10}>10 registros</option>
               <option value={50}>50 registros</option>
@@ -210,30 +210,30 @@ export default function GenerateDataApp() {
         </div>
 
         {/* Quick Presets */}
-        <div className="mt-4 pt-4 border-t border-zinc-800/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800/60 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-zinc-400 font-medium">Modelos Prontos:</span>
+            <span className="text-zinc-500 dark:text-zinc-400 font-medium">Modelos Prontos:</span>
             <button
               onClick={() => handleLoadPreset('crm')}
-              className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition"
+              className="px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition"
             >
               👤 Clientes / CRM
             </button>
             <button
               onClick={() => handleLoadPreset('ecommerce')}
-              className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition"
+              className="px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition"
             >
               🛒 E-Commerce / Produtos
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 text-zinc-400 cursor-pointer">
+            <label className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeDropTable}
                 onChange={(e) => setIncludeDropTable(e.target.checked)}
-                className="rounded bg-zinc-950 border-zinc-800 text-indigo-600 focus:ring-0"
+                className="rounded bg-zinc-50 dark:bg-zinc-950 border-zinc-300 dark:border-zinc-800 text-indigo-600 focus:ring-0"
               />
               <span>Incluir <code>DROP TABLE IF EXISTS</code></span>
             </label>
@@ -244,11 +244,11 @@ export default function GenerateDataApp() {
       {/* Main Grid Editor */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Column Definition Editor (7 cols) */}
-        <Card className="lg:col-span-7 p-5 bg-zinc-900/90 border-zinc-800 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+        <Card className="lg:col-span-7 p-5 bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
             <div className="flex items-center gap-2">
               <Sliders className="w-5 h-5 text-indigo-400" />
-              <h3 className="font-semibold text-white">Estrutura das Colunas ({columns.length})</h3>
+              <h3 className="font-semibold text-zinc-900 dark:text-white">Estrutura das Colunas ({columns.length})</h3>
             </div>
             <Button
               variant="secondary"
@@ -264,7 +264,7 @@ export default function GenerateDataApp() {
             {columns.map((col, index) => (
               <div
                 key={col.id}
-                className="p-3 bg-zinc-950/60 border border-zinc-800/80 rounded-xl flex flex-wrap items-center justify-between gap-3 hover:border-zinc-700 transition"
+                className="p-3 bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800/80 rounded-xl flex flex-wrap items-center justify-between gap-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition"
               >
                 {/* Column Name Input */}
                 <div className="flex-1 min-w-[140px]">
@@ -273,7 +273,7 @@ export default function GenerateDataApp() {
                     value={col.title}
                     onChange={(e) => handleUpdateColumn(col.id, { title: e.target.value })}
                     placeholder="Nome da coluna"
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-800 dark:text-white focus:outline-none focus:border-indigo-500 font-mono"
                   />
                 </div>
 
@@ -282,7 +282,7 @@ export default function GenerateDataApp() {
                   <select
                     value={col.type}
                     onChange={(e) => handleUpdateColumn(col.id, { type: e.target.value as DataTypeKey })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-700 dark:text-zinc-200 focus:outline-none focus:border-indigo-500"
                   >
                     {DATA_TYPES.map((dt) => (
                       <option key={dt.key} value={dt.key}>
@@ -294,14 +294,14 @@ export default function GenerateDataApp() {
 
                 {/* Null Percentage Input */}
                 <div className="w-20 text-center">
-                  <span className="text-[10px] text-zinc-500 block">Nulos (%)</span>
+                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500 block">Nulos (%)</span>
                   <input
                     type="number"
                     min={0}
                     max={100}
                     value={col.nullPercentage}
                     onChange={(e) => handleUpdateColumn(col.id, { nullPercentage: Math.min(100, Math.max(0, Number(e.target.value))) })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded px-1.5 py-1 text-xs text-center text-zinc-300 focus:outline-none"
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded px-1.5 py-1 text-xs text-center text-zinc-700 dark:text-zinc-300 focus:outline-none"
                   />
                 </div>
 
@@ -309,7 +309,7 @@ export default function GenerateDataApp() {
                 <button
                   onClick={() => handleRemoveColumn(col.id)}
                   disabled={columns.length <= 1}
-                  className="p-1.5 text-zinc-500 hover:text-red-400 disabled:opacity-30 rounded-lg hover:bg-zinc-800 transition"
+                  className="p-1.5 text-zinc-400 hover:text-red-500 dark:hover:text-red-400 disabled:opacity-30 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                   title="Remover coluna"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -320,14 +320,14 @@ export default function GenerateDataApp() {
         </Card>
 
         {/* Live Preview & Code View (5 cols) */}
-        <Card className="lg:col-span-5 p-5 bg-zinc-900/90 border-zinc-800 flex flex-col h-[600px]">
+        <Card className="lg:col-span-5 p-5 bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 flex flex-col h-[600px]">
           {/* Header Tabs */}
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-800 flex-shrink-0">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab('preview')}
                 className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition ${
-                  activeTab === 'preview' ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30' : 'text-zinc-400 hover:text-white'
+                  activeTab === 'preview' ? 'bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white'
                 }`}
               >
                 <Table className="w-4 h-4" />
@@ -336,7 +336,7 @@ export default function GenerateDataApp() {
               <button
                 onClick={() => setActiveTab('code')}
                 className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition ${
-                  activeTab === 'code' ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30' : 'text-zinc-400 hover:text-white'
+                  activeTab === 'code' ? 'bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white'
                 }`}
               >
                 <FileCode className="w-4 h-4" />
@@ -355,24 +355,24 @@ export default function GenerateDataApp() {
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-auto mt-4 rounded-xl border border-zinc-800 bg-zinc-950/70 p-3">
+          <div className="flex-1 overflow-auto mt-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/70 p-3">
             {activeTab === 'preview' ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-zinc-300">
-                  <thead className="bg-zinc-900 text-zinc-400 uppercase font-mono text-[10px]">
+                <table className="w-full text-left text-xs text-zinc-700 dark:text-zinc-300">
+                  <thead className="bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 uppercase font-mono text-[10px]">
                     <tr>
                       {columns.map(c => (
-                        <th key={c.id} className="p-2 border-b border-zinc-800 whitespace-nowrap">{c.title}</th>
+                        <th key={c.id} className="p-2 border-b border-zinc-200 dark:border-zinc-800 whitespace-nowrap">{c.title}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {previewData.map((row, idx) => (
-                      <tr key={idx} className="border-b border-zinc-800/40 hover:bg-zinc-900/50 font-mono">
+                      <tr key={idx} className="border-b border-zinc-100 dark:border-zinc-800/40 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 font-mono">
                         {columns.map(c => (
-                          <td key={c.id} className="p-2 whitespace-nowrap text-zinc-300">
+                          <td key={c.id} className="p-2 whitespace-nowrap text-zinc-600 dark:text-zinc-300">
                             {row[c.title] === null ? (
-                              <span className="text-zinc-600 italic">null</span>
+                              <span className="text-zinc-400 dark:text-zinc-600 italic">null</span>
                             ) : (
                               String(row[c.title])
                             )}
@@ -384,7 +384,7 @@ export default function GenerateDataApp() {
                 </table>
               </div>
             ) : (
-              <pre className="text-xs font-mono text-zinc-300 whitespace-pre-wrap">
+              <pre className="text-xs font-mono text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">
                 {exportedOutput}
               </pre>
             )}

@@ -397,41 +397,41 @@ const extractTargetFieldValues = (obj: any, prefix = ''): Record<string, string>
             />
 
             {/* Quick Action Toolbar */}
-            <div className="mb-6 p-3 bg-[#0d1222]/80 border border-zinc-800/80 rounded-2xl backdrop-blur-xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
+            <div className="mb-6 p-3 bg-zinc-100/90 dark:bg-[#0d1222]/80 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl backdrop-blur-xl flex flex-wrap items-center justify-between gap-3 shadow-sm dark:shadow-lg">
                 {/* Left Action Buttons */}
                 <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={() => setIsFinderModalOpen(true)}
-                        className="px-3.5 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+                        className="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-600/20 hover:bg-indigo-100 dark:hover:bg-indigo-600/30 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer"
                     >
-                        <Search size={14} className="text-indigo-400" />
+                        <Search size={14} className="text-indigo-500 dark:text-indigo-400" />
                         JSON Finder 🔍
                     </button>
 
                     <button
                         onClick={() => setIsTutorialModalOpen(true)}
-                        className="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+                        className="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-600/20 hover:bg-emerald-100 dark:hover:bg-emerald-600/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer"
                     >
-                        <BookOpen size={14} className="text-emerald-400" />
+                        <BookOpen size={14} className="text-emerald-600 dark:text-emerald-400" />
                         Tutorial JMESPath 🎓
                     </button>
 
                     <button
                         onClick={() => setIsHistoryModalOpen(true)}
-                        className="px-3.5 py-2 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+                        className="px-3.5 py-2 bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-sm cursor-pointer"
                     >
-                        <History size={14} className="text-amber-400" />
+                        <History size={14} className="text-amber-600 dark:text-amber-400" />
                         Histórico 📜
                     </button>
                 </div>
 
                 {/* Right Dataset Selector */}
                 <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-400 font-semibold hidden sm:inline">Exemplos Práticos:</span>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400 font-semibold hidden sm:inline">Exemplos Práticos:</span>
                     <select
                         value={selectedDatasetId}
                         onChange={(e) => handleSelectDataset(e.target.value)}
-                        className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+                        className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
                     >
                         <option value="">-- Carregar Exemplo --</option>
                         {SAMPLE_DATASETS.map((ds) => (
