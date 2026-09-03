@@ -74,7 +74,7 @@ const NexusAI: React.FC = () => {
       {
         id: 'init',
         sender: 'assistant',
-        text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas Meta WhatsApp ou no sequenciamento de Feature Flags do sistema hoje?',
+        text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas do WhatsApp Cloud API ou no sequenciamento de Feature Flags do sistema hoje?',
         timestamp: 'Agora'
       }
     ]);
@@ -113,7 +113,7 @@ const NexusAI: React.FC = () => {
       setLoadingMessage(true);
 
       try {
-        let systemPrompt = 'Você é o assistente Nexus AI, especialista em conformidade e políticas do WhatsApp Meta Enterprise (Business Platform / Cloud API, regras e diretrizes de templates HSM antispam) e arquitetura de Feature Flags. Forneça respostas claras, profissionais, organizadas e úteis em português.';
+        let systemPrompt = 'Você é o assistente Nexus AI, especialista em conformidade e diretrizes oficiais do WhatsApp Cloud API (regras de templates HSM antispam e entrega) e arquitetura de Feature Flags. Forneça respostas claras, profissionais, organizadas e úteis em português.';
         
         if (isStrictMode && sources.length > 0) {
           systemPrompt += `\n\n[MODO ESTRITO ATIVADO]: Baseie-se prioritariamente nestas diretrizes técnicas oficiais da sua base de conhecimento:\n${sources.map(s => `• [${s.title} (${s.domain})]: ${s.content}`).join('\n\n')}\n\nCaso a dúvida não conste na base, alerte o usuário com transparência.`;
@@ -147,7 +147,7 @@ const NexusAI: React.FC = () => {
         {
           id: 'init',
           sender: 'assistant',
-          text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas Meta WhatsApp ou no sequenciamento de Feature Flags do sistema hoje?',
+          text: 'Olá! Sou seu assistente de conformidade Nexus AI. Como posso te apoiar na análise de políticas do WhatsApp Cloud API ou no sequenciamento de Feature Flags do sistema hoje?',
           timestamp: 'Agora'
         }
       ]);
@@ -344,7 +344,7 @@ const NexusAI: React.FC = () => {
                                 <div className="relative flex items-center justify-between">
                                     <input 
                                       type="text" 
-                                      placeholder="Pergunte sobre políticas Meta, regras HSM ou use os prompts assistentes..." 
+                                      placeholder="Pergunte sobre políticas do WhatsApp, regras HSM ou use os prompts assistentes..." 
                                       value={inputQuestion}
                                       onChange={e => setInputQuestion(e.target.value)}
                                       onKeyDown={e => { if (e.key === 'Enter') handleSendMessage(); }}

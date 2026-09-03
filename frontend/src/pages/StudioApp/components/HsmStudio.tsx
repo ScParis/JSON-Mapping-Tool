@@ -151,7 +151,7 @@ const HsmStudio: React.FC = () => {
               <Zap className="w-8 h-8 text-indigo-500" /> HSM Studio AI
             </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-2xl leading-relaxed">
-              Desenvolva, otimize e audite seus templates altamente estruturados (Highly Structured Messages) com conformidade direta das políticas mundiais da Meta.
+              Desenvolva, otimize e audite seus templates altamente estruturados (Highly Structured Messages) com conformidade direta às diretrizes e boas práticas oficiais de mensageria do WhatsApp.
             </p>
           </div>
           <div className="flex items-center gap-2.5 p-1.5 bg-white dark:bg-zinc-950/80 rounded-2xl border border-zinc-200 dark:border-zinc-800 self-start shadow-sm shadow-black/5">
@@ -165,7 +165,7 @@ const HsmStudio: React.FC = () => {
               onClick={() => setApiMode('CLOUD_API')}
               className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${apiMode === 'CLOUD_API' ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/15' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'}`}
             >
-              Cloud API (Meta)
+              WhatsApp Cloud API
             </button>
             <button 
               onClick={() => setApiMode('MM_LITE')}
@@ -407,7 +407,7 @@ const HsmStudio: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <h2 className="text-xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50">Diagnóstico da Central Pro: AI Compliance</h2>
-                    <p className="text-xs text-zinc-400 mt-1">Auditado sob a ótica de conformidade geral Meta API.</p>
+                    <p className="text-xs text-zinc-400 mt-1">Auditado sob a ótica de conformidade e diretrizes oficiais do WhatsApp.</p>
                   </div>
                   <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-950 px-5 py-3 rounded-2xl border border-zinc-150 dark:border-zinc-800/80">
                     <span className="text-[10px] uppercase font-black tracking-widest text-zinc-400">Score de Qualidade</span>
@@ -439,7 +439,7 @@ const HsmStudio: React.FC = () => {
                   {/* Policy Warnings */}
                   <div className="p-6 bg-red-500/5 rounded-2xl border border-red-500/10 space-y-4">
                     <span className="text-xs font-black uppercase text-red-600 dark:text-red-400 tracking-widest flex items-center gap-1.5">
-                      <Shield className="w-4 h-4" /> Alertas de Política da Meta WhatsApp ({result.policyWarnings?.length || 0})
+                      <Shield className="w-4 h-4" /> Alertas de Política e Diretrizes do WhatsApp ({result.policyWarnings?.length || 0})
                     </span>
                     <ul className="space-y-2.5">
                       {result.policyWarnings?.map((warning: string, i: number) => (
@@ -570,7 +570,7 @@ const HsmStudio: React.FC = () => {
               <div className="p-4 bg-zinc-50 dark:bg-zinc-950/80 rounded-2xl border border-zinc-150 dark:border-zinc-800">
                 <span className="text-[10px] uppercase font-black tracking-widest text-zinc-400 block mb-1">Informações do Canal</span>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-normal">
-                  Este simulador renderiza de acordo com o padrão de marcação oficial da Meta Inc, incluindo decodificadores dinâmicos para markdown de textos.
+                  Este simulador renderiza de acordo com o padrão oficial de marcação de texto do WhatsApp, incluindo decodificadores dinâmicos para markdown.
                 </p>
               </div>
             </div>

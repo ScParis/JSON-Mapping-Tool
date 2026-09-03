@@ -52,7 +52,7 @@ const NAV_GROUPS: { items: NavItem[] }[] = [
             { id: 'cnpj', label: 'Consulta CNPJ', icon: Building2, path: '/cnpj' },
             { id: 'api', label: 'API Tester', icon: Send, path: '/api' },
             { id: 'mock', label: 'Mock API Server', icon: Radio, path: '/mock' },
-            { id: 'swagger', label: 'Swagger / OpenAPI', icon: FileCode2, path: '/swagger' },
+            { id: 'swagger', label: 'OpenAPI Studio', icon: FileCode2, path: '/swagger' },
         ]
     },
 ];
@@ -282,10 +282,12 @@ export const Layout = () => {
         } else if (path.startsWith('/api')) {
             title = 'Nexora Devkit |API Client & Rest Tester';
         } else if (path.startsWith('/mock')) {
-            title = 'Nexora Devkit |Mock API Server';
+            title = 'Nexora Devkit | Mock API Server';
+        } else if (path.startsWith('/swagger')) {
+            title = 'Nexora Devkit | OpenAPI Studio';
         } else if (path.startsWith('/studio')) {
             if (viewParam === 'hsm-studio') {
-                title = 'Nexora Devkit |HSM Studio (WhatsApp Meta)';
+                title = 'Nexora Devkit | HSM Studio (WhatsApp)';
             } else if (viewParam === 'nexus-ai') {
                 title = 'Nexora Devkit |Nexus AI Chat';
             } else if (viewParam === 'dictionary') {

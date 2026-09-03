@@ -95,8 +95,8 @@ export const SwaggerToolbar: React.FC<SwaggerToolbarProps> = ({
             <FileCode2 className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">Swagger Studio</h1>
-            <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-widest block">OpenAPI 3.0 / 3.1</span>
+            <h1 className="text-sm font-black text-zinc-900 dark:text-white leading-tight">OpenAPI Studio</h1>
+            <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-widest block">OAS 3.0 / 3.1 & Swagger</span>
           </div>
         </div>
 

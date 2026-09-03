@@ -19,13 +19,13 @@ export const processTextWithAI = async (text: string, action: AIAction): Promise
 export const auditHsmTemplate = async (templateData: any): Promise<any> => {
   const body = templateData.body || '';
 
-  // Regras de auditoria estáticas para WhatsApp Meta HSM
+  // Regras de auditoria estáticas para WhatsApp HSM
   const grammarIssues: string[] = [];
   const policyWarnings: string[] = [];
   let score = 100;
 
   if (body.length > 1024) {
-    policyWarnings.push('O corpo do modelo excede o limite máximo de 1024 caracteres permitido pela Meta.');
+    policyWarnings.push('O corpo do modelo excede o limite máximo de 1024 caracteres permitido nas diretrizes oficiais do WhatsApp.');
     score -= 30;
   }
   if (/([A-Z]{4,})/.test(body)) {
@@ -45,7 +45,7 @@ export const auditHsmTemplate = async (templateData: any): Promise<any> => {
   try {
     const prompt = `Analise e otimize o seguinte template HSM do WhatsApp. Retorne APENAS um JSON no formato {"qualityScore": 90, "grammarIssues": [], "policyWarnings": [], "improvedVersion": "texto melhorado"}:\n\n${JSON.stringify(templateData)}`;
     const aiResultStr = await runAiRequest(prompt, {
-      systemPrompt: 'Você é um auditor especialista em compliance de políticas do WhatsApp Meta Enterprise.'
+      systemPrompt: 'Você é um auditor especialista em conformidade de políticas e templates do WhatsApp Cloud API.'
     });
     
     // Tenta extrair JSON da resposta da IA

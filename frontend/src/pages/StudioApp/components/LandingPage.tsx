@@ -94,10 +94,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       id: 'hsm-studio',
       isStudioView: true,
       title: 'HSM Studio AI',
-      description: 'Crie e simule templates oficiais de WhatsApp (HSM Meta) com validação em tempo real contra regras estritas.',
+      description: 'Crie e simule templates oficiais de WhatsApp (HSM) com validação em tempo real contra regras e diretrizes oficiais.',
       icon: Zap,
       color: 'bg-gradient-to-br from-amber-500 to-amber-600',
-      badge: 'WhatsApp Meta',
+      badge: 'WhatsApp HSM',
       category: 'studio'
     },
     {
@@ -182,7 +182,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       id: '/cnpj',
       isStudioView: false,
       title: 'Consulta CNPJ & CEP',
-      description: 'Busca rápida de empresas via ReceitaWS e validação de endereços via BrasilAPI com preenchimento automático.',
+      description: 'Busca cadastral rápida de empresas e validação de endereços via bases públicas integradas com preenchimento automático.',
       icon: Building2,
       color: 'bg-gradient-to-br from-blue-500 to-cyan-500',
       category: 'api'
@@ -208,7 +208,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     {
       id: '/swagger',
       isStudioView: false,
-      title: 'Swagger / OpenAPI Studio',
+      title: 'OpenAPI Studio',
       description: 'Editor e visualizador interativo de especificações OpenAPI 3.0/3.1 com Monaco Editor, Try It Out em tempo real, geração de TypeScript e Copilot de IA.',
       icon: FileCode2,
       color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
