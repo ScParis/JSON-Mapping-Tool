@@ -19,7 +19,7 @@ export const SwaggerEditor: React.FC<SwaggerEditorProps> = ({
   theme = 'vs-dark'
 }) => {
   return (
-    <div className="h-full flex flex-col bg-zinc-950 overflow-hidden relative">
+    <div className="h-full flex flex-col bg-white dark:bg-zinc-950 overflow-hidden relative">
       {/* Monaco Editor Canvas */}
       <div className="flex-1 w-full h-full">
         <Editor
@@ -44,24 +44,24 @@ export const SwaggerEditor: React.FC<SwaggerEditorProps> = ({
       </div>
 
       {/* Status Bar */}
-      <div className="h-8 bg-zinc-900 border-t border-zinc-800 px-4 flex items-center justify-between text-[11px] font-mono shrink-0 select-none">
+      <div className="h-8 bg-zinc-100 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-4 flex items-center justify-between text-[11px] font-mono shrink-0 select-none text-zinc-600 dark:text-zinc-400">
         <div className="flex items-center gap-2">
           {error ? (
-            <div className="flex items-center gap-1.5 text-rose-400 font-bold truncate max-w-md">
+            <div className="flex items-center gap-1.5 text-rose-500 dark:text-rose-400 font-bold truncate max-w-md">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">
                 {error.line ? `Linha ${error.line}: ` : ''}{error.message}
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Sintaxe {language.toUpperCase()} válida</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-3 text-zinc-400">
+        <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
           <span>{language.toUpperCase()}</span>
           <span>UTF-8</span>
           <span>{value.split('\n').length} linhas</span>

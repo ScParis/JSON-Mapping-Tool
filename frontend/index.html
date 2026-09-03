@@ -7,6 +7,24 @@
   <meta name="description" content="Plataforma completa de ferramentas para desenvolvedores: JSON Mapper JMESPath, Diff Viewer, JWT & Hashes, Regex, SQL Toolset, Consulta CNPJ/CEP, API Tester e Universal Studio Pro.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="theme-color" content="#4f46e5">
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('portal-theme');
+        if (!t) {
+          t = 'light';
+          localStorage.setItem('portal-theme', 'light');
+        }
+        if (t === 'light') {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <div id="root"></div>

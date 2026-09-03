@@ -199,21 +199,14 @@ export const Layout = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const [theme, setTheme] = useState<'light' | 'dark' | 'midnight'>(() =>
-        (localStorage.getItem('portal-theme') as any) ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'light')
-    );
+    const [theme, setTheme] = useState<'light' | 'dark' | 'midnight'>(() => {
+        const saved = localStorage.getItem('portal-theme') as 'light' | 'dark' | 'midnight';
+        if (saved === 'light' || saved === 'dark' || saved === 'midnight') return saved;
+        return 'light';
+    });
     const [openSubPanel, setOpenSubPanel] = useState<NavItem | null>(null);
 
     // ── Theme effect ──────────────────────────────────────────────────────────
-    useEffect(() => {
-        const handleThemeChange = () => {
-            setTheme((localStorage.getItem('portal-theme') as any) || 'midnight');
-        };
-        window.addEventListener('theme-changed', handleThemeChange);
-        return () => window.removeEventListener('theme-changed', handleThemeChange);
-    }, []);
-
     useEffect(() => {
         if (theme === 'light') {
             document.documentElement.classList.remove('dark');
@@ -308,7 +301,7 @@ export const Layout = () => {
     const themeLabel = theme === 'light' ? 'Tema Claro' : theme === 'dark' ? 'Tema Escuro' : 'Midnight';
 
     return (
-        <div className="flex h-screen w-screen bg-app bg-grid-pattern text-primary font-sans overflow-hidden relative">
+        <div className="flex h-screen w-screen bg-[var(--color-app)] bg-grid-pattern text-[var(--color-primary)] font-sans overflow-hidden relative">
 
             {/* ── Icon Sidebar ─────────────────────────────────────────────── */}
         <aside className="relative z-50 w-16 flex-shrink-0 flex flex-col items-center py-3 gap-1 border-r border-zinc-200 dark:border-zinc-800/60 bg-[var(--color-sidebar-bg)] backdrop-blur-xl">
@@ -364,7 +357,7 @@ export const Layout = () => {
             )}
 
             {/* ── Main content ──────────────────────────────────────────────── */}
-            <main className="flex-1 h-full w-full relative flex flex-col bg-app overflow-hidden">
+            <main className="flex-1 h-full w-full relative flex flex-col bg-[var(--color-app)] overflow-hidden">
                 <div className="flex-1 overflow-y-auto overflow-x-hidden">
                     <Outlet />
                 </div>

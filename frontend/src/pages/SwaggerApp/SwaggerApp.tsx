@@ -51,6 +51,18 @@ export const SwaggerApp: React.FC = () => {
   const [isTsModalOpen, setIsTsModalOpen] = useState(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
+  const [theme, setTheme] = useState<'light' | 'dark' | 'midnight'>(() => {
+    return (localStorage.getItem('portal-theme') as any) || 'light';
+  });
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setTheme((localStorage.getItem('portal-theme') as any) || 'light');
+    };
+    window.addEventListener('theme-changed', handleThemeChange);
+    return () => window.removeEventListener('theme-changed', handleThemeChange);
+  }, []);
+
   // Auto-detect language
   const language: 'yaml' | 'json' = isJsonString(content) ? 'json' : 'yaml';
 
@@ -184,6 +196,7 @@ export const SwaggerApp: React.FC = () => {
               onChange={setContent}
               language={language}
               error={error}
+              theme={theme === 'light' ? 'vs' : 'vs-dark'}
             />
           </div>
         )}

@@ -29,7 +29,7 @@ const App: React.FC = () => {
     setSearchParams({ view });
   };
   const [forcedFormat, setForcedFormat] = useState<TextFormat | null>(null);
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('portal-theme') as Theme) || 'midnight');
+  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('portal-theme') as Theme) || 'light');
   const [activeTab, setActiveTab] = useState<'preview' | 'validator'>('preview');
   const [history, setHistory] = useState<string[]>([localStorage.getItem('studio_content_v2') || DEFAULT_CONTENT]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -58,24 +58,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const handleThemeChange = () => {
-      const currentTheme = (localStorage.getItem('portal-theme') as Theme) || 'midnight';
+      const currentTheme = (localStorage.getItem('portal-theme') as Theme) || 'light';
       setTheme(currentTheme);
     };
     window.addEventListener('theme-changed', handleThemeChange);
     return () => window.removeEventListener('theme-changed', handleThemeChange);
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem('portal-theme', theme);
-    window.dispatchEvent(new Event('theme-changed'));
-    if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', theme);
-    }
-  }, [theme]);
 
   const handleResize = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
@@ -212,41 +200,41 @@ const App: React.FC = () => {
 
 
   return (
-    <div className={`flex-1 flex flex-col h-full w-full bg-[#0f0f11] text-gray-100 font-sans overflow-hidden ${isDragging ? 'select-none cursor-col-resize' : ''}`}>
+    <div className={`flex-1 flex flex-col h-full w-full bg-white dark:bg-[#0f0f11] text-zinc-900 dark:text-gray-100 font-sans overflow-hidden ${isDragging ? 'select-none cursor-col-resize' : ''}`}>
       {/* Inline toolbar — only visible on editor view */}
       {activeView === 'editor' && (
-        <div className="h-11 bg-white/5 dark:bg-zinc-900/40 border-b border-zinc-800/60 flex items-center gap-2 px-4 flex-shrink-0">
-          <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-md font-bold border border-blue-500/20 uppercase flex-shrink-0">
+        <div className="h-11 bg-zinc-50 dark:bg-zinc-900/40 border-b border-zinc-200 dark:border-zinc-800/60 flex items-center gap-2 px-4 flex-shrink-0">
+          <span className="text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-md font-bold border border-blue-500/20 uppercase flex-shrink-0">
             {format}
           </span>
           <div className="flex items-center gap-1 ml-auto">
             <button
               onClick={() => { navigator.clipboard.writeText(content); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold transition-all ${
-                copied ? 'bg-emerald-500/15 text-emerald-400' : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60'
+                copied ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
               }`}
             >
               {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
               <span className="hidden sm:inline">{copied ? 'Copiado' : 'Copiar'}</span>
             </button>
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".docx,.doc,.md,.txt,.json,.csv" className="hidden" />
-            <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all">
+            <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all">
               <FileText className="w-3 h-3" />
               <span className="hidden sm:inline">Importar</span>
             </button>
-            <button onClick={() => setIsImageToMdOpen(true)} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold text-blue-400 hover:bg-blue-500/10 border border-blue-500/15 transition-all">
+            <button onClick={() => setIsImageToMdOpen(true)} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 border border-blue-500/15 transition-all">
               <Sparkles className="w-3 h-3 animate-pulse" />
               <span className="hidden sm:inline">IA Imagem</span>
             </button>
             <div className="relative flex items-center">
-              <button onClick={() => setShowExportMenu(!showExportMenu)} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all">
+              <button onClick={() => setShowExportMenu(!showExportMenu)} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all">
                 <Download className="w-3 h-3" />
                 <span className="hidden sm:inline">Exportar</span>
               </button>
               {showExportMenu && (
-                <div className="absolute top-full right-0 mt-2 w-40 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 p-1.5">
+                <div className="absolute top-full right-0 mt-2 w-40 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl z-50 p-1.5">
                   {['Markdown', 'HTML', 'PDF', 'Docx'].map(ext => (
-                    <button key={ext} onClick={(e) => { e.stopPropagation(); handleExport(ext); }} className="w-full text-left px-3 py-2 text-xs font-semibold hover:bg-blue-500 hover:text-white rounded-xl transition-all text-zinc-400">{ext}</button>
+                    <button key={ext} onClick={(e) => { e.stopPropagation(); handleExport(ext); }} className="w-full text-left px-3 py-2 text-xs font-semibold hover:bg-indigo-50 dark:hover:bg-blue-500 hover:text-indigo-600 dark:hover:text-white rounded-xl transition-all text-zinc-600 dark:text-zinc-400">{ext}</button>
                   ))}
                 </div>
               )}
@@ -266,11 +254,11 @@ const App: React.FC = () => {
         <div className="flex-1 flex overflow-hidden">
           {activeView === 'editor' && (
             <>
-              <div className="flex flex-col bg-[#1e1e24] dark:bg-[#18181c] h-full border-r border-gray-200 dark:border-gray-850" style={{ width: `${leftWidth}%` }}>
-                <div className="h-12 border-b border-gray-200 dark:border-gray-800 px-6 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/30">
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest"><Terminal className="w-3.5 h-3.5" /> Source Code</div>
+              <div className="flex flex-col bg-zinc-50 dark:bg-[#18181c] h-full border-r border-zinc-200 dark:border-gray-850" style={{ width: `${leftWidth}%` }}>
+                <div className="h-12 border-b border-zinc-200 dark:border-gray-800 px-6 flex items-center justify-between bg-zinc-100/60 dark:bg-gray-900/30">
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 dark:text-gray-400 uppercase tracking-widest"><Terminal className="w-3.5 h-3.5" /> Source Code</div>
                   <div className="flex items-center gap-3">
-                    <button onClick={() => setContent('')} className="text-gray-400 hover:text-red-500 transition-colors" title="Clear Buffer"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => setContent('')} className="text-zinc-400 hover:text-red-500 transition-colors" title="Clear Buffer"><Trash2 className="w-3.5 h-3.5" /></button>
                     {isSaved && <span className="text-[9px] font-black text-emerald-500 uppercase animate-pulse tracking-widest">Synced</span>}
                   </div>
                 </div>
@@ -283,7 +271,7 @@ const App: React.FC = () => {
                     onChange={(val) => { if (val !== undefined) setContent(val); }}
                     options={{ minimap: { enabled: false }, fontSize: 13, lineNumbers: 'on', wordWrap: 'on', scrollBeyondLastLine: false, automaticLayout: true, padding: { top: 16, bottom: 64 }, fontFamily: 'JetBrains Mono, Fira Code, Menlo, Monaco, Consolas, monospace' }}
                   />
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 p-1.5 bg-white/90 dark:bg-gray-900/80 backdrop-blur shadow-2xl border border-gray-200 dark:border-gray-800 rounded-2xl z-20">
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 p-1.5 bg-white/90 dark:bg-gray-900/80 backdrop-blur shadow-2xl border border-zinc-200 dark:border-gray-800 rounded-2xl z-20">
                     <button onClick={handleSave} className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 hover:bg-blue-500/5 transition-all"><Save className="w-4 h-4" /> <span className="text-[10px] font-bold uppercase">Save</span></button>
                     <div className="w-px h-4 bg-gray-200 dark:bg-gray-800 mx-1" />
                     <button disabled={historyIndex === 0} onClick={() => { setContent(history[historyIndex-1]); setHistoryIndex(historyIndex-1); }} className="p-2 rounded-xl text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-all disabled:opacity-20"><RotateCcw className="w-4 h-4" /></button>

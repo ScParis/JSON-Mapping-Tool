@@ -39,7 +39,8 @@
   }
 }
 
-:root {
+:root,
+html[data-theme="light"] {
   --color-app: #f8fafc;
   --color-sidebar: rgba(255, 255, 255, 0.85);
   --color-base: #e2e8f0;
@@ -160,6 +161,8 @@ body {
   height: 100%;
   width: 100%;
   font-family: var(--font-sans);
+  background-color: var(--color-app);
+  color: var(--color-primary);
   overflow: hidden;
 }
 
@@ -167,6 +170,16 @@ body {
   height: 100%;
   width: 100%;
   display: flex;
+  background-color: var(--color-app);
+  color: var(--color-primary);
+}
+
+.bg-app {
+  background-color: var(--color-app) !important;
+}
+
+.text-primary {
+  color: var(--color-primary) !important;
 }
 
 /* Background Patterns & Glassmorphism */
