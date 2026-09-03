@@ -215,6 +215,7 @@ export const SwaggerApp: React.FC = () => {
               onChangeBaseUrl={setBaseUrl}
               auth={auth}
               onSendToJsonMapper={handleSendToJsonMapper}
+              onOpenAuthModal={() => setIsAuthModalOpen(true)}
             />
           </div>
         )}

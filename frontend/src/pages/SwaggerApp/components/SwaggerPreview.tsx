@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Server, Search, Tag, Filter, Globe, BookOpen, AlertTriangle } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Server, Search, Tag, Filter, Globe, BookOpen, AlertTriangle, Lock, Unlock } from 'lucide-react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { OpenApiSpec, HttpMethod, AuthState } from '../types';
@@ -13,6 +13,7 @@ interface SwaggerPreviewProps {
   onChangeBaseUrl: (url: string) => void;
   auth: AuthState;
   onSendToJsonMapper?: (data: any) => void;
+  onOpenAuthModal?: () => void;
 }
 
 export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
@@ -21,7 +22,8 @@ export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
   baseUrl,
   onChangeBaseUrl,
   auth,
-  onSendToJsonMapper
+  onSendToJsonMapper,
+  onOpenAuthModal
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMethodFilter, setSelectedMethodFilter] = useState<string>('ALL');
@@ -45,10 +47,18 @@ export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
   const info = spec.info || { title: 'OpenAPI Specification', version: '1.0.0' };
   const servers = spec.servers || [{ url: spec.host ? `https://${spec.host}${spec.basePath || ''}` : 'https://api.exemplo.com' }];
 
-  // Description markdown rendering
-  const descriptionHtml = info.description
-    ? DOMPurify.sanitize(marked.parse(info.description) as string)
-    : '';
+  const isAuthed = !!(auth.bearerToken || auth.apiKeyValue || auth.basicUsername);
+
+  // Description markdown dynamic rendering
+  const descriptionHtml = useMemo(() => {
+    if (!info.description) return '';
+    try {
+      const rawHtml = marked.parse(info.description, { gfm: true, breaks: true }) as string;
+      return DOMPurify.sanitize(rawHtml);
+    } catch {
+      return info.description;
+    }
+  }, [info.description]);
 
   // Extract endpoints grouped by tags
   const tagsMap: Record<string, { method: HttpMethod; path: string; operation: any }[]> = {};
@@ -89,17 +99,17 @@ export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
   return (
     <div className="h-full overflow-y-auto custom-scrollbar p-6 md:p-8 space-y-8 bg-zinc-50/50 dark:bg-[#030711]/50">
       {/* API Header Info Card */}
-      <div className="bg-white dark:bg-slate-900/80 rounded-2xl border border-zinc-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-          <div className="space-y-1.5 flex-1">
+      <div className="bg-white dark:bg-slate-900/80 rounded-2xl border border-zinc-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+          <div className="space-y-2 flex-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
                 {info.title}
               </h1>
-              <span className="px-2.5 py-0.5 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-xs font-mono font-bold rounded-lg">
-                v{info.version}
+              <span className="px-2.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 text-xs font-mono font-bold rounded-lg shadow-2xs">
+                {info.version || '1.0.0'}
               </span>
-              <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-mono font-bold rounded-md uppercase">
+              <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-xs font-mono font-bold rounded-lg uppercase">
                 {spec.openapi ? `OAS ${spec.openapi}` : 'Swagger 2.0'}
               </span>
             </div>
@@ -107,28 +117,44 @@ export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
             {/* Links & Contact */}
             <div className="flex items-center gap-4 text-xs text-zinc-500 dark:text-slate-400 flex-wrap pt-1">
               {info.contact?.email && (
-                <span>Suporte: <a href={`mailto:${info.contact.email}`} className="text-indigo-500 hover:underline">{info.contact.email}</a></span>
+                <span>Suporte: <a href={`mailto:${info.contact.email}`} className="text-indigo-600 dark:text-indigo-400 hover:underline">{info.contact.email}</a></span>
               )}
               {info.license && (
-                <span>Licença: <a href={info.license.url || '#'} target="_blank" rel="noreferrer" className="text-indigo-500 hover:underline">{info.license.name}</a></span>
+                <span>Licença: <a href={info.license.url || '#'} target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">{info.license.name}</a></span>
               )}
               {info.termsOfService && (
-                <a href={info.termsOfService} target="_blank" rel="noreferrer" className="text-indigo-500 hover:underline flex items-center gap-1">
+                <a href={info.termsOfService} target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
                   <BookOpen className="w-3.5 h-3.5" /> Termos de Serviço
                 </a>
               )}
             </div>
           </div>
 
-          {/* Server / Environment Selector */}
-          <div className="w-full md:w-72 space-y-1">
-            <label className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-slate-400 flex items-center gap-1">
-              <Server className="w-3.5 h-3.5 text-indigo-500" /> Servidor / Base URL:
-            </label>
+          {/* Server Selector & Authorize Button */}
+          <div className="w-full lg:w-80 space-y-2 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-slate-400 flex items-center gap-1">
+                <Server className="w-3.5 h-3.5 text-indigo-500" /> Servidor / Base URL:
+              </label>
+              {onOpenAuthModal && (
+                <button
+                  onClick={onOpenAuthModal}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    isAuthed
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                      : 'bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-slate-300 border border-zinc-200 dark:border-slate-700 hover:border-indigo-500'
+                  }`}
+                  title="Configurar Autenticação"
+                >
+                  <Lock className="w-3 h-3 text-emerald-500" />
+                  <span>Authorize</span>
+                </button>
+              )}
+            </div>
             <select
               value={baseUrl}
               onChange={e => onChangeBaseUrl(e.target.value)}
-              className="w-full bg-zinc-50 dark:bg-slate-950 border border-zinc-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-mono font-bold text-zinc-900 dark:text-slate-200 outline-none focus:border-indigo-500 transition-colors shadow-sm"
+              className="w-full bg-zinc-50 dark:bg-slate-950 border border-zinc-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-mono font-bold text-zinc-900 dark:text-slate-200 outline-none focus:border-indigo-500 transition-colors shadow-sm cursor-pointer"
             >
               {servers.map((s, idx) => (
                 <option key={idx} value={s.url}>
@@ -139,12 +165,14 @@ export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
           </div>
         </div>
 
-        {/* Rendered Description Markdown */}
+        {/* Dynamic Rich Description Formatting */}
         {descriptionHtml && (
-          <div
-            className="text-xs leading-relaxed text-zinc-600 dark:text-slate-300 prose prose-invert max-w-none pt-2 border-t border-zinc-100 dark:border-slate-800/80"
-            dangerouslySetInnerHTML={{ __html: descriptionHtml }}
-          />
+          <div className="pt-4 border-t border-zinc-200/80 dark:border-slate-800/80">
+            <div
+              className="swagger-markdown"
+              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+            />
+          </div>
         )}
       </div>
 

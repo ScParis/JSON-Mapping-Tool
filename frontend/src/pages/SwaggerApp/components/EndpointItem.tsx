@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, Play, Lock, Copy, Check, ExternalLink, Loader2, ArrowUpRight } from 'lucide-react';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { HttpMethod, OpenApiOperation, OpenApiSpec, AuthState, TryItOutState } from '../types';
 import { ParameterTable } from './ParameterTable';
 import { RequestBodyViewer } from './RequestBodyViewer';
@@ -256,7 +258,12 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
                 <h3 className="text-sm font-extrabold text-zinc-900 dark:text-white">{operation.summary}</h3>
               )}
               {operation.description && (
-                <p className="text-xs text-zinc-600 dark:text-slate-400 leading-relaxed">{operation.description}</p>
+                <div
+                  className="swagger-markdown text-xs text-zinc-600 dark:text-slate-400 mt-1"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(marked.parse(operation.description, { gfm: true, breaks: true }) as string)
+                  }}
+                />
               )}
             </div>
 
