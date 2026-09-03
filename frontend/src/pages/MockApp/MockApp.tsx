@@ -90,7 +90,7 @@ export default function MockApp() {
     const [aiPreviewRule, setAiPreviewRule] = useState<any | null>(null);
 
     // Tunnel State
-    const [tunnelStatus, setTunnelStatus] = useState<'idle' | 'connecting' | 'open' | 'error' | 'disabled'>('idle');
+    const [tunnelStatus, setTunnelStatus] = useState<'idle' | 'connecting' | 'open' | 'error' | 'disabled'>('disabled');
     const [tunnelUrl, setTunnelUrl] = useState<string | null>(null);
     const [tunnelSubdomain, setTunnelSubdomain] = useState('');
     const [copiedTunnel, setCopiedTunnel] = useState(false);
@@ -120,8 +120,8 @@ export default function MockApp() {
                     setTunnelUrl(data.url);
                 }
             } catch (_) {
-                // backend offline — reset to idle
-                setTunnelStatus('idle');
+                // backend offline — mantém desabilitado (sem piscar o painel do túnel)
+                setTunnelStatus('disabled');
                 setTunnelUrl(null);
             }
         };
