@@ -46,7 +46,7 @@ export async function runAiRequest(prompt: string, options?: { systemPrompt?: st
 
     // Provider API executions
     if (config.provider === 'gemini') {
-        const apiKey = config.apiKey || import.meta.env?.VITE_GEMINI_API_KEY || '';
+        const apiKey = config.apiKey || import.meta.env.VITE_GEMINI_API_KEY || '';
         if (!apiKey) {
             return await tryBackendFallback(prompt);
         }
