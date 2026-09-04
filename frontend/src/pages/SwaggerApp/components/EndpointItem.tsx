@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight, Play, Lock, Copy, Check, ExternalLink, Loader2, ArrowUpRight } from 'lucide-react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
@@ -7,6 +7,7 @@ import { ParameterTable } from './ParameterTable';
 import { RequestBodyViewer } from './RequestBodyViewer';
 import { ResponseViewer } from './ResponseViewer';
 import { generateCurlCommand, generateFetchCode } from '../utils/codeGenerator';
+import { getOperationParameters } from '../utils/dereference';
 
 interface EndpointItemProps {
   method: HttpMethod;
@@ -42,6 +43,17 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
     selectedContentType: initialContentType,
     loading: false
   });
+
+  // Resolve $ref de parâmetros e mescla path-level + operation-level + path templates ({id}).
+  // Fonte única usada na tabela, na execução e na geração de cURL/fetch.
+  const resolvedParameters = useMemo(
+    () => getOperationParameters(path, (spec.paths as any)?.[path], operation, spec),
+    [path, spec, operation]
+  );
+  const resolvedOperation = useMemo(
+    () => ({ ...operation, parameters: resolvedParameters }),
+    [operation, resolvedParameters]
+  );
 
   const getMethodBadgeStyle = (m: HttpMethod) => {
     switch (m) {
@@ -93,8 +105,8 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
 
     // Resolve URL with path parameters
     let resolvedPath = path;
-    if (operation.parameters) {
-      operation.parameters
+    if (resolvedParameters.length) {
+      resolvedParameters
         .filter(p => p.in === 'path')
         .forEach(p => {
           const val = tryState.parameters[p.name] !== undefined && tryState.parameters[p.name] !== ''
@@ -106,8 +118,8 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
 
     // Query parameters
     const queryParts: string[] = [];
-    if (operation.parameters) {
-      operation.parameters
+    if (resolvedParameters.length) {
+      resolvedParameters
         .filter(p => p.in === 'query')
         .forEach(p => {
           const val = tryState.parameters[p.name];
@@ -125,8 +137,8 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
     const headers: Record<string, string> = {};
 
     // Custom Header Parameters
-    if (operation.parameters) {
-      operation.parameters
+    if (resolvedParameters.length) {
+      resolvedParameters
         .filter(p => p.in === 'header')
         .forEach(p => {
           const val = tryState.parameters[p.name];
@@ -152,7 +164,7 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
       headers['Authorization'] = `Basic ${btoa(`${auth.basicUsername}:${auth.basicPassword}`)}`;
     }
 
-    const curl = generateCurlCommand(method, baseUrl, path, tryState.parameters, operation, tryState.requestBody, auth);
+    const curl = generateCurlCommand(method, baseUrl, path, tryState.parameters, resolvedOperation, tryState.requestBody, auth);
 
     try {
       const fetchOpts: RequestInit = {
@@ -211,7 +223,7 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
   };
 
   const copyCurl = () => {
-    const curl = generateCurlCommand(method, baseUrl, path, tryState.parameters, operation, tryState.requestBody, auth);
+    const curl = generateCurlCommand(method, baseUrl, path, tryState.parameters, resolvedOperation, tryState.requestBody, auth);
     navigator.clipboard.writeText(curl);
     setCopiedCurl(true);
     setTimeout(() => setCopiedCurl(false), 2000);
@@ -281,9 +293,9 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
           </div>
 
           {/* Parameters Table */}
-          {operation.parameters && operation.parameters.length > 0 && (
+          {resolvedParameters.length > 0 && (
             <ParameterTable
-              parameters={operation.parameters}
+              parameters={resolvedParameters}
               isTryItOut={isTryItOut}
               values={tryState.parameters}
               onChangeValue={(name, val) =>
