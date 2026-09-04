@@ -56,7 +56,7 @@ app.use(express.json());
 app.get('/api/cnpj/:cnpj', rateLimiter(30, 60 * 1000), async (req, res) => {
     try {
         const { cnpj } = req.params;
-        const cleanCnpj = cnpj.replace(/\D/g, '');
+        const cleanCnpj = String(cnpj).replace(/\D/g, '');
 
         const response = await fetch(`https://receitaws.com.br/v1/cnpj/${cleanCnpj}`, {
             headers: { 'Accept': 'application/json' }
