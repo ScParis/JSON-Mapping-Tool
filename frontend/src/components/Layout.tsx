@@ -258,21 +258,21 @@ export const Layout = () => {
         let title = 'Nexora Devkit';
 
         if (path === '/') {
-            title = 'Nexora Devkit |Início & Dashboard';
+            title = 'Nexora Devkit | Início & Dashboard';
         } else if (path.startsWith('/json')) {
-            title = 'Nexora Devkit |JSON Mapper & JMESPath';
+            title = 'Nexora Devkit | JSON Mapper & JMESPath';
         } else if (path.startsWith('/diff')) {
-            title = 'Nexora Devkit |Diff Viewer & Comparador';
+            title = 'Nexora Devkit | Diff Viewer & Comparador';
         } else if (path.startsWith('/jwt')) {
-            title = 'Nexora Devkit |JWT & Criptografia';
+            title = 'Nexora Devkit | JWT & Criptografia';
         } else if (path.startsWith('/regex')) {
-            title = 'Nexora Devkit |Regex Playground';
+            title = 'Nexora Devkit | Regex Playground';
         } else if (path.startsWith('/sql')) {
-            title = 'Nexora Devkit |SQL Toolset & Conversor';
+            title = 'Nexora Devkit | SQL Toolset & Conversor';
         } else if (path.startsWith('/cnpj')) {
-            title = 'Nexora Devkit |Consulta CNPJ & CEP';
+            title = 'Nexora Devkit | Consulta CNPJ & CEP';
         } else if (path.startsWith('/api')) {
-            title = 'Nexora Devkit |API Client & Rest Tester';
+            title = 'Nexora Devkit | API Client & Rest Tester';
         } else if (path.startsWith('/mock')) {
             title = 'Nexora Devkit | Mock API Server';
         } else if (path.startsWith('/swagger')) {
@@ -281,15 +281,15 @@ export const Layout = () => {
             if (viewParam === 'hsm-studio') {
                 title = 'Nexora Devkit | HSM Studio (WhatsApp)';
             } else if (viewParam === 'nexus-ai') {
-                title = 'Nexora Devkit |Nexus AI Chat';
+                title = 'Nexora Devkit | Nexus AI Chat';
             } else if (viewParam === 'dictionary') {
-                title = 'Nexora Devkit |Dicionário de Variáveis';
+                title = 'Nexora Devkit | Dicionário de Variáveis';
             } else if (viewParam === 'whatsapp-builder') {
-                title = 'Nexora Devkit |Gerador de Link WhatsApp';
+                title = 'Nexora Devkit | Gerador de Link WhatsApp';
             } else if (viewParam === 'ai-lab') {
-                title = 'Nexora Devkit |Laboratório IA (Gemini)';
+                title = 'Nexora Devkit | Laboratório IA (Gemini)';
             } else {
-                title = 'Nexora Devkit |Universal Studio Pro Workspace';
+                title = 'Nexora Devkit | Universal Studio Pro Workspace';
             }
         }
 

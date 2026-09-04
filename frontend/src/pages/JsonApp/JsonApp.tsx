@@ -173,6 +173,21 @@ const extractTargetFieldValues = (obj: any, prefix = ''): Record<string, string>
     return result;
 };
 
+    // Importa dados enviados por outros módulos (ex.: "Abrir no JSON Mapper" do OpenAPI Studio)
+    useEffect(() => {
+        try {
+            const imported = sessionStorage.getItem('nexora_json_import');
+            if (imported) {
+                sessionStorage.removeItem('nexora_json_import');
+                const parsed = JSON.parse(imported);
+                setSourceJsonStr(JSON.stringify(parsed, null, 2));
+                showToast('JSON importado com sucesso!');
+            }
+        } catch (e) {
+            console.error('Falha ao importar JSON de outro módulo:', e);
+        }
+    }, []);
+
     useEffect(() => {
         try {
             const parsed = JSON.parse(sourceJsonStr);
