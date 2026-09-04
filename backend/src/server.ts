@@ -53,7 +53,7 @@ app.use(express.json());
 
 // Proxy seguro para a API da ReceitaWS, evitando erros de CORS no frontend
 // O ReceitaWS requer que as requisições venham do server side ou tenham um proxy.
-app.get('/api/cnpj/:cnpj', async (req, res) => {
+app.get('/api/cnpj/:cnpj', rateLimiter(30, 60 * 1000), async (req, res) => {
     try {
         const { cnpj } = req.params;
         const cleanCnpj = cnpj.replace(/\D/g, '');
@@ -79,45 +79,104 @@ app.get('/api/cnpj/:cnpj', async (req, res) => {
     }
 });
 
+// Limites de segurança do proxy genérico
+const PROXY_TIMEOUT_MS = 15000;              // Aborta requisições lentas (anti-hang/DoS)
+const PROXY_MAX_RESPONSE_BYTES = 10 * 1024 * 1024; // Teto de 10MB para a resposta (anti-exaustão de memória)
+const PROXY_MAX_REDIRECTS = 5;               // Máximo de saltos de redirect seguidos
+
+// Lê o corpo da resposta respeitando um teto de bytes, abortando o stream se exceder.
+async function readBodyWithLimit(response: Response, maxBytes: number): Promise<string> {
+    const reader = response.body?.getReader();
+    if (!reader) return '';
+    let received = 0;
+    const chunks: Uint8Array[] = [];
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+            received += value.length;
+            if (received > maxBytes) {
+                await reader.cancel();
+                throw new Error(`Resposta excede o tamanho máximo permitido (${maxBytes} bytes)`);
+            }
+            chunks.push(value);
+        }
+    }
+    return Buffer.concat(chunks).toString('utf-8');
+}
+
+// fetch com validação de SSRF em cada salto de redirect (fecha o bypass de redirect para IPs internos/metadata).
+async function ssrfSafeFetch(initialUrl: string, options: any): Promise<Response> {
+    let currentUrl = initialUrl;
+    for (let hop = 0; hop <= PROXY_MAX_REDIRECTS; hop++) {
+        const isSafe = await validateUrlForSSRF(currentUrl);
+        if (!isSafe) {
+            const err: any = new Error('Requisição bloqueada por política de segurança (SSRF). Acesso a endereços privados ou locais é proibido.');
+            err.ssrfBlocked = true;
+            throw err;
+        }
+
+        const response = await fetch(currentUrl, { ...options, redirect: 'manual' });
+
+        // 3xx com header Location → seguimos manualmente, re-validando o destino
+        if (response.status >= 300 && response.status < 400) {
+            const location = response.headers.get('location');
+            if (location) {
+                if (hop === PROXY_MAX_REDIRECTS) {
+                    throw new Error('Número máximo de redirects excedido');
+                }
+                // Resolve URLs relativas contra a URL atual
+                currentUrl = new URL(location, currentUrl).toString();
+                continue;
+            }
+        }
+        return response;
+    }
+    throw new Error('Número máximo de redirects excedido');
+}
+
 // Proxy genérico seguro para evitar bloqueio de CORS no cliente de API do frontend
-app.post('/api/proxy', async (req, res) => {
+app.post('/api/proxy', rateLimiter(60, 60 * 1000), async (req, res) => {
     try {
         const { url, method, headers, body } = req.body;
         if (!url) {
             return res.status(400).json({ error: 'URL é obrigatória' });
         }
 
-        // Validação de SSRF antes de realizar a requisição
-        const isUrlSafe = await validateUrlForSSRF(url);
-        if (!isUrlSafe) {
-            return res.status(403).json({ error: 'Requisição bloqueada por política de segurança (SSRF). Acesso a endereços privados ou locais é proibido.' });
-        }
-
         const fetchOptions: any = {
             method: method || 'GET',
             headers: headers || {},
+            signal: AbortSignal.timeout(PROXY_TIMEOUT_MS),
         };
 
         if (body && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
             fetchOptions.body = typeof body === 'object' ? JSON.stringify(body) : body;
         }
 
-        const response = await fetch(url, fetchOptions);
+        const response = await ssrfSafeFetch(url, fetchOptions);
         const responseHeaders: any = {};
         response.headers.forEach((val, key) => {
             responseHeaders[key] = val;
         });
 
-        let responseData;
+        // Rejeita cedo se o servidor anunciar um Content-Length acima do teto
+        const declaredLength = Number(response.headers.get('content-length') || 0);
+        if (declaredLength > PROXY_MAX_RESPONSE_BYTES) {
+            return res.status(413).json({ error: `Resposta excede o tamanho máximo permitido (${PROXY_MAX_RESPONSE_BYTES} bytes)` });
+        }
+
+        const rawBody = await readBodyWithLimit(response, PROXY_MAX_RESPONSE_BYTES);
+
+        let responseData: any;
         const contentType = response.headers.get('content-type') || '';
-        try {
-            if (contentType.includes('application/json')) {
-                responseData = await response.json();
-            } else {
-                responseData = await response.text();
+        if (contentType.includes('application/json')) {
+            try {
+                responseData = JSON.parse(rawBody);
+            } catch (e) {
+                responseData = rawBody;
             }
-        } catch (e) {
-            responseData = await response.text();
+        } else {
+            responseData = rawBody;
         }
 
         res.status(response.status).json({
@@ -127,6 +186,12 @@ app.post('/api/proxy', async (req, res) => {
             data: responseData
         });
     } catch (error: any) {
+        if (error.ssrfBlocked) {
+            return res.status(403).json({ error: error.message });
+        }
+        if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+            return res.status(504).json({ error: `Tempo limite da requisição excedido (${PROXY_TIMEOUT_MS}ms)` });
+        }
         console.error('Proxy error:', error);
         res.status(500).json({ error: 'Erro no proxy de API', details: error.message });
     }
