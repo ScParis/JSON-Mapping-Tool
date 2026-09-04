@@ -23,6 +23,9 @@ declare namespace NodeJS {
 
 declare var process: NodeJS.Process
 
+// URL do backend injetada em build-time pelo Vite (vite.config.ts).
+declare const __BACKEND_URL__: string
+
 declare module '*.gif' {
   const src: string
   export default src

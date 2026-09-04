@@ -8,8 +8,7 @@ export default defineConfig(({ mode }) => {
   // Prefixo '' apenas para LEITURA no build — nada é exposto ao client sem passar por 'define'.
   const env = loadEnv(mode, process.cwd(), '');
 
-  // O Vercel bloqueia o prefixo VITE_, então aceitamos BACKEND_URL (sem prefixo)
-  // e o mapeamos manualmente para import.meta.env.VITE_BACKEND_URL, que é o que o código lê.
+  // O Vercel bloqueia o prefixo VITE_, então aceitamos BACKEND_URL (sem prefixo).
   // Ordem: BACKEND_URL (Vercel) > VITE_BACKEND_URL (.env local) > vazio (fallback localhost no config.ts).
   const backendUrl = env.BACKEND_URL || env.VITE_BACKEND_URL || '';
 
@@ -18,9 +17,11 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss()
     ],
-    define: backendUrl
-      ? { 'import.meta.env.VITE_BACKEND_URL': JSON.stringify(backendUrl) }
-      : {},
+    // Constante global própria (não import.meta.env, que o Vite processa de forma
+    // especial e ignora um define manual). Substituída textualmente no build.
+    define: {
+      __BACKEND_URL__: JSON.stringify(backendUrl),
+    },
     server: {
       port: 3000,
       host: true,
