@@ -12,6 +12,32 @@ export function isJsonString(str: string): boolean {
   }
 }
 
+// Extrai uma especificação OpenAPI embutida num documento Markdown.
+// As docs da pipe.run (e do ReadMe em geral) entregam a versão `.md` da página
+// com o OpenAPI dentro de um bloco de código ```json ... ```. Quando o usuário
+// cola esse markdown inteiro, tentamos localizar o primeiro bloco cercado que
+// contenha um objeto com "openapi"/"swagger"/"paths" e usamos só esse trecho.
+function extractSpecFromMarkdown(content: string): string | null {
+  const fenceRegex = /```(?:json|yaml|yml)?\s*\n([\s\S]*?)```/gi;
+  let match: RegExpExecArray | null;
+  while ((match = fenceRegex.exec(content)) !== null) {
+    const block = match[1]?.trim();
+    if (!block) continue;
+    if (!/["']?(openapi|swagger|paths)["']?\s*:/.test(block)) continue;
+    try {
+      const candidate = block.startsWith('{') || block.startsWith('[')
+        ? JSON.parse(block)
+        : yaml.load(block);
+      if (candidate && typeof candidate === 'object') {
+        return block;
+      }
+    } catch {
+      // bloco não parseável — continua procurando o próximo
+    }
+  }
+  return null;
+}
+
 export function parseOpenApiSpec(content: string): { spec: OpenApiSpec | null; error: ParseError | null } {
   if (!content || !content.trim()) {
     return { spec: null, error: { message: 'Especificação vazia.' } };
@@ -29,7 +55,17 @@ export function parseOpenApiSpec(content: string): { spec: OpenApiSpec | null; e
         parsed = yaml.load(content);
       }
     } else {
-      parsed = yaml.load(content);
+      // Se não começa com JSON/array, pode ser YAML puro OU um markdown com o
+      // OpenAPI embutido num bloco de código. Tentamos extrair o bloco primeiro;
+      // se não houver, caímos no parse YAML normal.
+      const embedded = extractSpecFromMarkdown(content);
+      if (embedded) {
+        parsed = embedded.startsWith('{') || embedded.startsWith('[')
+          ? JSON.parse(embedded)
+          : yaml.load(embedded);
+      } else {
+        parsed = yaml.load(content);
+      }
     }
 
     if (!parsed || typeof parsed !== 'object') {

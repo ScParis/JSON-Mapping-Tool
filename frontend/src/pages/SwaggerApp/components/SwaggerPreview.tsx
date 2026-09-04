@@ -28,6 +28,23 @@ export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMethodFilter, setSelectedMethodFilter] = useState<string>('ALL');
 
+  const info = spec?.info || { title: 'OpenAPI Specification', version: '1.0.0' };
+
+  // Description markdown dynamic rendering.
+  // IMPORTANTE: este hook precisa rodar em toda renderização (antes de qualquer
+  // early return) para não violar a ordem dos hooks — caso contrário, ao colar
+  // um documento inválido o spec vira null, o return antecipado pula o useMemo
+  // e o React quebra com o erro #300 (tela escura).
+  const descriptionHtml = useMemo(() => {
+    if (!info.description || typeof info.description !== 'string') return '';
+    try {
+      const rawHtml = marked.parse(info.description, { gfm: true, breaks: true }) as string;
+      return DOMPurify.sanitize(rawHtml);
+    } catch {
+      return typeof info.description === 'string' ? info.description : '';
+    }
+  }, [info.description]);
+
   if (error || !spec) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-zinc-50 dark:bg-[#030711]/60">
@@ -44,21 +61,9 @@ export const SwaggerPreview: React.FC<SwaggerPreviewProps> = ({
     );
   }
 
-  const info = spec.info || { title: 'OpenAPI Specification', version: '1.0.0' };
   const servers = spec.servers || [{ url: spec.host ? `https://${spec.host}${spec.basePath || ''}` : 'https://api.exemplo.com' }];
 
   const isAuthed = !!(auth.bearerToken || auth.apiKeyValue || auth.basicUsername);
-
-  // Description markdown dynamic rendering
-  const descriptionHtml = useMemo(() => {
-    if (!info.description) return '';
-    try {
-      const rawHtml = marked.parse(info.description, { gfm: true, breaks: true }) as string;
-      return DOMPurify.sanitize(rawHtml);
-    } catch {
-      return info.description;
-    }
-  }, [info.description]);
 
   // Extract endpoints grouped by tags
   const tagsMap: Record<string, { method: HttpMethod; path: string; operation: any }[]> = {};

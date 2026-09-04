@@ -269,7 +269,7 @@ export const EndpointItem: React.FC<EndpointItemProps> = ({
               {operation.summary && (
                 <h3 className="text-sm font-extrabold text-zinc-900 dark:text-white">{operation.summary}</h3>
               )}
-              {operation.description && (
+              {operation.description && typeof operation.description === 'string' && (
                 <div
                   className="swagger-markdown text-xs text-zinc-600 dark:text-slate-400 mt-1"
                   dangerouslySetInnerHTML={{
